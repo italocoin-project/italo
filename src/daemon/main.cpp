@@ -1,5 +1,5 @@
 // Copyright (c) 2014-2020, The Monero Project
-// Copyright (c)      2018, The Loki Project
+// Copyright (c)      2018, The Italo Project
 //
 // All rights reserved.
 //
@@ -51,8 +51,8 @@
 #include "common/stack_trace.h"
 #endif // STACK_TRACE
 
-#undef LOKI_DEFAULT_LOG_CATEGORY
-#define LOKI_DEFAULT_LOG_CATEGORY "daemon"
+#undef ITALO_DEFAULT_LOG_CATEGORY
+#define ITALO_DEFAULT_LOG_CATEGORY "daemon"
 
 namespace po = boost::program_options;
 
@@ -120,16 +120,16 @@ int main(int argc, char const * argv[])
 
     if (command_line::get_arg(vm, command_line::arg_help))
     {
-      std::cout << "Loki '" << LOKI_RELEASE_NAME << "' (v" << LOKI_VERSION_FULL << ")\n\n";
+      std::cout << "Italo '" << ITALO_RELEASE_NAME << "' (v" << ITALO_VERSION_FULL << ")\n\n";
       std::cout << "Usage: " + std::string{argv[0]} + " [options|settings] [daemon_command...]" << std::endl << std::endl;
       std::cout << visible_options << std::endl;
       return 0;
     }
 
-    // Loki Version
+    // Italo Version
     if (command_line::get_arg(vm, command_line::arg_version))
     {
-      std::cout << "Loki '" << LOKI_RELEASE_NAME << "' (v" << LOKI_VERSION_FULL << ")\n\n";
+      std::cout << "Italo '" << ITALO_RELEASE_NAME << "' (v" << ITALO_VERSION_FULL << ")\n\n";
       return 0;
     }
 
@@ -169,7 +169,7 @@ int main(int argc, char const * argv[])
     }
 
     // data_dir
-    //   default: e.g. ~/.loki/ or ~/.loki/testnet
+    //   default: e.g. ~/.italo/ or ~/.italo/testnet
     //   if data-dir argument given:
     //     absolute path
     //     relative path: relative to cwd
@@ -213,7 +213,7 @@ int main(int argc, char const * argv[])
 
     // logging is now set up
     // FIXME: only print this when starting up as a daemon but not when running rpc commands
-    MGINFO_GREEN("Loki '" << LOKI_RELEASE_NAME << "' (v" << LOKI_VERSION_FULL << ")");
+    MGINFO_GREEN("Italo '" << ITALO_RELEASE_NAME << "' (v" << ITALO_VERSION_FULL << ")");
 
     // If there are positional options, we're running a daemon command
     {
@@ -257,7 +257,7 @@ int main(int argc, char const * argv[])
 
     MINFO("Moving from main() into the daemonize now.");
 
-    return daemonizer::daemonize<daemonize::daemon>("Loki Daemon", argc, argv, std::move(vm))
+    return daemonizer::daemonize<daemonize::daemon>("Italo Daemon", argc, argv, std::move(vm))
         ? 0 : 1;
   }
   catch (std::exception const & ex)

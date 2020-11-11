@@ -1,4 +1,4 @@
-// Copyright (c) 2018-2020, The Loki Project
+// Copyright (c) 2018-2020, The Italo Project
 // Copyright (c) 2014-2019, The Monero Project
 // 
 // All rights reserved.
@@ -28,7 +28,7 @@
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "common/loki.h"
+#include "common/italo.h"
 #include <string>
 #include <vector>
 #include "cryptonote_basic/subaddress_index.h"
@@ -63,7 +63,7 @@ inline const char *pay_type_string(pay_type type)
   }
 }
 
-LOKI_RPC_DOC_INTROSPECT
+ITALO_RPC_DOC_INTROSPECT
 struct transfer_view
 {
   std::string txid;                                          // Transaction ID for this transfer.
@@ -88,10 +88,10 @@ struct transfer_view
   bool was_blink;                                            // True if we saw this as an approved blink (either in the mempool or a recent, uncheckpointed block).  Note that if we didn't see it while an active blink this won't be set.
 
   // Not serialized, for internal wallet2 use
-  wallet::pay_type pay_type;                                 // @NoLokiRPCDocGen Internal use only, not serialized
-  bool            confirmed;                                 // @NoLokiRPCDocGen Internal use only, not serialized
-  crypto::hash    hash;                                      // @NoLokiRPCDocGen Internal use only, not serialized
-  std::string     lock_msg;                                  // @NoLokiRPCDocGen Internal use only, not serialized
+  wallet::pay_type pay_type;                                 // @NoItaloRPCDocGen Internal use only, not serialized
+  bool            confirmed;                                 // @NoItaloRPCDocGen Internal use only, not serialized
+  crypto::hash    hash;                                      // @NoItaloRPCDocGen Internal use only, not serialized
+  std::string     lock_msg;                                  // @NoItaloRPCDocGen Internal use only, not serialized
 
   KV_MAP_SERIALIZABLE
 };

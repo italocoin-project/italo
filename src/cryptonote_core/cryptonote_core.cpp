@@ -1,5 +1,5 @@
 // Copyright (c) 2014-2019, The Monero Project
-// Copyright (c)      2018, The Loki Project
+// Copyright (c)      2018, The Italo Project
 //
 // All rights reserved.
 //
@@ -36,7 +36,7 @@
 
 #include <unordered_set>
 #include <iomanip>
-#include <lokimq/base32z.h>
+#include <italomq/base32z.h>
 
 extern "C" {
 #include <sodium.h>
@@ -68,10 +68,10 @@ extern "C" {
 #include "common/i18n.h"
 #include "epee/net/local_ip.h"
 
-#include "common/loki_integration_test_hooks.h"
+#include "common/italo_integration_test_hooks.h"
 
-#undef LOKI_DEFAULT_LOG_CATEGORY
-#define LOKI_DEFAULT_LOG_CATEGORY "cn"
+#undef ITALO_DEFAULT_LOG_CATEGORY
+#define ITALO_DEFAULT_LOG_CATEGORY "cn"
 
 DISABLE_VS_WARNINGS(4355)
 
@@ -182,7 +182,7 @@ namespace cryptonote
   };
   static const command_line::arg_descriptor<std::string> arg_public_ip = {
     "service-node-public-ip"
-  , "Public IP address on which this service node's services (such as the Loki "
+  , "Public IP address on which this service node's services (such as the Italo "
     "storage server) are accessible. This IP address will be advertised to the "
     "network via the service node uptime proofs. Required if operating as a "
     "service node."
@@ -191,7 +191,7 @@ namespace cryptonote
     "storage-server-port"
   , "The port on which this service node's storage server is accessible. A listening "
     "storage server is required for service nodes. (This option is specified "
-    "automatically when using Loki Launcher.)"
+    "automatically when using Italo Launcher.)"
   , 0};
   static const command_line::arg_descriptor<uint16_t, false, true, 2> arg_quorumnet_port = {
     "quorumnet-port"
@@ -232,8 +232,8 @@ namespace cryptonote
   static const command_line::arg_descriptor<std::string> arg_block_rate_notify = {
     "block-rate-notify"
   , "Run a program when the block rate undergoes large fluctuations. This might "
-    "be a sign of large amounts of hash rate going on and off the Loki network, "
-    "or could be a sign that lokid is not properly synchronizing with the network. %t will be replaced "
+    "be a sign of large amounts of hash rate going on and off the Italo network, "
+    "or could be a sign that italod is not properly synchronizing with the network. %t will be replaced "
     "by the number of minutes for the observation window, %b by the number of "
     "blocks observed within that window, and %e by the number of blocks that was "
     "expected in that window."
@@ -281,7 +281,7 @@ namespace cryptonote
   , m_last_json_checkpoints_update(0)
   , m_nettype(UNDEFINED)
   , m_last_storage_server_ping(0)
-  , m_last_lokinet_ping(0)
+  , m_last_italonet_ping(0)
   , m_pad_transactions(false)
   {
     m_checkpoints_updating.clear();
@@ -348,7 +348,7 @@ namespace cryptonote
 
     command_line::add_arg(desc, arg_pad_transactions);
     command_line::add_arg(desc, arg_block_notify);
-#if 0 // TODO(loki): Pruning not supported because of Service Node List
+#if 0 // TODO(italo): Pruning not supported because of Service Node List
     command_line::add_arg(desc, arg_prune_blockchain);
 #endif
     command_line::add_arg(desc, arg_reorg_notify);
@@ -356,7 +356,7 @@ namespace cryptonote
     command_line::add_arg(desc, arg_keep_alt_blocks);
 
     command_line::add_arg(desc, arg_store_quorum_history);
-#if defined(LOKI_ENABLE_INTEGRATION_TEST_HOOKS)
+#if defined(ITALO_ENABLE_INTEGRATION_TEST_HOOKS)
     command_line::add_arg(desc, integration_test::arg_hardforks_override);
     command_line::add_arg(desc, integration_test::arg_pipe_name);
 #endif
@@ -416,7 +416,7 @@ namespace cryptonote
 
         if (!epee::net_utils::is_ip_public(m_sn_public_ip)) {
           if (m_service_node_list.debug_allow_local_ips) {
-            MWARNING("Address given for public-ip is not public; allowing it because dev-allow-local-ips was specified. This service node WILL NOT WORK ON THE PUBLIC LOKI NETWORK!");
+            MWARNING("Address given for public-ip is not public; allowing it because dev-allow-local-ips was specified. This service node WILL NOT WORK ON THE PUBLIC ITALO NETWORK!");
           } else {
             MERROR("Address given for public-ip is not public: " << epee::string_tools::get_ip_string_from_int32(m_sn_public_ip));
             storage_ok = false;
@@ -430,7 +430,7 @@ namespace cryptonote
       }
 
       if (!storage_ok) {
-        MERROR("IMPORTANT: All service node operators are now required to run the loki storage "
+        MERROR("IMPORTANT: All service node operators are now required to run the italo storage "
                << "server and provide the public ip and ports on which it can be accessed on the internet.");
         return false;
       }
@@ -505,12 +505,12 @@ namespace cryptonote
   }
 
   // Returns a string for systemd status notifications such as:
-  // Height: 1234567, SN: active, proof: 55m12s, storage: 4m48s, lokinet: 47s
+  // Height: 1234567, SN: active, proof: 55m12s, storage: 4m48s, italonet: 47s
   std::string core::get_status_string() const
   {
     std::string s;
     s.reserve(128);
-    s += 'v'; s += LOKI_VERSION_STR;
+    s += 'v'; s += ITALO_VERSION_STR;
     s += "; Height: ";
     s += std::to_string(get_blockchain_storage().get_current_blockchain_height());
     s += ", SN: ";
@@ -540,8 +540,8 @@ namespace cryptonote
         s += time_ago_str(now, last_proof);
         s += ", storage: ";
         s += time_ago_str(now, m_last_storage_server_ping);
-        s += ", lokinet: ";
-        s += time_ago_str(now, m_last_lokinet_ping);
+        s += ", italonet: ";
+        s += time_ago_str(now, m_last_italonet_ping);
       }
     }
     return s;
@@ -552,7 +552,7 @@ namespace cryptonote
   {
     start_time = std::time(nullptr);
 
-#if defined(LOKI_ENABLE_INTEGRATION_TEST_HOOKS)
+#if defined(ITALO_ENABLE_INTEGRATION_TEST_HOOKS)
     const std::string arg_hardforks_override = command_line::get_arg(vm, integration_test::arg_hardforks_override);
 
     std::vector<std::pair<uint8_t, uint64_t>> integration_test_hardforks;
@@ -643,7 +643,7 @@ namespace cryptonote
     bool sync_on_blocks = true;
     uint64_t sync_threshold = 1;
 
-#if !defined(LOKI_ENABLE_INTEGRATION_TEST_HOOKS) // In integration mode, don't delete the DB. This should be explicitly done in the tests. Otherwise the more likely behaviour is persisting the DB across multiple daemons in the same test.
+#if !defined(ITALO_ENABLE_INTEGRATION_TEST_HOOKS) // In integration mode, don't delete the DB. This should be explicitly done in the tests. Otherwise the more likely behaviour is persisting the DB across multiple daemons in the same test.
     if (m_nettype == FAKECHAIN && !keep_fakechain)
     {
       // reset the db by removing the database file before opening it
@@ -803,10 +803,10 @@ namespace cryptonote
     // Checkpoints
     m_checkpoints_path = m_config_folder / fs::u8path(JSON_HASH_FILE_NAME);
 
-    sqlite3 *lns_db = lns::init_loki_name_system(lns_db_file_path, db->is_read_only());
+    sqlite3 *lns_db = lns::init_italo_name_system(lns_db_file_path, db->is_read_only());
     if (!lns_db) return false;
 
-    init_lokimq(vm);
+    init_italomq(vm);
 
     const difficulty_type fixed_difficulty = command_line::get_arg(vm, arg_fixed_difficulty);
     r = m_blockchain_storage.init(db.release(), lns_db, m_nettype, m_offline, regtest ? &regtest_test_options : test_options, fixed_difficulty, get_checkpoints);
@@ -907,7 +907,7 @@ namespace cryptonote
     // <data>/key_ed25519: Standard ed25519 secret key.  We always have this, and generate one if it
     // doesn't exist.
     //
-    // As of Loki 8.x, if this exists and `key` doesn't, we use this key for everything.  For
+    // As of Italo 8.x, if this exists and `key` doesn't, we use this key for everything.  For
     // compatibility with earlier versions we also allow `key` to contain a separate monero privkey
     // for the SN keypair.  (The main difference is that the Monero keypair is unclamped and that it
     // only contains the private key value but not the secret key value that we need for full
@@ -962,7 +962,7 @@ namespace cryptonote
       MGINFO_YELLOW("- primary: " << tools::type_to_hex(keys.pub));
       MGINFO_YELLOW("- ed25519: " << tools::type_to_hex(keys.pub_ed25519));
       // .snode address is the ed25519 pubkey, encoded with base32z and with .snode appended:
-      MGINFO_YELLOW("- lokinet: " << lokimq::to_base32z(tools::view_guts(keys.pub_ed25519)) << ".snode");
+      MGINFO_YELLOW("- italonet: " << italomq::to_base32z(tools::view_guts(keys.pub_ed25519)) << ".snode");
       MGINFO_YELLOW("-  x25519: " << tools::type_to_hex(keys.pub_x25519));
     } else {
       // Only print the x25519 version because it's the only thing useful for a non-SN (for
@@ -973,8 +973,8 @@ namespace cryptonote
     return true;
   }
 
-  static constexpr el::Level easylogging_level(lokimq::LogLevel level) {
-    using namespace lokimq;
+  static constexpr el::Level easylogging_level(italomq::LogLevel level) {
+    using namespace italomq;
     switch (level) {
         case LogLevel::fatal: return el::Level::Fatal;
         case LogLevel::error: return el::Level::Error;
@@ -986,11 +986,11 @@ namespace cryptonote
     }
   }
 
-  lokimq::AuthLevel core::lmq_check_access(const crypto::x25519_public_key& pubkey) const {
+  italomq::AuthLevel core::lmq_check_access(const crypto::x25519_public_key& pubkey) const {
     auto it = m_lmq_auth.find(pubkey);
     if (it != m_lmq_auth.end())
       return it->second;
-    return lokimq::AuthLevel::denied;
+    return italomq::AuthLevel::denied;
   }
 
   // Builds an allow function; takes `*this`, the default auth level, and whether this connection
@@ -1004,8 +1004,8 @@ namespace cryptonote
   // check_sn is whether we check an incoming key against known service nodes (and thus return
   // "true" for the service node access if it checks out).
   //
-  lokimq::AuthLevel core::lmq_allow(std::string_view ip, std::string_view x25519_pubkey_str, lokimq::AuthLevel default_auth) {
-    using namespace lokimq;
+  italomq::AuthLevel core::lmq_allow(std::string_view ip, std::string_view x25519_pubkey_str, italomq::AuthLevel default_auth) {
+    using namespace italomq;
     AuthLevel auth = default_auth;
     if (x25519_pubkey_str.size() == sizeof(crypto::x25519_public_key)) {
       crypto::x25519_public_key x25519_pubkey;
@@ -1025,10 +1025,10 @@ namespace cryptonote
     return auth;
   }
 
-  void core::init_lokimq(const boost::program_options::variables_map& vm) {
-    using namespace lokimq;
-    MGINFO("Starting lokimq");
-    m_lmq = std::make_unique<LokiMQ>(
+  void core::init_italomq(const boost::program_options::variables_map& vm) {
+    using namespace italomq;
+    MGINFO("Starting italomq");
+    m_lmq = std::make_unique<ItaloMQ>(
         tools::copy_guts(m_service_keys.pub_x25519),
         tools::copy_guts(m_service_keys.key_x25519),
         m_service_node,
@@ -1038,7 +1038,7 @@ namespace cryptonote
           if (ELPP->vRegistry()->allowed(easylogging_level(level), "lmq"))
             el::base::Writer(easylogging_level(level), file, line, ELPP_FUNC, el::base::DispatchAction::NormalLog).construct("lmq") << msg;
         },
-        lokimq::LogLevel::trace
+        italomq::LogLevel::trace
     );
 
     // ping.ping: a simple debugging target for pinging the lmq listener
@@ -1068,7 +1068,7 @@ namespace cryptonote
     quorumnet_init(*this, m_quorumnet_state);
   }
 
-  void core::start_lokimq() {
+  void core::start_italomq() {
       update_lmq_sns(); // Ensure we have SNs set for the current block before starting
 
       if (m_service_node)
@@ -1670,7 +1670,7 @@ namespace cryptonote
     if (count == 0)
       return result;
 
-    auto& [emission_amount, total_fee_amount, burnt_loki] = result;
+    auto& [emission_amount, total_fee_amount, burnt_italo] = result;
 
     // Caching.
     //
@@ -1695,7 +1695,7 @@ namespace cryptonote
         if (count >= m_coinbase_cache.height) {
           emission_amount = m_coinbase_cache.emissions;
           total_fee_amount = m_coinbase_cache.fees;
-          burnt_loki = m_coinbase_cache.burnt;
+          burnt_italo = m_coinbase_cache.burnt;
           start_offset = m_coinbase_cache.height;
           count -= m_coinbase_cache.height;
         }
@@ -1725,7 +1725,7 @@ namespace cryptonote
             // The cache is updated and we can still use it, so update our variables.
             emission_amount = m_coinbase_cache.emissions;
             total_fee_amount = m_coinbase_cache.fees;
-            burnt_loki = m_coinbase_cache.burnt;
+            burnt_italo = m_coinbase_cache.burnt;
             count -= m_coinbase_cache.height - start_offset;
             start_offset = m_coinbase_cache.height;
           }
@@ -1741,7 +1741,7 @@ namespace cryptonote
     const uint64_t end = start_offset + count - 1;
     m_blockchain_storage.for_blocks_range(start_offset, end,
       [this, &cache_to, &result, &cache_build_started](uint64_t height, const crypto::hash& hash, const block& b){
-      auto& [emission_amount, total_fee_amount, burnt_loki] = result;
+      auto& [emission_amount, total_fee_amount, burnt_italo] = result;
       std::vector<transaction> txs;
       std::vector<crypto::hash> missed_txs;
       uint64_t coinbase_amount = get_outs_money_amount(b.miner_tx);
@@ -1752,7 +1752,7 @@ namespace cryptonote
         tx_fee_amount += get_tx_miner_fee(tx, b.major_version >= HF_VERSION_FEE_BURNING);
         if(b.major_version >= HF_VERSION_FEE_BURNING)
         {
-          burnt_loki += get_burned_amount_from_tx_extra(tx.extra);
+          burnt_italo += get_burned_amount_from_tx_extra(tx.extra);
         }
       }
 
@@ -1766,7 +1766,7 @@ namespace cryptonote
           m_coinbase_cache.height = height;
           m_coinbase_cache.emissions = emission_amount;
           m_coinbase_cache.fees = total_fee_amount;
-          m_coinbase_cache.burnt = burnt_loki;
+          m_coinbase_cache.burnt = burnt_italo;
         }
         if (m_coinbase_cache.building)
         {
@@ -1867,7 +1867,7 @@ namespace cryptonote
     bool result = m_service_node_list.handle_uptime_proof(proof, my_uptime_proof_confirmation, pkey);
     if (result && m_service_node_list.is_service_node(proof.pubkey, true /*require_active*/) && pkey)
     {
-      lokimq::pubkey_set added;
+      italomq::pubkey_set added;
       added.insert(tools::copy_guts(pkey));
       m_lmq->update_active_sns(added, {} /*removed*/);
     }
@@ -1988,7 +1988,7 @@ namespace cryptonote
     std::vector<block_complete_entry> blocks;
     m_miner.pause();
     {
-      LOKI_DEFER { m_miner.resume(); };
+      ITALO_DEFER { m_miner.resume(); };
       try
       {
         blocks.push_back(get_block_complete_entry(b, m_mempool));
@@ -2134,8 +2134,8 @@ namespace cryptonote
 
   void core::update_lmq_sns()
   {
-    // TODO: let callers (e.g. lokinet, ss) subscribe to callbacks when this fires
-    lokimq::pubkey_set active_sns;
+    // TODO: let callers (e.g. italonet, ss) subscribe to callbacks when this fires
+    italomq::pubkey_set active_sns;
     m_service_node_list.copy_active_x25519_pubkeys(std::inserter(active_sns, active_sns.end()));
     m_lmq->set_active_sns(std::move(active_sns));
   }
@@ -2239,14 +2239,14 @@ namespace cryptonote
           {
             MGINFO_RED(
                 "Failed to submit uptime proof: have not heard from the storage server recently. Make sure that it "
-                "is running! It is required to run alongside the Loki daemon");
+                "is running! It is required to run alongside the Italo daemon");
             return;
           }
-          if (!check_external_ping(m_last_lokinet_ping, LOKINET_PING_LIFETIME, "Lokinet"))
+          if (!check_external_ping(m_last_italonet_ping, ITALONET_PING_LIFETIME, "Italonet"))
           {
             MGINFO_RED(
-                "Failed to submit uptime proof: have not heard from lokinet recently. Make sure that it "
-                "is running! It is required to run alongside the Loki daemon");
+                "Failed to submit uptime proof: have not heard from italonet recently. Make sure that it "
+                "is running! It is required to run alongside the Italo daemon");
             return;
           }
         }
@@ -2267,7 +2267,7 @@ namespace cryptonote
     {
       std::string main_message;
       if (m_offline)
-        main_message = "The daemon is running offline and will not attempt to sync to the Loki network.";
+        main_message = "The daemon is running offline and will not attempt to sync to the Italo network.";
       else
         main_message = "The daemon will start synchronizing with the network. This may take a long time to complete.";
       MGINFO_YELLOW("\n**********************************************************************\n"
@@ -2300,7 +2300,7 @@ namespace cryptonote
     m_miner.on_idle();
     m_mempool.on_idle();
 
-#if defined(LOKI_ENABLE_INTEGRATION_TEST_HOOKS)
+#if defined(ITALO_ENABLE_INTEGRATION_TEST_HOOKS)
     integration_test::state.core_is_idle = true;
 #endif
 
@@ -2404,7 +2404,7 @@ namespace cryptonote
       return true;
     }
 
-#if defined(LOKI_ENABLE_INTEGRATION_TEST_HOOKS)
+#if defined(ITALO_ENABLE_INTEGRATION_TEST_HOOKS)
     MDEBUG("Not checking block rate, integration test mode");
     return true;
 #endif
@@ -2425,7 +2425,7 @@ namespace cryptonote
       MDEBUG("blocks in the last " << seconds[n] / 60 << " minutes: " << b << " (probability " << p << ")");
       if (p < threshold)
       {
-        MWARNING("There were " << b << (b == max_blocks_checked ? " or more" : "") << " blocks in the last " << seconds[n] / 60 << " minutes, there might be large hash rate changes, or we might be partitioned, cut off from the Loki network or under attack, or your computer's time is off. Or it could be just sheer bad luck.");
+        MWARNING("There were " << b << (b == max_blocks_checked ? " or more" : "") << " blocks in the last " << seconds[n] / 60 << " minutes, there might be large hash rate changes, or we might be partitioned, cut off from the Italo network or under attack, or your computer's time is off. Or it could be just sheer bad luck.");
 
         std::shared_ptr<tools::Notify> block_rate_notify = m_block_rate_notify;
         if (block_rate_notify)

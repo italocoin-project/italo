@@ -36,7 +36,7 @@
  */
 #pragma once
 
-#include <lokimq/variant.h>
+#include <italomq/variant.h>
 #include "serialization.h"
 #include "common/meta.h"
 

@@ -35,7 +35,7 @@
 #include "serialization/binary_utils.h"
 #include "serialization/variant.h"
 #include "crypto/crypto.h"
-#include "loki_economy.h"
+#include "italo_economy.h"
 #include "cryptonote_basic.h"
 
 
@@ -61,7 +61,7 @@ constexpr uint8_t
   TX_EXTRA_TAG_TX_KEY_IMAGE_UNLOCK        = 0x77,
   TX_EXTRA_TAG_SERVICE_NODE_STATE_CHANGE  = 0x78,
   TX_EXTRA_TAG_BURN                       = 0x79,
-  TX_EXTRA_TAG_LOKI_NAME_SYSTEM           = 0x7A,
+  TX_EXTRA_TAG_ITALO_NAME_SYSTEM           = 0x7A,
 
   TX_EXTRA_MYSTERIOUS_MINERGATE_TAG       = 0xDE;
 
@@ -452,7 +452,7 @@ namespace cryptonote
     END_SERIALIZE()
   };
 
-  struct tx_extra_loki_name_system
+  struct tx_extra_italo_name_system
   {
     uint8_t                 version = 0;
     lns::mapping_type       type;
@@ -471,13 +471,13 @@ namespace cryptonote
     bool is_updating() const { return field_is_set(lns::extra_field::signature) && field_any_set(lns::extra_field::updatable_fields); }
     // True if this is buying a new LNS record
     bool is_buying()   const { return (fields == lns::extra_field::buy || fields == lns::extra_field::buy_no_backup); }
-    // True if this is renewing an existing LNS: has no fields at all, is a renewal registration (i.e. lokinet),
+    // True if this is renewing an existing LNS: has no fields at all, is a renewal registration (i.e. italonet),
     // and has a non-null txid set (which should point to the most recent registration or update).
-    bool is_renewing() const { return fields == lns::extra_field::none && prev_txid && is_lokinet_type(type); }
+    bool is_renewing() const { return fields == lns::extra_field::none && prev_txid && is_italonet_type(type); }
 
-    static tx_extra_loki_name_system make_buy(lns::generic_owner const &owner, lns::generic_owner const *backup_owner, lns::mapping_type type, crypto::hash const &name_hash, std::string const &encrypted_value, crypto::hash const &prev_txid)
+    static tx_extra_italo_name_system make_buy(lns::generic_owner const &owner, lns::generic_owner const *backup_owner, lns::mapping_type type, crypto::hash const &name_hash, std::string const &encrypted_value, crypto::hash const &prev_txid)
     {
-      tx_extra_loki_name_system result = {};
+      tx_extra_italo_name_system result = {};
       result.fields                    = lns::extra_field::buy;
       result.owner                     = owner;
 
@@ -493,11 +493,11 @@ namespace cryptonote
       return result;
     }
 
-    static tx_extra_loki_name_system make_renew(lns::mapping_type type, crypto::hash const &name_hash, crypto::hash const &prev_txid)
+    static tx_extra_italo_name_system make_renew(lns::mapping_type type, crypto::hash const &name_hash, crypto::hash const &prev_txid)
     {
-      assert(is_lokinet_type(type) && prev_txid);
+      assert(is_italonet_type(type) && prev_txid);
 
-      tx_extra_loki_name_system result{};
+      tx_extra_italo_name_system result{};
       result.fields = lns::extra_field::none;
       result.type = type;
       result.name_hash = name_hash;
@@ -505,7 +505,7 @@ namespace cryptonote
       return result;
     }
 
-    static tx_extra_loki_name_system make_update(lns::generic_signature const &signature,
+    static tx_extra_italo_name_system make_update(lns::generic_signature const &signature,
                                                  lns::mapping_type type,
                                                  crypto::hash const &name_hash,
                                                  std::string_view encrypted_value,
@@ -513,7 +513,7 @@ namespace cryptonote
                                                  lns::generic_owner const *backup_owner,
                                                  crypto::hash const &prev_txid)
     {
-      tx_extra_loki_name_system result = {};
+      tx_extra_italo_name_system result = {};
       result.signature                 = signature;
       result.type                      = type;
       result.name_hash                 = name_hash;
@@ -573,7 +573,7 @@ namespace cryptonote
       tx_extra_service_node_contributor,
       tx_extra_service_node_pubkey,
       tx_extra_tx_secret_key,
-      tx_extra_loki_name_system,
+      tx_extra_italo_name_system,
       tx_extra_tx_key_image_proofs,
       tx_extra_tx_key_image_unlock,
       tx_extra_burn,
@@ -602,4 +602,4 @@ BINARY_VARIANT_TAG(cryptonote::tx_extra_tx_secret_key,               cryptonote:
 BINARY_VARIANT_TAG(cryptonote::tx_extra_tx_key_image_proofs,         cryptonote::TX_EXTRA_TAG_TX_KEY_IMAGE_PROOFS);
 BINARY_VARIANT_TAG(cryptonote::tx_extra_tx_key_image_unlock,         cryptonote::TX_EXTRA_TAG_TX_KEY_IMAGE_UNLOCK);
 BINARY_VARIANT_TAG(cryptonote::tx_extra_burn,                        cryptonote::TX_EXTRA_TAG_BURN);
-BINARY_VARIANT_TAG(cryptonote::tx_extra_loki_name_system,            cryptonote::TX_EXTRA_TAG_LOKI_NAME_SYSTEM);
+BINARY_VARIANT_TAG(cryptonote::tx_extra_italo_name_system,            cryptonote::TX_EXTRA_TAG_ITALO_NAME_SYSTEM);

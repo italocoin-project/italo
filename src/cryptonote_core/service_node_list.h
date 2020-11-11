@@ -1,4 +1,4 @@
-// Copyright (c)      2018, The Loki Project
+// Copyright (c)      2018, The Italo Project
 //
 // All rights reserved.
 //
@@ -49,7 +49,7 @@ namespace service_nodes
 {
   constexpr uint64_t INVALID_HEIGHT = static_cast<uint64_t>(-1);
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   struct participation_entry
   {
     bool is_pulse   = false;
@@ -348,7 +348,7 @@ namespace service_nodes
     /// The service node key pair used for registration-related data on the chain; is
     /// curve25519-based but with Monero-specific changes that make it useless for external tools
     /// supporting standard ed25519 or x25519 keys.
-    /// TODO(loki) - eventually drop this key and just do everything with the ed25519 key.
+    /// TODO(italo) - eventually drop this key and just do everything with the ed25519 key.
     crypto::secret_key key;
     crypto::public_key pub;
 
@@ -419,7 +419,7 @@ namespace service_nodes
     /// Initializes the x25519 map from current pubkey state; called during initialization
     void initialize_x25519_map();
 
-    /// Remote SN lookup address function for LokiMQ: given a string_view of a x25519 pubkey, this
+    /// Remote SN lookup address function for ItaloMQ: given a string_view of a x25519 pubkey, this
     /// returns that service node's quorumnet contact information, if we have it, else empty string.
     std::string remote_lookup(std::string_view x25519_pk);
 

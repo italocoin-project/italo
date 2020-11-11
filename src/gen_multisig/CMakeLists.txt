@@ -1,4 +1,4 @@
-# Copyright (c) 2018, The Loki Project
+# Copyright (c) 2018, The Italo Project
 # Copyright (c) 2017-2019, The Monero Project
 #
 # All rights reserved.
@@ -27,7 +27,7 @@
 # STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-loki_add_executable(gen_multisig "loki-gen-trusted-multisig"
+italo_add_executable(gen_multisig "italo-gen-trusted-multisig"
   gen_multisig.cpp
   )
 

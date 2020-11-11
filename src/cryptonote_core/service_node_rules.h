@@ -7,7 +7,7 @@
 
 namespace service_nodes {
   constexpr size_t PULSE_QUORUM_ENTROPY_LAG    = 21; // How many blocks back from the tip of the Blockchain to source entropy for the Pulse quorums.
-#if defined(LOKI_ENABLE_INTEGRATION_TEST_HOOKS)
+#if defined(ITALO_ENABLE_INTEGRATION_TEST_HOOKS)
   constexpr auto PULSE_ROUND_TIME                                   = 20s;
   constexpr auto PULSE_WAIT_FOR_HANDSHAKES_DURATION                 = 3s;
   constexpr auto PULSE_WAIT_FOR_OTHER_VALIDATOR_HANDSHAKES_DURATION = 3s;
@@ -91,13 +91,13 @@ namespace service_nodes {
   // and the number of blocks the decommission lasted.  Note that it is possible for decomm_blocks
   // to be *larger* than credit_at_decomm: in particularl
   //
-  // The default, starting in Loki 8, subtracts two blocks for every block you were decomissioned,
+  // The default, starting in Italo 8, subtracts two blocks for every block you were decomissioned,
   // or returns 0 if that value would be negative.  So, for example, if you had 1000 blocks of
   // credit and got decomissioned for 100 blocks, you will be recommissioned with 800 blocks of
   // credit.  If you got decomissioned for 500 or more you will be recommissioned with 0 blocks of
   // credit.
   //
-  // Before Loki 8 (when this configuration was added) recomissioning would always reset your credit
+  // Before Italo 8 (when this configuration was added) recomissioning would always reset your credit
   // to 0, which is what happens if this function always returns 0.
   inline constexpr int64_t RECOMMISSION_CREDIT(int64_t credit_at_decomm, int64_t decomm_blocks) {
       return std::max<int64_t>(0, credit_at_decomm - 2*decomm_blocks);
@@ -151,7 +151,7 @@ namespace service_nodes {
   constexpr size_t   STATE_CHANGE_MIN_NODES_TO_TEST          = 50;
   constexpr uint64_t VOTE_LIFETIME                           = BLOCKS_EXPECTED_IN_HOURS(2);
 
-#if defined(LOKI_ENABLE_INTEGRATION_TEST_HOOKS)
+#if defined(ITALO_ENABLE_INTEGRATION_TEST_HOOKS)
   constexpr size_t STATE_CHANGE_QUORUM_SIZE               = 5;
   constexpr size_t STATE_CHANGE_MIN_VOTES_TO_CHANGE_STATE = 1;
   constexpr int    MIN_TIME_IN_S_BEFORE_VOTING            = 0;
@@ -172,7 +172,7 @@ namespace service_nodes {
   static_assert(STATE_CHANGE_MIN_VOTES_TO_CHANGE_STATE <= STATE_CHANGE_QUORUM_SIZE, "The number of votes required to kick can't exceed the actual quorum size, otherwise we never kick.");
   static_assert(CHECKPOINT_MIN_VOTES <= CHECKPOINT_QUORUM_SIZE, "The number of votes required to add a checkpoint can't exceed the actual quorum size, otherwise we never add checkpoints.");
   static_assert(BLINK_MIN_VOTES <= BLINK_SUBQUORUM_SIZE, "The number of votes required can't exceed the actual blink subquorum size, otherwise we never approve.");
-#ifndef LOKI_ENABLE_INTEGRATION_TEST_HOOKS
+#ifndef ITALO_ENABLE_INTEGRATION_TEST_HOOKS
   static_assert(BLINK_MIN_VOTES > BLINK_SUBQUORUM_SIZE / 2, "Blink approvals must require a majority of quorum members to prevent conflicting, signed blinks.");
 #endif
 
@@ -212,7 +212,7 @@ namespace service_nodes {
   constexpr uint64_t VOTE_OR_TX_VERIFY_HEIGHT_BUFFER    = 5;
 
   constexpr std::array<int, 3> MIN_STORAGE_SERVER_VERSION{{2, 0, 7}};
-  constexpr std::array<int, 3> MIN_LOKINET_VERSION{{0, 8, 0}};
+  constexpr std::array<int, 3> MIN_ITALONET_VERSION{{0, 8, 0}};
 
   // The minimum accepted version number, broadcasted by Service Nodes via uptime proofs for each hardfork
   struct proof_version
@@ -260,7 +260,7 @@ namespace service_nodes {
   }
 
 static_assert(STAKING_PORTIONS != UINT64_MAX, "UINT64_MAX is used as the invalid value for failing to calculate the min_node_contribution");
-// return: UINT64_MAX if (num_contributions > the max number of contributions), otherwise the amount in loki atomic units
+// return: UINT64_MAX if (num_contributions > the max number of contributions), otherwise the amount in italo atomic units
 uint64_t get_min_node_contribution            (uint8_t version, uint64_t staking_requirement, uint64_t total_reserved, size_t num_contributions);
 uint64_t get_min_node_contribution_in_portions(uint8_t version, uint64_t staking_requirement, uint64_t total_reserved, size_t num_contributions);
 

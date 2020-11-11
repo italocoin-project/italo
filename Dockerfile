@@ -1,7 +1,7 @@
 # Multistage docker build, requires docker 17.05
 
 # TO RUN
-# docker build -t loki-daemon-image .
+# docker build -t italo-daemon-image .
 
 # TO COLLECT BINARIES
 # ./util/build_scripts/collect_from_docker_container.sh
@@ -105,7 +105,7 @@ RUN set -ex && \
     make -j$(nproc) VERBOSE=1
 
 RUN set -ex && \
-    ldd /src/build/release/bin/lokid
+    ldd /src/build/release/bin/italod
 
 # runtime stage
 FROM ubuntu:16.04
@@ -117,24 +117,24 @@ RUN set -ex && \
     rm -rf /var/lib/apt
 COPY --from=builder /src/build/release/bin /usr/local/bin/
 
-# Create loki user
-RUN adduser --system --group --disabled-password loki && \
-	mkdir -p /wallet /home/loki/.loki && \
-	chown -R loki:loki /home/loki/.loki && \
-	chown -R loki:loki /wallet
+# Create italo user
+RUN adduser --system --group --disabled-password italo && \
+	mkdir -p /wallet /home/italo/.italo && \
+	chown -R italo:italo /home/italo/.italo && \
+	chown -R italo:italo /wallet
 
 # Contains the blockchain
-VOLUME /home/loki/.loki
+VOLUME /home/italo/.italo
 
 # Generate your wallet via accessing the container and run:
 # cd /wallet
-# loki-wallet-cli
+# italo-wallet-cli
 VOLUME /wallet
 
 EXPOSE 22022
 EXPOSE 22023
 
 # switch to user monero
-USER loki
+USER italo
 
-ENTRYPOINT ["lokid", "--p2p-bind-ip=0.0.0.0", "--p2p-bind-port=22022", "--rpc-bind-ip=0.0.0.0", "--rpc-bind-port=22023", "--non-interactive", "--confirm-external-bind"]
+ENTRYPOINT ["italod", "--p2p-bind-ip=0.0.0.0", "--p2p-bind-port=22022", "--rpc-bind-ip=0.0.0.0", "--rpc-bind-port=22023", "--non-interactive", "--confirm-external-bind"]

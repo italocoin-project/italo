@@ -46,7 +46,7 @@ if(NOT STATIC AND NOT BUILD_STATIC_DEPS)
     pkg_check_modules(MINIUPNPC miniupnpc>=2.1)
   endif()
   pkg_check_modules(UNBOUND libunbound)
-  pkg_check_modules(LOKIMQ liblokimq>=1.2)
+  pkg_check_modules(ITALOMQ libitalomq>=1.2)
 endif()
 
 if(NOT WITH_MINIUPNPC)
@@ -72,30 +72,30 @@ else()
 endif()
 
 
-if(NOT LOKIMQ_FOUND)
-  message(STATUS "Using in-tree lokimq")
+if(NOT ITALOMQ_FOUND)
+  message(STATUS "Using in-tree italomq")
   if (DEPENDS)
-    # The depends system builds a static libzmq so set up a target loki-mq can use to avoid building
+    # The depends system builds a static libzmq so set up a target italo-mq can use to avoid building
     add_library(libzmq STATIC IMPORTED GLOBAL)
     set_target_properties(libzmq PROPERTIES IMPORTED_LOCATION ${ZMQ_LIBRARIES})
     target_link_libraries(libzmq INTERFACE sodium)
     target_include_directories(libzmq INTERFACE ${ZMQ_INCLUDE_DIRS})
     message(STATUS "${ZMQ_INCLUDE_DIRS} ${ZMQ_LIBRARIES}")
   endif()
-  add_subdirectory(loki-mq)
+  add_subdirectory(italo-mq)
 else()
-  add_library(lokimq INTERFACE)
-  link_dep_libs(lokimq INTERFACE "${LOKIMQ_LIBRARY_DIRS}" ${LOKIMQ_LIBRARIES})
-  target_include_directories(lokimq INTERFACE ${LOKIMQ_INCLUDE_DIRS})
-  add_library(lokimq::lokimq ALIAS lokimq)
-  message(STATUS "Found liblokimq ${LOKIMQ_VERSION}")
+  add_library(italomq INTERFACE)
+  link_dep_libs(italomq INTERFACE "${ITALOMQ_LIBRARY_DIRS}" ${ITALOMQ_LIBRARIES})
+  target_include_directories(italomq INTERFACE ${ITALOMQ_INCLUDE_DIRS})
+  add_library(italomq::italomq ALIAS italomq)
+  message(STATUS "Found libitalomq ${ITALOMQ_VERSION}")
 
   # TODO: Temporary fix for also linking libzmq; this can go when the direct zmq code (for zmq
-  # server) gets replaced with lokimq.
+  # server) gets replaced with italomq.
   pkg_check_modules(LIBZMQ libzmq)
   if (LIBZMQ_FOUND)
-    link_dep_libs(lokimq INTERFACE "${LIBZMQ_LIBRARY_DIRS}" ${LIBZMQ_LIBRARIES})
-    target_include_directories(lokimq INTERFACE ${LIBZMQ_INCLUDE_DIRS})
+    link_dep_libs(italomq INTERFACE "${LIBZMQ_LIBRARY_DIRS}" ${LIBZMQ_LIBRARIES})
+    target_include_directories(italomq INTERFACE ${LIBZMQ_INCLUDE_DIRS})
   endif()
 endif()
 

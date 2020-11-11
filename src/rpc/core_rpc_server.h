@@ -1,4 +1,4 @@
-// Copyright (c) 2018-2020, The Loki Project
+// Copyright (c) 2018-2020, The Italo Project
 // Copyright (c) 2014-2019, The Monero Project
 // 
 // All rights reserved.
@@ -43,12 +43,12 @@
 #include "p2p/net_node.h"
 #include "cryptonote_protocol/cryptonote_protocol_handler.h"
 
-#if defined(LOKI_ENABLE_INTEGRATION_TEST_HOOKS)
-#include "common/loki_integration_test_hooks.h"
+#if defined(ITALO_ENABLE_INTEGRATION_TEST_HOOKS)
+#include "common/italo_integration_test_hooks.h"
 #endif
 
-#undef LOKI_DEFAULT_LOG_CATEGORY
-#define LOKI_DEFAULT_LOG_CATEGORY "daemon.rpc"
+#undef ITALO_DEFAULT_LOG_CATEGORY
+#define ITALO_DEFAULT_LOG_CATEGORY "daemon.rpc"
 
 namespace boost { namespace program_options {
 class options_description;
@@ -71,11 +71,11 @@ namespace cryptonote { namespace rpc {
   /// For JSON RPC these become an error response with the code as the error.code value and the
   /// string as the error.message.
   /// For HTTP JSON these become a 500 Internal Server Error response with the message as the body.
-  /// For LokiMQ the code becomes the first part of the response and the message becomes the
+  /// For ItaloMQ the code becomes the first part of the response and the message becomes the
   /// second part of the response.
   struct rpc_error : std::runtime_error {
     /// \param code - a signed, 16-bit numeric code.  0 must not be used (as it is used for a
-    /// success code in LokiMQ), and values in the -32xxx range are reserved by JSON-RPC.
+    /// success code in ItaloMQ), and values in the -32xxx range are reserved by JSON-RPC.
     ///
     /// \param message - a message to send along with the error code (see general description above).
     rpc_error(int16_t code, std::string message)
@@ -257,7 +257,7 @@ namespace cryptonote { namespace rpc {
     GET_STAKING_REQUIREMENT::response                   invoke(GET_STAKING_REQUIREMENT::request&& req, rpc_context context);
     PERFORM_BLOCKCHAIN_TEST::response                   invoke(PERFORM_BLOCKCHAIN_TEST::request&& req, rpc_context context);
     STORAGE_SERVER_PING::response                       invoke(STORAGE_SERVER_PING::request&& req, rpc_context context);
-    LOKINET_PING::response                              invoke(LOKINET_PING::request&& req, rpc_context context);
+    ITALONET_PING::response                              invoke(ITALONET_PING::request&& req, rpc_context context);
     GET_CHECKPOINTS::response                           invoke(GET_CHECKPOINTS::request&& req, rpc_context context);
     GET_SN_STATE_CHANGES::response                      invoke(GET_SN_STATE_CHANGES::request&& req, rpc_context context);
     REPORT_PEER_SS_STATUS::response                     invoke(REPORT_PEER_SS_STATUS::request&& req, rpc_context context);
@@ -268,7 +268,7 @@ namespace cryptonote { namespace rpc {
     LNS_RESOLVE::response                               invoke(LNS_RESOLVE::request&& req, rpc_context context);
     FLUSH_CACHE::response                               invoke(FLUSH_CACHE::request&& req, rpc_context);
 
-#if defined(LOKI_ENABLE_INTEGRATION_TEST_HOOKS)
+#if defined(ITALO_ENABLE_INTEGRATION_TEST_HOOKS)
     void on_relay_uptime_and_votes()
     {
       m_core.submit_uptime_proof();

@@ -36,8 +36,8 @@
 #include "../span.h"
 #include "../storages/portable_storage_base.h"
 
-#undef LOKI_DEFAULT_LOG_CATEGORY
-#define LOKI_DEFAULT_LOG_CATEGORY "serialization"
+#undef ITALO_DEFAULT_LOG_CATEGORY
+#define ITALO_DEFAULT_LOG_CATEGORY "serialization"
 
 namespace epee
 {

@@ -1,4 +1,4 @@
-// Copyright (c) 2018-2020, The Loki Project
+// Copyright (c) 2018-2020, The Italo Project
 // Copyright (c) 2014-2019, The Monero Project
 //
 // All rights reserved.
@@ -38,16 +38,16 @@
 #include <iterator>
 #include <type_traits>
 #include <variant>
-#include <lokimq/base64.h>
+#include <italomq/base64.h>
 #include "crypto/crypto.h"
 #include "cryptonote_basic/tx_extra.h"
-#include "cryptonote_core/loki_name_system.h"
+#include "cryptonote_core/italo_name_system.h"
 #include "cryptonote_core/pulse.h"
-#include "loki_economy.h"
+#include "italo_economy.h"
 #include "epee/string_tools.h"
 #include "core_rpc_server.h"
 #include "common/command_line.h"
-#include "common/loki.h"
+#include "common/italo.h"
 #include "common/sha256sum.h"
 #include "common/perf_timer.h"
 #include "common/random.h"
@@ -65,8 +65,8 @@
 #include "p2p/net_node.h"
 #include "version.h"
 
-#undef LOKI_DEFAULT_LOG_CATEGORY
-#define LOKI_DEFAULT_LOG_CATEGORY "daemon.rpc"
+#undef ITALO_DEFAULT_LOG_CATEGORY
+#define ITALO_DEFAULT_LOG_CATEGORY "daemon.rpc"
 
 
 namespace cryptonote { namespace rpc {
@@ -421,7 +421,7 @@ namespace cryptonote { namespace rpc {
       res.service_node = m_core.service_node();
       res.start_time = (uint64_t)m_core.get_start_time();
       res.last_storage_server_ping = (uint64_t)m_core.m_last_storage_server_ping;
-      res.last_lokinet_ping = (uint64_t)m_core.m_last_lokinet_ping;
+      res.last_italonet_ping = (uint64_t)m_core.m_last_italonet_ping;
       res.free_space = m_core.get_free_space();
       res.height_without_bootstrap = res.height;
       std::shared_lock lock{m_bootstrap_daemon_mutex};
@@ -436,9 +436,9 @@ namespace cryptonote { namespace rpc {
     res.database_size = m_core.get_blockchain_storage().get_db().get_database_size();
     if (!context.admin)
       res.database_size = round_up(res.database_size, 1'000'000'000);
-    res.version = context.admin ? LOKI_VERSION_FULL : std::to_string(LOKI_VERSION[0]);
+    res.version = context.admin ? ITALO_VERSION_FULL : std::to_string(ITALO_VERSION[0]);
     res.status_line = context.admin ? m_core.get_status_string() :
-      "v" + std::to_string(LOKI_VERSION[0]) + "; Height: " + std::to_string(res.height);
+      "v" + std::to_string(ITALO_VERSION[0]) + "; Height: " + std::to_string(res.height);
 
     res.status = STATUS_OK;
     return res;
@@ -712,9 +712,9 @@ namespace cryptonote { namespace rpc {
       void operator()(const tx_extra_nonce& x) {
         if ((x.nonce.size() == sizeof(crypto::hash) + 1 && x.nonce[0] == TX_EXTRA_NONCE_PAYMENT_ID)
             || (x.nonce.size() == sizeof(crypto::hash8) + 1 && x.nonce[0] == TX_EXTRA_NONCE_ENCRYPTED_PAYMENT_ID))
-          entry.payment_id = lokimq::to_hex(x.nonce.begin() + 1, x.nonce.end());
+          entry.payment_id = italomq::to_hex(x.nonce.begin() + 1, x.nonce.end());
         else
-          entry.extra_nonce = lokimq::to_hex(x.nonce);
+          entry.extra_nonce = italomq::to_hex(x.nonce);
       }
       void operator()(const tx_extra_merge_mining_tag& x) { entry.mm_depth = x.depth; entry.mm_root = tools::type_to_hex(x.merkle_root); }
       void operator()(const tx_extra_additional_pub_keys& x) { entry.additional_pubkeys = hexify(x.data); }
@@ -775,15 +775,15 @@ namespace cryptonote { namespace rpc {
         else if (owner.type == lns::generic_owner_sig_type::ed25519)
           entry = tools::type_to_hex(owner.ed25519);
       }
-      void operator()(const tx_extra_loki_name_system& x) {
+      void operator()(const tx_extra_italo_name_system& x) {
         auto& lns = entry.lns.emplace();
         lns.blocks = lns::expiry_blocks(nettype, x.type);
         switch (x.type)
         {
-          case lns::mapping_type::lokinet: [[fallthrough]];
-          case lns::mapping_type::lokinet_2years: [[fallthrough]];
-          case lns::mapping_type::lokinet_5years: [[fallthrough]];
-          case lns::mapping_type::lokinet_10years: lns.type = "lokinet"; break;
+          case lns::mapping_type::italonet: [[fallthrough]];
+          case lns::mapping_type::italonet_2years: [[fallthrough]];
+          case lns::mapping_type::italonet_5years: [[fallthrough]];
+          case lns::mapping_type::italonet_10years: lns.type = "italonet"; break;
 
           case lns::mapping_type::session: lns.type = "session"; break;
           case lns::mapping_type::wallet:  lns.type = "wallet"; break;
@@ -800,7 +800,7 @@ namespace cryptonote { namespace rpc {
           lns.renew = true;
         lns.name_hash = tools::type_to_hex(x.name_hash);
         if (!x.encrypted_value.empty())
-          lns.value = lokimq::to_hex(x.encrypted_value);
+          lns.value = italomq::to_hex(x.encrypted_value);
         _load_owner(lns.owner, x.owner);
         _load_owner(lns.backup_owner, x.backup_owner);
       }
@@ -948,9 +948,9 @@ namespace cryptonote { namespace rpc {
         }
         else
         {
-          e.pruned_as_hex = lokimq::to_hex(unprunable_data);
+          e.pruned_as_hex = italomq::to_hex(unprunable_data);
           if (!req.prune && prunable && !pruned)
-            e.prunable_as_hex = lokimq::to_hex(prunable_data);
+            e.prunable_as_hex = italomq::to_hex(prunable_data);
         }
       }
       else
@@ -959,7 +959,7 @@ namespace cryptonote { namespace rpc {
         tx_data = unprunable_data;
         tx_data += prunable_data;
         if (!req.decode_as_json)
-          e.as_hex = lokimq::to_hex(tx_data);
+          e.as_hex = italomq::to_hex(tx_data);
       }
 
       if (req.decode_as_json || req.tx_extra)
@@ -1293,7 +1293,7 @@ namespace cryptonote { namespace rpc {
     const uint8_t major_version = m_core.get_blockchain_storage().get_current_hard_fork_version();
 
     res.pow_algorithm =
-        major_version >= network_version_12_checkpointing    ? "RandomX (LOKI variant)"               :
+        major_version >= network_version_12_checkpointing    ? "RandomX (ITALO variant)"               :
         major_version == network_version_11_infinite_staking ? "Cryptonight Turtle Light (Variant 2)" :
                                                                "Cryptonight Heavy (Variant 2)";
 
@@ -1448,7 +1448,7 @@ namespace cryptonote { namespace rpc {
 
     m_core.get_pool().get_transactions_and_spent_keys_info(res.transactions, res.spent_key_images, load_extra, context.admin);
     for (tx_info& txi : res.transactions)
-      txi.tx_blob = lokimq::to_hex(txi.tx_blob);
+      txi.tx_blob = italomq::to_hex(txi.tx_blob);
     res.status = STATUS_OK;
     return res;
   }
@@ -1523,7 +1523,7 @@ namespace cryptonote { namespace rpc {
   //------------------------------------------------------------------------------------------------------------------------------
 
   //
-  // Loki
+  // Italo
   //
   GET_OUTPUT_BLACKLIST::response core_rpc_server::invoke(GET_OUTPUT_BLACKLIST::request&& req, rpc_context context)
   {
@@ -1678,8 +1678,8 @@ namespace cryptonote { namespace rpc {
     }
     blobdata hashing_blob = get_block_hashing_blob(b);
     res.prev_hash = tools::type_to_hex(b.prev_id);
-    res.blocktemplate_blob = lokimq::to_hex(block_blob);
-    res.blockhashing_blob =  lokimq::to_hex(hashing_blob);
+    res.blocktemplate_blob = italomq::to_hex(block_blob);
+    res.blockhashing_blob =  italomq::to_hex(hashing_blob);
     res.status = STATUS_OK;
     return res;
   }
@@ -1761,7 +1761,7 @@ namespace cryptonote { namespace rpc {
         return true;
       }, b, template_res.difficulty, template_res.height);
 
-      submit_req.blob[0] = lokimq::to_hex(block_to_blob(b));
+      submit_req.blob[0] = italomq::to_hex(block_to_blob(b));
       auto submit_res = invoke(std::move(submit_req), context);
       res.status = submit_res.status;
 
@@ -2043,7 +2043,7 @@ namespace cryptonote { namespace rpc {
     res.tx_hashes.reserve(blk.tx_hashes.size());
     for (const auto& tx_hash : blk.tx_hashes)
         res.tx_hashes.push_back(tools::type_to_hex(tx_hash));
-    res.blob = lokimq::to_hex(t_serializable_object_to_blob(blk));
+    res.blob = italomq::to_hex(t_serializable_object_to_blob(blk));
     res.json = obj_to_json_str(blk);
     res.status = STATUS_OK;
     return res;
@@ -2309,7 +2309,7 @@ namespace cryptonote { namespace rpc {
       res.service_node_state.quorumnet_port       = m_core.quorumnet_port();
       res.service_node_state.pubkey_ed25519       = std::move(get_service_node_key_res.service_node_ed25519_pubkey);
       res.service_node_state.pubkey_x25519        = std::move(get_service_node_key_res.service_node_x25519_pubkey);
-      res.service_node_state.service_node_version = LOKI_VERSION;
+      res.service_node_state.service_node_version = ITALO_VERSION;
     }
     else
     {
@@ -3176,11 +3176,11 @@ namespace cryptonote { namespace rpc {
       });
   }
   //------------------------------------------------------------------------------------------------------------------------------
-  LOKINET_PING::response core_rpc_server::invoke(LOKINET_PING::request&& req, rpc_context context)
+  ITALONET_PING::response core_rpc_server::invoke(ITALONET_PING::request&& req, rpc_context context)
   {
-    return handle_ping<LOKINET_PING>(
-        req.version, service_nodes::MIN_LOKINET_VERSION,
-        "Lokinet", m_core.m_last_lokinet_ping, LOKINET_PING_LIFETIME,
+    return handle_ping<ITALONET_PING>(
+        req.version, service_nodes::MIN_ITALONET_VERSION,
+        "Italonet", m_core.m_last_italonet_ping, ITALONET_PING_LIFETIME,
         [this](bool significant) { if (significant) m_core.reset_proof_interval(); });
   }
   //------------------------------------------------------------------------------------------------------------------------------
@@ -3404,7 +3404,7 @@ namespace cryptonote { namespace rpc {
       {
         types.push_back(static_cast<lns::mapping_type>(type));
         if (!lns::mapping_type_allowed(hf_version, types.back()))
-          throw rpc_error{ERROR_WRONG_PARAM, "Invalid lokinet type '" + std::to_string(type) + "'"};
+          throw rpc_error{ERROR_WRONG_PARAM, "Invalid italonet type '" + std::to_string(type) + "'"};
       }
 
       // This also takes 32 raw bytes, but that is undocumented (because it is painful to pass
@@ -3422,7 +3422,7 @@ namespace cryptonote { namespace rpc {
         entry.name_hash                                        = record.name_hash;
         entry.owner                                            = record.owner.to_string(nettype());
         if (record.backup_owner) entry.backup_owner            = record.backup_owner.to_string(nettype());
-        entry.encrypted_value                                  = lokimq::to_hex(record.encrypted_value.to_view());
+        entry.encrypted_value                                  = italomq::to_hex(record.encrypted_value.to_view());
         entry.expiration_height                                = record.expiration_height;
         entry.update_height                                    = record.update_height;
         entry.txid                                             = tools::type_to_hex(record.txid);
@@ -3452,7 +3452,7 @@ namespace cryptonote { namespace rpc {
       if (!lns::parse_owner_to_generic_owner(m_core.get_nettype(), owner, lns_owner, &errmsg))
         throw rpc_error{ERROR_WRONG_PARAM, std::move(errmsg)};
 
-      // TODO(loki): We now serialize both owner and backup_owner, since if
+      // TODO(italo): We now serialize both owner and backup_owner, since if
       // we specify an owner that is backup owner, we don't show the (other)
       // owner. For RPC compatibility we keep the request_index around until the
       // next hard fork (16)
@@ -3479,7 +3479,7 @@ namespace cryptonote { namespace rpc {
       entry.name_hash       = std::move(record.name_hash);
       if (record.owner) entry.owner = record.owner.to_string(nettype());
       if (record.backup_owner) entry.backup_owner = record.backup_owner.to_string(nettype());
-      entry.encrypted_value = lokimq::to_hex(record.encrypted_value.to_view());
+      entry.encrypted_value = italomq::to_hex(record.encrypted_value.to_view());
       entry.update_height   = record.update_height;
       entry.expiration_height = record.expiration_height;
       entry.txid            = tools::type_to_hex(record.txid);
@@ -3504,15 +3504,15 @@ namespace cryptonote { namespace rpc {
     uint8_t hf_version = m_core.get_hard_fork_version(m_core.get_current_blockchain_height());
     auto type = static_cast<lns::mapping_type>(req.type);
     if (!lns::mapping_type_allowed(hf_version, type))
-      throw rpc_error{ERROR_WRONG_PARAM, "Invalid lokinet type '" + std::to_string(req.type) + "'"};
+      throw rpc_error{ERROR_WRONG_PARAM, "Invalid italonet type '" + std::to_string(req.type) + "'"};
 
     if (auto mapping = m_core.get_blockchain_storage().name_system_db().resolve(
         type, *name_hash, m_core.get_current_blockchain_height()))
     {
       auto [val, nonce] = mapping->value_nonce(type);
-      res.encrypted_value = lokimq::to_hex(val);
+      res.encrypted_value = italomq::to_hex(val);
       if (val.size() < mapping->to_view().size())
-        res.nonce = lokimq::to_hex(nonce);
+        res.nonce = italomq::to_hex(nonce);
     }
     return res;
   }

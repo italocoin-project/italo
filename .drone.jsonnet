@@ -24,7 +24,7 @@ local debian_pipeline(name, image,
         lto=false,
         werror=false, // FIXME
         build_tests=true,
-        test_lokid=true, # Simple lokid offline startup test
+        test_italod=true, # Simple italod offline startup test
         run_tests=false, # Runs full test suite
         cmake_extra='',
         extra_cmds=[],
@@ -47,11 +47,11 @@ local debian_pipeline(name, image,
                 apt_get_quiet + ' install -y eatmydata',
                 'eatmydata ' + apt_get_quiet + ' dist-upgrade -y',
                 'eatmydata ' + apt_get_quiet + ' install -y --no-install-recommends cmake git ca-certificates ninja-build ccache '
-                    + deps + (if test_lokid then ' gdb' else ''),
+                    + deps + (if test_italod then ' gdb' else ''),
                 'mkdir build',
                 'cd build',
                 'cmake .. -G Ninja -DCMAKE_CXX_FLAGS=-fdiagnostics-color=always -DCMAKE_BUILD_TYPE='+build_type+' ' +
-                    '-DLOCAL_MIRROR=https://builds.lokinet.dev/deps -DUSE_LTO=' + (if lto then 'ON ' else 'OFF ') +
+                    '-DLOCAL_MIRROR=https://builds.italonet.dev/deps -DUSE_LTO=' + (if lto then 'ON ' else 'OFF ') +
                     (if werror then '-DWARNINGS_AS_ERRORS=ON ' else '') +
                     (if build_tests || run_tests then '-DBUILD_TESTS=ON ' else '') +
                     cmake_extra
@@ -62,12 +62,12 @@ local debian_pipeline(name, image,
                 else
                     ['ninja -j' + jobs + ' -v']
             ) + (
-                if test_lokid then [
-                    '(sleep 3; echo "status\ndiff\nexit") | TERM=xterm ../utils/build_scripts/drone-gdb.sh ./bin/lokid --offline --data-dir=startuptest'
+                if test_italod then [
+                    '(sleep 3; echo "status\ndiff\nexit") | TERM=xterm ../utils/build_scripts/drone-gdb.sh ./bin/italod --offline --data-dir=startuptest'
                 ] else []
             ) + (
                 if run_tests then [
-                    'mkdir -v -p $$HOME/.loki',
+                    'mkdir -v -p $$HOME/.italo',
                     'GTEST_COLOR=1 ctest --output-on-failure -j'+jobs
                 ] else []
             ) + extra_cmds,
@@ -102,14 +102,14 @@ local mac_builder(name,
                 'mkdir build',
                 'cd build',
                 'cmake .. -G Ninja -DCMAKE_CXX_FLAGS=-fcolor-diagnostics -DCMAKE_BUILD_TYPE='+build_type+' ' +
-                    '-DLOCAL_MIRROR=https://builds.lokinet.dev/deps -DUSE_LTO=' + (if lto then 'ON ' else 'OFF ') +
+                    '-DLOCAL_MIRROR=https://builds.italonet.dev/deps -DUSE_LTO=' + (if lto then 'ON ' else 'OFF ') +
                     (if werror then '-DWARNINGS_AS_ERRORS=ON ' else '') +
                     (if build_tests || run_tests then '-DBUILD_TESTS=ON ' else '') +
                     cmake_extra,
                 'ninja -j' + jobs + ' -v'
             ] + (
                 if run_tests then [
-                    'mkdir -v -p $$HOME/.loki',
+                    'mkdir -v -p $$HOME/.italo',
                     'GTEST_COLOR=1 ctest --output-on-failure -j'+jobs
                 ] else []
             ) + extra_cmds,
@@ -156,14 +156,14 @@ local android_build_steps(android_abi, android_platform=21, jobs=6, cmake_extra=
     debian_pipeline("Debian (ARM64)", "debian:sid", arch="arm64", build_tests=false),
     debian_pipeline("Debian buster (armhf)", "arm32v7/debian:buster", arch="arm64", build_tests=false, cmake_extra='-DDOWNLOAD_SODIUM=ON -DARCH_ID=armhf'),
 
-    // Static build (on bionic) which gets uploaded to builds.lokinet.dev:
+    // Static build (on bionic) which gets uploaded to builds.italonet.dev:
     debian_pipeline("Static (bionic amd64)", "ubuntu:bionic", deps='g++-8 '+static_build_deps,
                     cmake_extra='-DBUILD_STATIC_DEPS=ON -DCMAKE_C_COMPILER=gcc-8 -DCMAKE_CXX_COMPILER=g++-8 -DARCH=x86-64',
                     build_tests=false, lto=true, extra_cmds=static_check_and_upload),
-    // Static mingw build (on focal) which gets uploaded to builds.lokinet.dev:
+    // Static mingw build (on focal) which gets uploaded to builds.italonet.dev:
     debian_pipeline("Static (win64)", "ubuntu:focal", deps='g++ g++-mingw-w64-x86-64 '+static_build_deps,
                     cmake_extra='-DCMAKE_TOOLCHAIN_FILE=../cmake/64-bit-toolchain.cmake -DBUILD_STATIC_DEPS=ON -DARCH=x86-64',
-                    build_tests=false, lto=false, test_lokid=false, extra_cmds=[
+                    build_tests=false, lto=false, test_italod=false, extra_cmds=[
                         'ninja strip_binaries', 'ninja create_zip', '../utils/build_scripts/drone-static-upload.sh']),
 
     // Macos builds:

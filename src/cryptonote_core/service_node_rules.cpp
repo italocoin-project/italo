@@ -1,5 +1,5 @@
 #include "cryptonote_config.h"
-#include "common/loki.h"
+#include "common/italo.h"
 #include "epee/int-util.h"
 #include <limits>
 #include <vector>
@@ -10,7 +10,7 @@
 
 namespace service_nodes {
 
-// TODO(loki): Move to loki_economy, this will also need access to loki::exp2
+// TODO(italo): Move to italo_economy, this will also need access to italo::exp2
 uint64_t get_staking_requirement(cryptonote::network_type m_nettype, uint64_t height, uint8_t hf_version)
 {
   if (m_nettype == cryptonote::TESTNET || m_nettype == cryptonote::FAKECHAIN)
@@ -63,13 +63,13 @@ uint64_t get_staking_requirement(cryptonote::network_type m_nettype, uint64_t he
     };
 
     assert(static_cast<int64_t>(height) >= heights[0]);
-    constexpr uint64_t LAST_HEIGHT      = heights[loki::array_count(heights) - 1];
-    constexpr uint64_t LAST_REQUIREMENT = lsr    [loki::array_count(lsr) - 1];
+    constexpr uint64_t LAST_HEIGHT      = heights[italo::array_count(heights) - 1];
+    constexpr uint64_t LAST_REQUIREMENT = lsr    [italo::array_count(lsr) - 1];
     if (height >= LAST_HEIGHT)
         return LAST_REQUIREMENT;
 
     size_t i = 0;
-    for (size_t index = 1; index < loki::array_count(heights); index++)
+    for (size_t index = 1; index < italo::array_count(heights); index++)
     {
       if (heights[index] > static_cast<int64_t>(height))
       {
@@ -92,12 +92,12 @@ uint64_t get_staking_requirement(cryptonote::network_type m_nettype, uint64_t he
   if (hf_version >= cryptonote::network_version_11_infinite_staking)
   {
     base     = 15000 * COIN;
-    variable = (25007.0 * COIN) / loki::exp2(height_adjusted/129600.0);
+    variable = (25007.0 * COIN) / italo::exp2(height_adjusted/129600.0);
   }
   else
   {
     base      = 10000 * COIN;
-    variable  = (35000.0 * COIN) / loki::exp2(height_adjusted/129600.0);
+    variable  = (35000.0 * COIN) / italo::exp2(height_adjusted/129600.0);
   }
 
   uint64_t result = base + variable;

@@ -1,4 +1,4 @@
-// Copyright (c) 2018-2020, The Loki Project
+// Copyright (c) 2018-2020, The Italo Project
 // Copyright (c) 2014-2019, The Monero Project
 //
 // All rights reserved.
@@ -50,7 +50,7 @@
 
 #include "cryptonote_core/service_node_quorum_cop.h"
 #include "cryptonote_core/service_node_list.h"
-#include "common/loki.h"
+#include "common/italo.h"
 
 namespace cryptonote {
 
@@ -134,7 +134,7 @@ namespace rpc {
     KV_MAP_SERIALIZABLE
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   // Get the node's current height.
   struct GET_HEIGHT : PUBLIC, LEGACY
   {
@@ -154,7 +154,7 @@ namespace rpc {
     };
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   // Get all blocks info. Binary request.
   struct GET_BLOCKS_FAST : PUBLIC, BINARY
   {
@@ -199,7 +199,7 @@ namespace rpc {
     };
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   // Get blocks by height. Binary request.
   struct GET_BLOCKS_BY_HEIGHT : PUBLIC, BINARY
   {
@@ -223,7 +223,7 @@ namespace rpc {
   };
 
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   // Get the known blocks hashes which are not on the main chain.
   struct GET_ALT_BLOCKS_HASHES : PUBLIC, BINARY
   {
@@ -240,7 +240,7 @@ namespace rpc {
     };
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   // Get hashes. Binary request.
   struct GET_HASHES_FAST : PUBLIC, BINARY
   {
@@ -266,7 +266,7 @@ namespace rpc {
     };
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   // Look up one or more transactions by hash.
   struct GET_TRANSACTIONS : PUBLIC, LEGACY
   {
@@ -304,8 +304,8 @@ namespace rpc {
         std::optional<bool> buy;                 // Provided and true iff this is an LNS buy record
         std::optional<bool> update;              // Provided and true iff this is an LNS record update
         std::optional<bool> renew;               // Provided and true iff this is an LNS record renewal
-        std::string type;                        // The LNS request type.  For registrations: "lokinet", "session", "wallet"; for a record update: "update"
-        std::optional<uint64_t> blocks;          // The registration length in blocks (only applies to lokinet registrations; session/wallet registrations do not expire)
+        std::string type;                        // The LNS request type.  For registrations: "italonet", "session", "wallet"; for a record update: "update"
+        std::optional<uint64_t> blocks;          // The registration length in blocks (only applies to italonet registrations; session/wallet registrations do not expire)
         std::string name_hash;                   // The hashed name of the record being purchased/updated, in hex (the actual name is not provided on the blockchain).
         std::optional<std::string> prev_txid;    // For an update, this points at the txid of the previous lns update transaction.
         std::optional<std::string> value;        // The encrypted value of the record, in hex.  Note that this is encrypted using the actual name itself (*not* the hashed name).
@@ -315,7 +315,7 @@ namespace rpc {
       };
 
       std::optional<std::string> pubkey;            // The tx extra public key
-      std::optional<uint64_t> burn_amount;          // The amount of LOKI that this transaction burns
+      std::optional<uint64_t> burn_amount;          // The amount of ITALO that this transaction burns
       std::optional<std::string> extra_nonce;       // Optional extra nonce value (in hex); will be empty if nonce is recognized as a payment id
       std::optional<std::string> payment_id;        // The payment ID, if present. This is either a 16 hex character (8-byte) encrypted payment id, or a 64 hex character (32-byte) deprecated, unencrypted payment ID
       std::optional<uint32_t> mm_depth;             // (Merge-mining) the merge-mined depth
@@ -378,7 +378,7 @@ namespace rpc {
     };
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   // Check if outputs have been spent using the key image associated with the output.
   struct IS_KEY_IMAGE_SPENT : PUBLIC, LEGACY
   {
@@ -410,7 +410,7 @@ namespace rpc {
   };
 
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   // Get global outputs of transactions. Binary request.
   struct GET_TX_GLOBAL_OUTPUTS_INDEXES : PUBLIC, BINARY
   {
@@ -434,16 +434,16 @@ namespace rpc {
     };
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   struct get_outputs_out
   {
-    uint64_t amount; // Amount of Loki in TXID.
+    uint64_t amount; // Amount of Italo in TXID.
     uint64_t index;
 
     KV_MAP_SERIALIZABLE
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   // Get outputs. Binary request.
   struct GET_OUTPUTS_BIN : PUBLIC, BINARY
   {
@@ -481,7 +481,7 @@ namespace rpc {
     };
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   struct GET_OUTPUTS : PUBLIC, LEGACY
   {
     static constexpr auto names() { return NAMES("get_outs"); }
@@ -518,7 +518,7 @@ namespace rpc {
     };
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   // Broadcast a raw transaction to the network.
   struct SEND_RAW_TX : PUBLIC, LEGACY
   {
@@ -548,7 +548,7 @@ namespace rpc {
     };
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   // Start mining on the daemon.
   struct START_MINING : LEGACY
   {
@@ -567,7 +567,7 @@ namespace rpc {
     struct response : STATUS {};
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   // Stop mining on the daemon.
   struct STOP_MINING : LEGACY
   {
@@ -577,7 +577,7 @@ namespace rpc {
     struct response : STATUS {};
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   // Get the mining status of the daemon.
   struct MINING_STATUS : LEGACY
   {
@@ -600,7 +600,7 @@ namespace rpc {
     };
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   // Retrieve general information about the state of your node and the network.
   // Note that all of the std::optional<> fields here are not included if the request is a public
   // (restricted) RPC request.
@@ -640,7 +640,7 @@ namespace rpc {
       std::optional<bool> service_node;                    // Will be true if the node is running in --service-node mode.
       std::optional<uint64_t> start_time;                  // Start time of the daemon, as UNIX time.
       std::optional<uint64_t> last_storage_server_ping;    // Last ping time of the storage server (0 if never or not running as a service node)
-      std::optional<uint64_t> last_lokinet_ping;           // Last ping time of lokinet (0 if never or not running as a service node)
+      std::optional<uint64_t> last_italonet_ping;           // Last ping time of italonet (0 if never or not running as a service node)
       std::optional<uint64_t> free_space;                  // Available disk space on the node.
       bool offline;                         // States if the node is offline (`true`) or online (`false`).
       bool untrusted;                       // States if the result is obtained using the bootstrap mode, and is therefore not trusted (`true`), or when the daemon is fully synced (`false`).
@@ -656,7 +656,7 @@ namespace rpc {
   };
 
   //-----------------------------------------------
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   struct GET_NET_STATS : LEGACY
   {
     static constexpr auto names() { return NAMES("get_net_stats"); }
@@ -676,7 +676,7 @@ namespace rpc {
   };
 
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   // Save the blockchain. The blockchain does not need saving and is always saved when modified,
   // however it does a sync to flush the filesystem cache onto the disk for safety purposes against Operating System or Hardware crashes.
   struct SAVE_BC : LEGACY
@@ -687,7 +687,7 @@ namespace rpc {
     struct response : STATUS {};
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   // Look up how many blocks are in the longest chain known to the node.
   struct GETBLOCKCOUNT : PUBLIC
   {
@@ -703,7 +703,7 @@ namespace rpc {
     };
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   // Look up a block's hash by its height.
   struct GETBLOCKHASH : PUBLIC
   {
@@ -720,7 +720,7 @@ namespace rpc {
     using response = std::string;          // Block hash (string).
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   // Get a block template on which mining a new block.
   struct GETBLOCKTEMPLATE : PUBLIC
   {
@@ -754,7 +754,7 @@ namespace rpc {
     };
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   // Submit a mined block to the network.
   struct SUBMITBLOCK : PUBLIC
   {
@@ -770,7 +770,7 @@ namespace rpc {
     struct response : STATUS {};
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   // Developer only.
   struct GENERATEBLOCKS : RPC_COMMAND
   {
@@ -796,22 +796,22 @@ namespace rpc {
     };
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   struct block_header_response
   {
-      uint8_t major_version;                  // The major version of the loki protocol at this block height.
-      uint8_t minor_version;                  // The minor version of the loki protocol at this block height.
+      uint8_t major_version;                  // The major version of the italo protocol at this block height.
+      uint8_t minor_version;                  // The minor version of the italo protocol at this block height.
       uint64_t timestamp;                     // The unix time at which the block was recorded into the blockchain.
       std::string prev_hash;                  // The hash of the block immediately preceding this block in the chain.
-      uint32_t nonce;                         // A cryptographic random one-time number used in mining a Loki block.
+      uint32_t nonce;                         // A cryptographic random one-time number used in mining a Italo block.
       bool orphan_status;                     // Usually `false`. If `true`, this block is not part of the longest chain.
       uint64_t height;                        // The number of blocks preceding this block on the blockchain.
       uint64_t depth;                         // The number of blocks succeeding this block on the blockchain. A larger number means an older block.
       std::string hash;                       // The hash of this block.
-      difficulty_type difficulty;             // The strength of the Loki network based on mining power.
-      difficulty_type cumulative_difficulty;  // The cumulative strength of the Loki network based on mining power.
-      uint64_t reward;                        // The amount of new generated in this block and rewarded to the miner, foundation and service Nodes. Note: 1 LOKI = 1e9 atomic units.
-      uint64_t miner_reward;                  // The amount of new generated in this block and rewarded to the miner. Note: 1 LOKI = 1e9 atomic units.
+      difficulty_type difficulty;             // The strength of the Italo network based on mining power.
+      difficulty_type cumulative_difficulty;  // The cumulative strength of the Italo network based on mining power.
+      uint64_t reward;                        // The amount of new generated in this block and rewarded to the miner, foundation and service Nodes. Note: 1 ITALO = 1e9 atomic units.
+      uint64_t miner_reward;                  // The amount of new generated in this block and rewarded to the miner. Note: 1 ITALO = 1e9 atomic units.
       uint64_t block_size;                    // The block size in bytes.
       uint64_t block_weight;                  // The block weight in bytes.
       uint64_t num_txes;                      // Number of transactions in the block, not counting the coinbase tx.
@@ -824,7 +824,7 @@ namespace rpc {
       KV_MAP_SERIALIZABLE
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   // Block header information for the most recent block is easily retrieved with this method. No inputs are needed.
   struct GET_LAST_BLOCK_HEADER : PUBLIC
   {
@@ -848,7 +848,7 @@ namespace rpc {
     };
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   // Block header information can be retrieved using either a block's hash or height. This method includes a block's hash as an input parameter to retrieve basic information about the block.
   struct GET_BLOCK_HEADER_BY_HASH : PUBLIC
   {
@@ -875,7 +875,7 @@ namespace rpc {
     };
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   // Similar to get_block_header_by_hash above, this method includes a block's height as an input parameter to retrieve basic information about the block.
   struct GET_BLOCK_HEADER_BY_HEIGHT : PUBLIC
   {
@@ -902,7 +902,7 @@ namespace rpc {
     };
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   // Full block information can be retrieved by either block height or hash, like with the above block header calls.
   // For full block information, both lookups use the same method, but with different input parameters.
   struct GET_BLOCK : PUBLIC
@@ -931,7 +931,7 @@ namespace rpc {
     };
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   // Get the known peers list.
   struct GET_PEER_LIST : LEGACY
   {
@@ -948,7 +948,7 @@ namespace rpc {
       uint64_t id;           // Peer id.
       std::string host;      // IP address in string format.
       uint32_t ip;           // IP address in integer format.
-      uint16_t port;         // TCP port the peer is using to connect to loki network.
+      uint16_t port;         // TCP port the peer is using to connect to italo network.
       uint16_t rpc_port;     // RPC port the peer is using
       uint64_t last_seen;    // Unix time at which the peer has been seen for the last time
       uint32_t pruning_seed; //
@@ -978,7 +978,7 @@ namespace rpc {
     };
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   struct public_node
   {
     std::string host;
@@ -991,7 +991,7 @@ namespace rpc {
     KV_MAP_SERIALIZABLE
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   // Query the daemon's peerlist and retrieve peers who have set their public rpc port.
   struct GET_PUBLIC_NODES : PUBLIC
   {
@@ -1015,7 +1015,7 @@ namespace rpc {
     };
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   // Set the log hash rate display mode.
   struct SET_LOG_HASH_RATE : LEGACY
   {
@@ -1031,7 +1031,7 @@ namespace rpc {
     struct response : STATUS {};
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   // Set the daemon log level. By default, log level is set to `0`.  For more fine-tuned logging
   // control set the set_log_categories command instead.
   struct SET_LOG_LEVEL : LEGACY
@@ -1048,7 +1048,7 @@ namespace rpc {
     struct response : STATUS {};
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   // Set the daemon log categories. Categories are represented as a comma separated list of `<Category>:<level>` (similarly to syslog standard `<Facility>:<Severity-level>`), where:
   // Category is one of the following: * (all facilities), default, net, net.http, net.p2p, logging, net.trottle, blockchain.db, blockchain.db.lmdb, bcutil, checkpoints, net.dns, net.dl,
   // i18n, perf,stacktrace, updates, account, cn ,difficulty, hardfork, miner, blockchain, txpool, cn.block_queue, net.cn, daemon, debugtools.deserialize, debugtools.objectsizes, device.ledger,
@@ -1082,7 +1082,7 @@ namespace rpc {
     };
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   struct tx_info
   {
     std::string id_hash;                // The transaction ID hash.
@@ -1107,7 +1107,7 @@ namespace rpc {
     KV_MAP_SERIALIZABLE
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   struct spent_key_image_info
   {
     std::string id_hash;                 // Key image.
@@ -1116,7 +1116,7 @@ namespace rpc {
     KV_MAP_SERIALIZABLE
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   // Show information about valid transactions seen by the node but not yet mined into a block,
   // as well as spent key image information for the txpool in the node's memory.
   struct GET_TRANSACTION_POOL : PUBLIC, LEGACY
@@ -1141,7 +1141,7 @@ namespace rpc {
     };
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   // Get hashes from transaction pool. Binary request.
   struct GET_TRANSACTION_POOL_HASHES_BIN : PUBLIC, BINARY
   {
@@ -1167,7 +1167,7 @@ namespace rpc {
     };
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   // Get hashes from transaction pool.
   struct GET_TRANSACTION_POOL_HASHES : PUBLIC, LEGACY
   {
@@ -1184,15 +1184,15 @@ namespace rpc {
     };
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   struct tx_backlog_entry
   {
     uint64_t weight;       //
-    uint64_t fee;          // Fee in Loki measured in atomic units.
+    uint64_t fee;          // Fee in Italo measured in atomic units.
     uint64_t time_in_pool;
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   // Get all transaction pool backlog.
   struct GET_TRANSACTION_POOL_BACKLOG : PUBLIC
   {
@@ -1210,7 +1210,7 @@ namespace rpc {
     };
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   struct txpool_histo
   {
     uint32_t txs;   // Number of transactions.
@@ -1219,7 +1219,7 @@ namespace rpc {
     KV_MAP_SERIALIZABLE
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   struct txpool_stats
   {
     uint64_t bytes_total;            // Total size of all transactions in pool.
@@ -1241,7 +1241,7 @@ namespace rpc {
     KV_MAP_SERIALIZABLE
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   // Get the transaction pool statistics.
   struct GET_TRANSACTION_POOL_STATS : PUBLIC, LEGACY
   {
@@ -1259,7 +1259,7 @@ namespace rpc {
     };
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   // Retrieve information about incoming and outgoing connections to your node.
   struct GET_CONNECTIONS : RPC_COMMAND
   {
@@ -1276,7 +1276,7 @@ namespace rpc {
     };
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   // Similar to get_block_header_by_height above, but for a range of blocks.
   // This method includes a starting block height and an ending block height as
   // parameters to retrieve basic information about the range of blocks.
@@ -1304,7 +1304,7 @@ namespace rpc {
     };
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   // Set the bootstrap daemon to use for data on the blockchain whilst syncing the chain.
   struct SET_BOOTSTRAP_DAEMON : RPC_COMMAND
   {
@@ -1322,7 +1322,7 @@ namespace rpc {
     struct response : STATUS {};
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   // Send a command to the daemon to safely disconnect and shut down.
   struct STOP_DAEMON : LEGACY
   {
@@ -1332,7 +1332,7 @@ namespace rpc {
     struct response : STATUS {};
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   // Get daemon bandwidth limits.
   struct GET_LIMIT : LEGACY
   {
@@ -1351,7 +1351,7 @@ namespace rpc {
     };
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   // Set daemon bandwidth limits.
   struct SET_LIMIT : LEGACY
   {
@@ -1375,7 +1375,7 @@ namespace rpc {
     };
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   // Limit number of Outgoing peers.
   struct OUT_PEERS : LEGACY
   {
@@ -1395,7 +1395,7 @@ namespace rpc {
     };
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   // Limit number of Incoming peers.
   struct IN_PEERS : LEGACY
   {
@@ -1415,7 +1415,7 @@ namespace rpc {
     };
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   // Look up information regarding hard fork voting and readiness.
   struct HARD_FORK_INFO : PUBLIC
   {
@@ -1445,7 +1445,7 @@ namespace rpc {
     };
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   // Get list of banned IPs.
   struct GETBANS : RPC_COMMAND
   {
@@ -1471,7 +1471,7 @@ namespace rpc {
     };
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   // Ban another node by IP.
   struct SETBANS : RPC_COMMAND
   {
@@ -1497,7 +1497,7 @@ namespace rpc {
     struct response : STATUS {};
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   // Determine whether a given IP address is banned
   struct BANNED : RPC_COMMAND
   {
@@ -1520,7 +1520,7 @@ namespace rpc {
     };
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   // Flush tx ids from transaction pool..
   struct FLUSH_TRANSACTION_POOL : RPC_COMMAND
   {
@@ -1536,7 +1536,7 @@ namespace rpc {
     struct response : STATUS {};
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   // Get a histogram of output amounts. For all amounts (possibly filtered by parameters),
   // gives the number of outputs on the chain for that amount. RingCT outputs counts as 0 amount.
   struct GET_OUTPUT_HISTOGRAM : PUBLIC
@@ -1578,7 +1578,7 @@ namespace rpc {
     };
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   // Get current RPC protocol version.
   struct GET_VERSION : PUBLIC
   {
@@ -1596,7 +1596,7 @@ namespace rpc {
     };
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   // Get the coinbase amount and the fees amount for n last blocks starting at particular height.
   struct GET_COINBASE_TX_SUM : RPC_COMMAND
   {
@@ -1615,13 +1615,13 @@ namespace rpc {
       std::string status;       // General RPC error code. "OK" means everything looks good.
       uint64_t emission_amount; // Amount of coinbase reward in atomic units.
       uint64_t fee_amount;      // Amount of fees in atomic units.
-      uint64_t burn_amount;      // Amount of burnt loki.
+      uint64_t burn_amount;      // Amount of burnt italo.
 
       KV_MAP_SERIALIZABLE
     };
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   // Gives an estimation of per-output + per-byte fees
   struct GET_BASE_FEE_ESTIMATE : PUBLIC
   {
@@ -1649,7 +1649,7 @@ namespace rpc {
     };
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   // Display alternative chains seen by the node.
   struct GET_ALTERNATE_CHAINS : RPC_COMMAND
   {
@@ -1678,7 +1678,7 @@ namespace rpc {
     };
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   // Relay a list of transaction IDs.
   struct RELAY_TX : RPC_COMMAND
   {
@@ -1694,7 +1694,7 @@ namespace rpc {
     struct response : STATUS {};
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   // Get synchronisation information.
   struct SYNC_INFO : RPC_COMMAND
   {
@@ -1736,7 +1736,7 @@ namespace rpc {
     };
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   struct GET_OUTPUT_DISTRIBUTION : PUBLIC
   {
     static constexpr auto names() { return NAMES("get_output_distribution"); }
@@ -1774,7 +1774,7 @@ namespace rpc {
     };
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   // Exactly like GET_OUTPUT_DISTRIBUTION, but does a binary RPC transfer instead of JSON
   struct GET_OUTPUT_DISTRIBUTION_BIN : PUBLIC, BINARY
   {
@@ -1784,7 +1784,7 @@ namespace rpc {
     using response = GET_OUTPUT_DISTRIBUTION::response;
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   struct POP_BLOCKS : LEGACY
   {
     static constexpr auto names() { return NAMES("pop_blocks"); }
@@ -1805,7 +1805,7 @@ namespace rpc {
     };
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   struct PRUNE_BLOCKCHAIN : RPC_COMMAND
   {
     static constexpr auto names() { return NAMES("prune_blockchain"); }
@@ -1828,7 +1828,7 @@ namespace rpc {
   };
 
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   // Accesses the list of public keys of the nodes who are participating or being tested in a quorum.
   struct GET_QUORUM_STATE : PUBLIC
   {
@@ -1884,7 +1884,7 @@ namespace rpc {
     };
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   struct GET_SERVICE_NODE_REGISTRATION_CMD_RAW : RPC_COMMAND
   {
     static constexpr auto names() { return NAMES("get_service_node_registration_cmd_raw"); }
@@ -1907,7 +1907,7 @@ namespace rpc {
     };
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   struct GET_SERVICE_NODE_REGISTRATION_CMD : RPC_COMMAND
   {
     static constexpr auto names() { return NAMES("get_service_node_registration_cmd"); }
@@ -1915,7 +1915,7 @@ namespace rpc {
     struct contribution_t
     {
       std::string address; // The wallet address for the contributor
-      uint64_t amount;     // The amount that the contributor will reserve in Loki atomic units towards the staking requirement
+      uint64_t amount;     // The amount that the contributor will reserve in Italo atomic units towards the staking requirement
 
       KV_MAP_SERIALIZABLE
     };
@@ -1932,7 +1932,7 @@ namespace rpc {
     using response = GET_SERVICE_NODE_REGISTRATION_CMD_RAW::response;
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   // Get the service public keys of the queried daemon, encoded in hex.  All three keys are used
   // when running as a service node; when running as a regular node only the x25519 key is regularly
   // used for some RPC and and node-to-SN communication requests.
@@ -1953,7 +1953,7 @@ namespace rpc {
     };
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   // Get the service private keys of the queried daemon, encoded in hex.  Do not ever share
   // these keys: they would allow someone to impersonate your service node.  All three keys are used
   // when running as a service node; when running as a regular node only the x25519 key is regularly
@@ -1975,7 +1975,7 @@ namespace rpc {
     };
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   // TODO: Undocumented, -- unused
   struct PERFORM_BLOCKCHAIN_TEST : RPC_COMMAND
   {
@@ -1998,7 +1998,7 @@ namespace rpc {
     };
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   struct service_node_contribution
   {
     std::string key_image;         // The contribution's key image that is locked on the network.
@@ -2008,18 +2008,18 @@ namespace rpc {
     KV_MAP_SERIALIZABLE
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   struct service_node_contributor
   {
-    uint64_t amount;                                             // The total amount of locked Loki in atomic units for this contributor.
-    uint64_t reserved;                                           // The amount of Loki in atomic units reserved by this contributor for this Service Node.
+    uint64_t amount;                                             // The total amount of locked Italo in atomic units for this contributor.
+    uint64_t reserved;                                           // The amount of Italo in atomic units reserved by this contributor for this Service Node.
     std::string address;                                         // The wallet address for this contributor rewards are sent to and contributions came from.
     std::vector<service_node_contribution> locked_contributions; // Array of contributions from this contributor.
 
     KV_MAP_SERIALIZABLE
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   // Get information on some, all, or a random subset of Service Nodes.
   struct GET_SERVICE_NODES : PUBLIC
   {
@@ -2098,15 +2098,15 @@ namespace rpc {
         int64_t                               earned_downtime_blocks;        // The number of blocks earned towards decommissioning, or the number of blocks remaining until deregistration if currently decommissioned
         std::array<uint16_t, 3>               service_node_version;          // The major, minor, patch version of the Service Node respectively.
         std::vector<service_node_contributor> contributors;                  // Array of contributors, contributing to this Service Node.
-        uint64_t                              total_contributed;             // The total amount of Loki in atomic units contributed to this Service Node.
-        uint64_t                              total_reserved;                // The total amount of Loki in atomic units reserved in this Service Node.
+        uint64_t                              total_contributed;             // The total amount of Italo in atomic units contributed to this Service Node.
+        uint64_t                              total_reserved;                // The total amount of Italo in atomic units reserved in this Service Node.
         uint64_t                              staking_requirement;           // The staking requirement in atomic units that is required to be contributed to become a Service Node.
         uint64_t                              portions_for_operator;         // The operator percentage cut to take from each reward expressed in portions, see cryptonote_config.h's STAKING_PORTIONS.
         uint64_t                              swarm_id;                      // The identifier of the Service Node's current swarm.
         std::string                           operator_address;              // The wallet address of the operator to which the operator cut of the staking reward is sent to.
         std::string                           public_ip;                     // The public ip address of the service node
         uint16_t                              storage_port;                  // The port number associated with the storage server
-        uint16_t                              storage_lmq_port;              // The port number associated with the storage server (lokimq interface)
+        uint16_t                              storage_lmq_port;              // The port number associated with the storage server (italomq interface)
         uint16_t                              quorumnet_port;                // The port for direct SN-to-SN communication
         std::string                           pubkey_ed25519;                // The service node's ed25519 public key for auxiliary services
         std::string                           pubkey_x25519;                 // The service node's x25519 public key for auxiliary services
@@ -2121,8 +2121,8 @@ namespace rpc {
         KV_MAP_SERIALIZABLE
       };
 
-      requested_fields_t fields; // @NoLokiRPCDocGen Internal use only, not serialized
-      bool polling_mode;         // @NoLokiRPCDocGen Internal use only, not serialized
+      requested_fields_t fields; // @NoItaloRPCDocGen Internal use only, not serialized
+      bool polling_mode;         // @NoItaloRPCDocGen Internal use only, not serialized
 
       std::vector<entry> service_node_states; // Array of service node registration information
       uint64_t    height;                     // Current block's height.
@@ -2138,7 +2138,7 @@ namespace rpc {
     };
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   // Get information on the queried daemon's Service Node state.
   struct GET_SERVICE_NODE_STATUS : RPC_COMMAND
   {
@@ -2163,7 +2163,7 @@ namespace rpc {
     };
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   struct STORAGE_SERVER_PING : RPC_COMMAND
   {
     static constexpr auto names() { return NAMES("storage_server_ping"); }
@@ -2180,22 +2180,22 @@ namespace rpc {
     struct response : STATUS {};
   };
 
-  LOKI_RPC_DOC_INTROSPECT
-  struct LOKINET_PING : RPC_COMMAND
+  ITALO_RPC_DOC_INTROSPECT
+  struct ITALONET_PING : RPC_COMMAND
   {
-    static constexpr auto names() { return NAMES("lokinet_ping"); }
+    static constexpr auto names() { return NAMES("italonet_ping"); }
 
     struct request
     {
-      std::array<int, 3> version; // Lokinet version
+      std::array<int, 3> version; // Italonet version
       KV_MAP_SERIALIZABLE
     };
 
     struct response : STATUS {};
   };
 
-  LOKI_RPC_DOC_INTROSPECT
-  // Get the required amount of Loki to become a Service Node at the queried height.
+  ITALO_RPC_DOC_INTROSPECT
+  // Get the required amount of Italo to become a Service Node at the queried height.
   // For devnet and testnet values, ensure the daemon is started with the
   // `--devnet` or `--testnet` flags respectively.
   struct GET_STAKING_REQUIREMENT : PUBLIC
@@ -2211,7 +2211,7 @@ namespace rpc {
 
     struct response
     {
-      uint64_t staking_requirement; // The staking requirement in Loki, in atomic units.
+      uint64_t staking_requirement; // The staking requirement in Italo, in atomic units.
       uint64_t height;              // The height requested (or current height if 0 was requested)
       std::string status;           // Generic RPC error code. "OK" is the success value.
 
@@ -2219,7 +2219,7 @@ namespace rpc {
     };
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   // Get information on blacklisted Service Node key images.
   struct GET_SERVICE_NODE_BLACKLISTED_KEY_IMAGES : PUBLIC
   {
@@ -2231,7 +2231,7 @@ namespace rpc {
     {
       std::string key_image;  // The key image of the transaction that is blacklisted on the network.
       uint64_t unlock_height; // The height at which the key image is removed from the blacklist and becomes spendable.
-      uint64_t amount;        // The total amount of locked Loki in atomic units in this blacklisted stake.
+      uint64_t amount;        // The total amount of locked Italo in atomic units in this blacklisted stake.
 
       KV_MAP_SERIALIZABLE
     };
@@ -2245,7 +2245,7 @@ namespace rpc {
     };
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   // Get information on output blacklist.
   struct GET_OUTPUT_BLACKLIST : PUBLIC, BINARY
   {
@@ -2263,7 +2263,7 @@ namespace rpc {
     };
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   // Query hardcoded/service node checkpoints stored for the blockchain. Omit all arguments to retrieve the latest "count" checkpoints.
   struct GET_CHECKPOINTS : PUBLIC
   {
@@ -2343,7 +2343,7 @@ namespace rpc {
     };
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   // Query hardcoded/service node checkpoints stored for the blockchain. Omit all arguments to retrieve the latest "count" checkpoints.
   struct GET_SN_STATE_CHANGES : PUBLIC
   {
@@ -2376,7 +2376,7 @@ namespace rpc {
   };
 
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   struct REPORT_PEER_SS_STATUS : RPC_COMMAND
   {
     static constexpr auto names() { return NAMES("report_peer_storage_server_status"); }
@@ -2410,9 +2410,9 @@ namespace rpc {
     struct response : STATUS {};
   };
 
-  LOKI_RPC_DOC_INTROSPECT
-  // Get the name mapping for a Loki Name Service entry. Loki currently supports mappings
-  // for Session and Lokinet.
+  ITALO_RPC_DOC_INTROSPECT
+  // Get the name mapping for a Italo Name Service entry. Italo currently supports mappings
+  // for Session and Italonet.
   struct LNS_NAMES_TO_OWNERS : PUBLIC
   {
     static constexpr auto names() { return NAMES("lns_names_to_owners"); }
@@ -2421,8 +2421,8 @@ namespace rpc {
     static constexpr size_t MAX_TYPE_REQUEST_ENTRIES = 8;
     struct request_entry
     {
-      std::string name_hash; // The 32-byte BLAKE2b hash of the name to resolve to a public key via Loki Name Service. The value must be provided either in hex (64 hex digits) or base64 (44 characters with padding, or 43 characters without).
-      std::vector<uint16_t> types; // If empty, query all types. Currently supported types are 0 (session) and 2 (lokinet). In future updates more mapping types will be available.
+      std::string name_hash; // The 32-byte BLAKE2b hash of the name to resolve to a public key via Italo Name Service. The value must be provided either in hex (64 hex digits) or base64 (44 characters with padding, or 43 characters without).
+      std::vector<uint16_t> types; // If empty, query all types. Currently supported types are 0 (session) and 2 (italonet). In future updates more mapping types will be available.
 
       KV_MAP_SERIALIZABLE
     };
@@ -2437,13 +2437,13 @@ namespace rpc {
 
     struct response_entry
     {
-      uint64_t entry_index;     // The index in request_entry's `entries` array that was resolved via Loki Name Service.
-      lns::mapping_type type;   // The type of Loki Name Service entry that the owner owns: currently supported values are 0 (session), 2 (lokinet)
+      uint64_t entry_index;     // The index in request_entry's `entries` array that was resolved via Italo Name Service.
+      lns::mapping_type type;   // The type of Italo Name Service entry that the owner owns: currently supported values are 0 (session), 2 (italonet)
       std::string name_hash;    // The hash of the name that was queried, in base64
-      std::string owner;        // The public key that purchased the Loki Name Service entry.
-      std::optional<std::string> backup_owner; // The backup public key that the owner specified when purchasing the Loki Name Service entry. Omitted if no backup owner.
+      std::string owner;        // The public key that purchased the Italo Name Service entry.
+      std::optional<std::string> backup_owner; // The backup public key that the owner specified when purchasing the Italo Name Service entry. Omitted if no backup owner.
       std::string encrypted_value; // The encrypted value that the name maps to. See the `LNS_RESOLVE` description for information on how this value can be decrypted.
-      uint64_t update_height;   // The last height that this Loki Name Service entry was updated on the Blockchain.
+      uint64_t update_height;   // The last height that this Italo Name Service entry was updated on the Blockchain.
       std::optional<uint64_t> expiration_height; // For records that expire, this will be set to the expiration block height.
       std::string txid;                          // The txid of the mapping's most recent update or purchase.
 
@@ -2459,7 +2459,7 @@ namespace rpc {
     };
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   // Get all the name mappings for the queried owner. The owner can be either a ed25519 public key or Monero style
   // public key; by default purchases are owned by the spend public key of the purchasing wallet.
   struct LNS_OWNERS_TO_NAMES : PUBLIC
@@ -2469,7 +2469,7 @@ namespace rpc {
     static constexpr size_t MAX_REQUEST_ENTRIES = 256;
     struct request
     {
-      std::vector<std::string> entries; // The owner's public key to find all Loki Name Service entries for.
+      std::vector<std::string> entries; // The owner's public key to find all Italo Name Service entries for.
       bool include_expired;             // Optional: if provided and true, include entries in the results even if they are expired
 
       KV_MAP_SERIALIZABLE
@@ -2477,13 +2477,13 @@ namespace rpc {
 
     struct response_entry
     {
-      uint64_t    request_index;   // (Deprecated) The index in request's `entries` array that was resolved via Loki Name Service.
-      lns::mapping_type type;      // The category the Loki Name Service entry belongs to; currently 0 for Session and 2 for Lokinet.
-      std::string name_hash;       // The hash of the name that the owner purchased via Loki Name Service in base64
-      std::string owner;           // The backup public key specified by the owner that purchased the Loki Name Service entry.
-      std::optional<std::string> backup_owner; // The backup public key specified by the owner that purchased the Loki Name Service entry. Omitted if no backup owner.
+      uint64_t    request_index;   // (Deprecated) The index in request's `entries` array that was resolved via Italo Name Service.
+      lns::mapping_type type;      // The category the Italo Name Service entry belongs to; currently 0 for Session and 2 for Italonet.
+      std::string name_hash;       // The hash of the name that the owner purchased via Italo Name Service in base64
+      std::string owner;           // The backup public key specified by the owner that purchased the Italo Name Service entry.
+      std::optional<std::string> backup_owner; // The backup public key specified by the owner that purchased the Italo Name Service entry. Omitted if no backup owner.
       std::string encrypted_value; // The encrypted value that the name maps to, in hex. This value is encrypted using the name (not the hash) as the secret.
-      uint64_t    update_height;   // The last height that this Loki Name Service entry was updated on the Blockchain.
+      uint64_t    update_height;   // The last height that this Italo Name Service entry was updated on the Blockchain.
       std::optional<uint64_t> expiration_height; // For records that expire, this will be set to the expiration block height.
       std::string txid;                     // The txid of the mapping's most recent update or purchase.
 
@@ -2499,13 +2499,13 @@ namespace rpc {
     };
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   // Performs a simple LNS lookup of a BLAKE2b-hashed name.  This RPC method is meant for simple,
   // single-value resolutions that do not care about registration details, etc.; if you need more
   // information use LNS_NAMES_TO_OWNERS instead.
   //
   // Technical details: the returned value is encrypted using the name itself so that neither this
-  // lokid responding to the RPC request nor any other blockchain observers can (easily) obtain the
+  // italod responding to the RPC request nor any other blockchain observers can (easily) obtain the
   // name of registered addresses or the registration details.  Thus, from a client's point of view,
   // resolving an LNS record involves:
   //
@@ -2524,7 +2524,7 @@ namespace rpc {
 
     struct request
     {
-      uint16_t type;         // The LNS type (mandatory); currently supported values are: 0 = session, 2 = lokinet.
+      uint16_t type;         // The LNS type (mandatory); currently supported values are: 0 = session, 2 = italonet.
       std::string name_hash; // The 32-byte BLAKE2b hash of the name to look up, encoded as 64 hex digits or 44/43 base64 characters (with/without padding).
 
       KV_MAP_SERIALIZABLE
@@ -2539,7 +2539,7 @@ namespace rpc {
     };
   };
 
-  LOKI_RPC_DOC_INTROSPECT
+  ITALO_RPC_DOC_INTROSPECT
   // Clear TXs from the daemon cache, currently only the cache storing TX hashes that were previously verified bad by the daemon.
   struct FLUSH_CACHE : RPC_COMMAND
   {
@@ -2629,7 +2629,7 @@ namespace rpc {
     GET_SERVICE_NODES,
     GET_SERVICE_NODE_STATUS,
     STORAGE_SERVER_PING,
-    LOKINET_PING,
+    ITALONET_PING,
     GET_STAKING_REQUIREMENT,
     GET_SERVICE_NODE_BLACKLISTED_KEY_IMAGES,
     GET_OUTPUT_BLACKLIST,

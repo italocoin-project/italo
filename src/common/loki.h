@@ -1,4 +1,4 @@
-// Copyright (c) 2018, The Loki Project
+// Copyright (c) 2018, The Italo Project
 // 
 // All rights reserved.
 // 
@@ -26,16 +26,16 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef LOKI_H
-#define LOKI_H
+#ifndef ITALO_H
+#define ITALO_H
 
-#define LOKI_HOUR(val) ((val) * LOKI_MINUTES(60))
-#define LOKI_MINUTES(val) val * 60
+#define ITALO_HOUR(val) ((val) * ITALO_MINUTES(60))
+#define ITALO_MINUTES(val) val * 60
 
 #include <cstddef>
 
-#define LOKI_RPC_DOC_INTROSPECT
-namespace loki
+#define ITALO_RPC_DOC_INTROSPECT
+namespace italo
 {
 double      round           (double);
 double      exp2            (double);
@@ -63,9 +63,9 @@ struct defer_helper
   deferred<lambda_t> operator+(lambda_t lambda) { return lambda; }
 };
 
-#define LOKI_TOKEN_COMBINE2(x, y) x ## y
-#define LOKI_TOKEN_COMBINE(x, y) LOKI_TOKEN_COMBINE2(x, y)
-#define LOKI_DEFER auto const LOKI_TOKEN_COMBINE(loki_defer_, __LINE__) = loki::defer_helper() + [&]()
+#define ITALO_TOKEN_COMBINE2(x, y) x ## y
+#define ITALO_TOKEN_COMBINE(x, y) ITALO_TOKEN_COMBINE2(x, y)
+#define ITALO_DEFER auto const ITALO_TOKEN_COMBINE(italo_defer_, __LINE__) = italo::defer_helper() + [&]()
 
 template <typename T, size_t N>
 constexpr size_t array_count(T (&)[N]) { return N; }
@@ -73,6 +73,6 @@ constexpr size_t array_count(T (&)[N]) { return N; }
 template <typename T, size_t N>
 constexpr size_t char_count(T (&)[N]) { return N - 1; }
 
-}; // namespace Loki
+}; // namespace Italo
 
-#endif // LOKI_H
+#endif // ITALO_H

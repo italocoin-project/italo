@@ -39,11 +39,11 @@
 #include "epee/misc_log_ex.h"
 #include "util.h"
 #include "spawn.h"
-#include "loki.h"
+#include "italo.h"
 #include "string_util.h"
 
-#undef LOKI_DEFAULT_LOG_CATEGORY
-#define LOKI_DEFAULT_LOG_CATEGORY "spawn"
+#undef ITALO_DEFAULT_LOG_CATEGORY
+#define ITALO_DEFAULT_LOG_CATEGORY "spawn"
 
 namespace tools
 {
@@ -87,7 +87,7 @@ int spawn(const fs::path& filename, const std::vector<std::string>& args, bool w
     return -1;
   }
 
-  LOKI_DEFER {
+  ITALO_DEFER {
     CloseHandle(pi.hThread);
     CloseHandle(pi.hProcess);
   };

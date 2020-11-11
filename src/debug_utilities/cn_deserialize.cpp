@@ -1,5 +1,5 @@
 // Copyright (c) 2014-2019, The Monero Project
-// Copyright (c)      2018, The Loki Project
+// Copyright (c)      2018, The Italo Project
 //
 // All rights reserved.
 //
@@ -31,13 +31,13 @@
 #include "cryptonote_basic/tx_extra.h"
 #include "cryptonote_core/blockchain.h"
 #include "common/command_line.h"
-#include "loki_economy.h"
+#include "italo_economy.h"
 #include "common/hex.h"
 #include "version.h"
-#include <lokimq/hex.h>
+#include <italomq/hex.h>
 
-#undef LOKI_DEFAULT_LOG_CATEGORY
-#define LOKI_DEFAULT_LOG_CATEGORY "debugtools.deserialize"
+#undef ITALO_DEFAULT_LOG_CATEGORY
+#define ITALO_DEFAULT_LOG_CATEGORY "debugtools.deserialize"
 
 namespace po = boost::program_options;
 
@@ -46,10 +46,10 @@ using namespace cryptonote;
 static std::string extra_nonce_to_string(const cryptonote::tx_extra_nonce &extra_nonce)
 {
   if (extra_nonce.nonce.size() == 9 && extra_nonce.nonce[0] == TX_EXTRA_NONCE_ENCRYPTED_PAYMENT_ID)
-    return "encrypted payment ID: " + lokimq::to_hex(extra_nonce.nonce.begin() + 1, extra_nonce.nonce.end());
+    return "encrypted payment ID: " + italomq::to_hex(extra_nonce.nonce.begin() + 1, extra_nonce.nonce.end());
   if (extra_nonce.nonce.size() == 33 && extra_nonce.nonce[0] == TX_EXTRA_NONCE_PAYMENT_ID)
-    return "plaintext payment ID: " + lokimq::to_hex(extra_nonce.nonce.begin() + 1, extra_nonce.nonce.end());
-  return lokimq::to_hex(extra_nonce.nonce);
+    return "plaintext payment ID: " + italomq::to_hex(extra_nonce.nonce.begin() + 1, extra_nonce.nonce.end());
+  return italomq::to_hex(extra_nonce.nonce);
 }
 
 struct extra_printer {
@@ -66,7 +66,7 @@ struct extra_printer {
       std::cout << pk;
     }
   }
-  void operator()(const tx_extra_mysterious_minergate& x) { std::cout << "minergate custom: " << lokimq::to_hex(x.data); }
+  void operator()(const tx_extra_mysterious_minergate& x) { std::cout << "minergate custom: " << italomq::to_hex(x.data); }
   void operator()(const tx_extra_service_node_winner& x) { std::cout << "SN reward winner: " << x.m_service_node_key; }
   void operator()(const tx_extra_service_node_register& x) { std::cout << "SN registration data"; } // TODO: could parse this further
   void operator()(const tx_extra_service_node_pubkey& x) { std::cout << "SN pubkey: " << x.m_service_node_key; }
@@ -76,14 +76,14 @@ struct extra_printer {
   void operator()(const tx_extra_tx_key_image_proofs& x) { std::cout << "TX key image proofs (" << x.proofs.size() << ")"; }
   void operator()(const tx_extra_tx_key_image_unlock& x) { std::cout << "TX key image unlock: " << x.key_image; }
   void operator()(const tx_extra_burn& x) { std::cout << "Transaction burned fee/payment: " << print_money(x.amount); }
-  void operator()(const tx_extra_loki_name_system& x) {
+  void operator()(const tx_extra_italo_name_system& x) {
     std::cout << "LNS " << (x.is_buying() ? "registration" : x.is_updating() ? "update" : "(unknown)");
     switch (x.type)
     {
-      case lns::mapping_type::lokinet: std::cout << " - Lokinet (1y)"; break;
-      case lns::mapping_type::lokinet_2years: std::cout << " - Lokinet (2y)"; break;
-      case lns::mapping_type::lokinet_5years: std::cout << " - Lokinet (5y)"; break;
-      case lns::mapping_type::lokinet_10years: std::cout << " - Lokinet (10y)"; break;
+      case lns::mapping_type::italonet: std::cout << " - Italonet (1y)"; break;
+      case lns::mapping_type::italonet_2years: std::cout << " - Italonet (2y)"; break;
+      case lns::mapping_type::italonet_5years: std::cout << " - Italonet (5y)"; break;
+      case lns::mapping_type::italonet_10years: std::cout << " - Italonet (10y)"; break;
       case lns::mapping_type::session: std::cout << " - Session address"; break;
       case lns::mapping_type::wallet: std::cout << " - Wallet address"; break;
       case lns::mapping_type::update_record_internal:
@@ -155,7 +155,7 @@ int main(int argc, char* argv[])
 
   if (command_line::get_arg(vm, command_line::arg_help))
   {
-    std::cout << "Loki '" << LOKI_RELEASE_NAME << "' (v" << LOKI_VERSION_FULL << ")\n\n";
+    std::cout << "Italo '" << ITALO_RELEASE_NAME << "' (v" << ITALO_VERSION_FULL << ")\n\n";
     std::cout << desc_options << std::endl;
     return 1;
   }

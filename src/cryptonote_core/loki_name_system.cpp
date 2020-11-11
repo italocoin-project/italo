@@ -1,9 +1,9 @@
 #include <bitset>
 #include <variant>
 #include "common/hex.h"
-#include "loki_name_system.h"
+#include "italo_name_system.h"
 
-#include "common/loki.h"
+#include "common/italo.h"
 #include "common/string_util.h"
 #include "crypto/hash.h"
 #include "cryptonote_basic/cryptonote_basic.h"
@@ -11,11 +11,11 @@
 #include "cryptonote_basic/cryptonote_format_utils.h"
 #include "cryptonote_basic/tx_extra.h"
 #include "cryptonote_core/blockchain.h"
-#include "loki_economy.h"
+#include "italo_economy.h"
 
-#include <lokimq/hex.h>
-#include <lokimq/base32z.h>
-#include <lokimq/base64.h>
+#include <italomq/hex.h>
+#include <italomq/base32z.h>
+#include <italomq/base64.h>
 
 #include <sqlite3.h>
 
@@ -30,8 +30,8 @@ extern "C"
 #include <sodium/randombytes.h>
 }
 
-#undef LOKI_DEFAULT_LOG_CATEGORY
-#define LOKI_DEFAULT_LOG_CATEGORY "lns"
+#undef ITALO_DEFAULT_LOG_CATEGORY
+#define ITALO_DEFAULT_LOG_CATEGORY "lns"
 
 namespace lns
 {
@@ -103,9 +103,9 @@ std::pair<std::basic_string_view<unsigned char>, std::basic_string_view<unsigned
 std::string lns::mapping_value::to_readable_value(cryptonote::network_type nettype, lns::mapping_type type) const
 {
   std::string result;
-  if (is_lokinet_type(type))
+  if (is_italonet_type(type))
   {
-    result = lokimq::to_base32z(to_view()) + ".loki";
+    result = italomq::to_base32z(to_view()) + ".italo";
   }
   else if (type == lns::mapping_type::wallet)
   {
@@ -120,7 +120,7 @@ std::string lns::mapping_value::to_readable_value(cryptonote::network_type netty
   }
   else
   {
-    result = lokimq::to_hex(to_view());
+    result = italomq::to_hex(to_view());
   }
 
   return result;
@@ -128,7 +128,7 @@ std::string lns::mapping_value::to_readable_value(cryptonote::network_type netty
 
 namespace {
 
-std::string lns_extra_string(cryptonote::network_type nettype, cryptonote::tx_extra_loki_name_system const &data)
+std::string lns_extra_string(cryptonote::network_type nettype, cryptonote::tx_extra_italo_name_system const &data)
 {
   std::stringstream stream;
   stream << "LNS Extra={";
@@ -555,7 +555,7 @@ sql_compiled_statement::~sql_compiled_statement()
   sqlite3_finalize(statement);
 }
 
-sqlite3 *init_loki_name_system(const fs::path& file_path, bool read_only)
+sqlite3 *init_italo_name_system(const fs::path& file_path, bool read_only)
 {
   sqlite3 *result = nullptr;
   int sql_init    = sqlite3_initialize();
@@ -611,23 +611,23 @@ std::vector<mapping_type> all_mapping_types(uint8_t hf_version) {
   if (hf_version >= cryptonote::network_version_15_lns)
     result.push_back(mapping_type::session);
   if (hf_version >= cryptonote::network_version_16_pulse)
-    result.push_back(mapping_type::lokinet);
+    result.push_back(mapping_type::italonet);
   return result;
 }
 
 std::optional<uint64_t> expiry_blocks(cryptonote::network_type nettype, mapping_type type)
 {
   std::optional<uint64_t> result;
-  if (is_lokinet_type(type))
+  if (is_italonet_type(type))
   {
     // For testnet we shorten 1-, 2-, and 5-year renewals to 1/2/5 days with 1-day renewal, but
     // leave 10 years alone to allow long-term registrations on testnet.
-    const bool testnet_short = nettype == cryptonote::TESTNET && type != mapping_type::lokinet_10years;
+    const bool testnet_short = nettype == cryptonote::TESTNET && type != mapping_type::italonet_10years;
 
-    if (type == mapping_type::lokinet)              result = BLOCKS_EXPECTED_IN_DAYS(1 * REGISTRATION_YEAR_DAYS);
-    else if (type == mapping_type::lokinet_2years)  result = BLOCKS_EXPECTED_IN_DAYS(2 * REGISTRATION_YEAR_DAYS);
-    else if (type == mapping_type::lokinet_5years)  result = BLOCKS_EXPECTED_IN_DAYS(5 * REGISTRATION_YEAR_DAYS);
-    else if (type == mapping_type::lokinet_10years) result = BLOCKS_EXPECTED_IN_DAYS(10 * REGISTRATION_YEAR_DAYS);
+    if (type == mapping_type::italonet)              result = BLOCKS_EXPECTED_IN_DAYS(1 * REGISTRATION_YEAR_DAYS);
+    else if (type == mapping_type::italonet_2years)  result = BLOCKS_EXPECTED_IN_DAYS(2 * REGISTRATION_YEAR_DAYS);
+    else if (type == mapping_type::italonet_5years)  result = BLOCKS_EXPECTED_IN_DAYS(5 * REGISTRATION_YEAR_DAYS);
+    else if (type == mapping_type::italonet_10years) result = BLOCKS_EXPECTED_IN_DAYS(10 * REGISTRATION_YEAR_DAYS);
     assert(result);
 
     if (testnet_short)
@@ -733,9 +733,9 @@ bool parse_owner_to_generic_owner(cryptonote::network_type nettype, std::string_
   {
     result = lns::make_monero_owner(parsed_addr.address, parsed_addr.is_subaddress);
   }
-  else if (owner.size() == 2*sizeof(ed_owner.data) && lokimq::is_hex(owner))
+  else if (owner.size() == 2*sizeof(ed_owner.data) && italomq::is_hex(owner))
   {
-    lokimq::from_hex(owner.begin(), owner.end(), ed_owner.data);
+    italomq::from_hex(owner.begin(), owner.end(), ed_owner.data);
     result = lns::make_ed25519_owner(ed_owner);
   }
   else
@@ -776,13 +776,13 @@ static bool check_condition(bool condition, std::string* reason, T&&... args) {
 
 bool validate_lns_name(mapping_type type, std::string name, std::string *reason)
 {
-  bool const is_lokinet = is_lokinet_type(type);
+  bool const is_italonet = is_italonet_type(type);
   size_t max_name_len   = 0;
 
-  if (is_lokinet)
+  if (is_italonet)
     max_name_len = name.find('-') != std::string::npos
-      ? LOKINET_DOMAIN_NAME_MAX
-      : LOKINET_DOMAIN_NAME_MAX_NOHYPHEN;
+      ? ITALONET_DOMAIN_NAME_MAX
+      : ITALONET_DOMAIN_NAME_MAX_NOHYPHEN;
   else if (type == mapping_type::session) max_name_len = lns::SESSION_DISPLAY_NAME_MAX;
   else if (type == mapping_type::wallet)  max_name_len = lns::WALLET_NAME_MAX;
   else
@@ -804,37 +804,37 @@ bool validate_lns_name(mapping_type type, std::string name, std::string *reason)
   std::string_view name_view{name}; // Will chop this down as we validate each part
 
   // NOTE: Validate domain specific requirements
-  if (is_lokinet)
+  if (is_italonet)
   {
-    // LOKINET
-    // Domain has to start with an alphanumeric, and can have (alphanumeric or hyphens) in between, the character before the suffix <char>'.loki' must be alphanumeric followed by the suffix '.loki'
+    // ITALONET
+    // Domain has to start with an alphanumeric, and can have (alphanumeric or hyphens) in between, the character before the suffix <char>'.italo' must be alphanumeric followed by the suffix '.italo'
     // It's *approximately* this regex, but there are some extra restrictions below
-    // ^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.loki$
+    // ^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.italo$
 
     // Reserved names:
-    // - localhost.loki has special meaning within lokinet (it is always a CNAME to the local
+    // - localhost.italo has special meaning within italonet (it is always a CNAME to the local
     //   address)
-    // - loki.loki and snode.loki are prohibited in case someone added .loki or .snode as search
-    //   domains (in which case the user looking up "foo.loki" would try end up trying to resolve
-    //   "foo.loki.loki").
-    for (auto& reserved : {"localhost.loki"sv, "loki.loki"sv, "snode.loki"sv})
+    // - italo.italo and snode.italo are prohibited in case someone added .italo or .snode as search
+    //   domains (in which case the user looking up "foo.italo" would try end up trying to resolve
+    //   "foo.italo.italo").
+    for (auto& reserved : {"localhost.italo"sv, "italo.italo"sv, "snode.italo"sv})
       if (check_condition(name == reserved, reason, "LNS type=", type, ", specifies mapping from name->value using protocol reserved name=", name))
         return false;
 
-    auto constexpr SHORTEST_DOMAIN = "a.loki"sv;
+    auto constexpr SHORTEST_DOMAIN = "a.italo"sv;
     if (check_condition(name.size() < SHORTEST_DOMAIN.size(), reason, "LNS type=", type, ", specifies mapping from name->value where the name is shorter than the shortest possible name=", SHORTEST_DOMAIN, ", given name=", name))
       return false;
 
-    // Must end with .loki
-    auto constexpr SUFFIX = ".loki"sv;
-    if (check_condition(!tools::ends_with(name_view, SUFFIX), reason, "LNS type=", type, ", specifies mapping from name->value where the name does not end with the domain .loki, name=", name))
+    // Must end with .italo
+    auto constexpr SUFFIX = ".italo"sv;
+    if (check_condition(!tools::ends_with(name_view, SUFFIX), reason, "LNS type=", type, ", specifies mapping from name->value where the name does not end with the domain .italo, name=", name))
       return false;
 
     name_view.remove_suffix(SUFFIX.size());
 
     // All domains containing '--' as 3rd/4th letter are reserved except for xn-- punycode domains
     if (check_condition(name_view.size() >= 4 && name_view.substr(2, 2) == "--"sv && !tools::starts_with(name_view, "xn--"sv),
-          reason, "LNS type=", type, ", specifies reserved name `?\?--*.loki': ", name))
+          reason, "LNS type=", type, ", specifies reserved name `?\?--*.italo': ", name))
       return false;
 
     // Must start with alphanumeric
@@ -844,8 +844,8 @@ bool validate_lns_name(mapping_type type, std::string name, std::string *reason)
     name_view.remove_prefix(1);
 
     if (!name_view.empty()) {
-      // Character preceding .loki must be alphanumeric
-      if (check_condition(!char_is_alphanum(name_view.back()), reason, "LNS type=", type ,", specifies mapping from name->value where the character preceding the .loki is not alphanumeric, char=", name_view.back(), ", name=", name))
+      // Character preceding .italo must be alphanumeric
+      if (check_condition(!char_is_alphanum(name_view.back()), reason, "LNS type=", type ,", specifies mapping from name->value where the character preceding the .italo is not alphanumeric, char=", name_view.back(), ", name=", name))
         return false;
       name_view.remove_suffix(1);
     }
@@ -896,7 +896,7 @@ static bool check_lengths(mapping_type type, std::string_view value, size_t max,
     {
       std::stringstream err_stream;
       err_stream << "LNS type=" << type << ", specifies mapping from name_hash->encrypted_value where the value's length=" << value.size() << ", does not equal the required length=" << max << ", given value=";
-      if (binary_val) err_stream << lokimq::to_hex(value);
+      if (binary_val) err_stream << italomq::to_hex(value);
       else            err_stream << value;
       *reason = err_stream.str();
     }
@@ -939,19 +939,19 @@ bool mapping_value::validate(cryptonote::network_type nettype, mapping_type type
       std::memcpy(blob->buffer.data(), &addr_info, blob->len);
     }
   }
-  else if (is_lokinet_type(type))
+  else if (is_italonet_type(type))
   {
     // We need a 52 char base32z string that decodes to a 32-byte value, which really means we need
     // 51 base32z chars (=255 bits) followed by a 1-bit value ('y'=0, or 'o'=0b10000); anything else
-    // in the last spot isn't a valid lokinet address.
-    if (check_condition(value.size() != 57 || !tools::ends_with(value, ".loki") || !lokimq::is_base32z(value.substr(0, 52)) || !(value[51] == 'y' || value[51] == 'o'),
-                reason, "'", value, "' is not a valid lokinet address"))
+    // in the last spot isn't a valid italonet address.
+    if (check_condition(value.size() != 57 || !tools::ends_with(value, ".italo") || !italomq::is_base32z(value.substr(0, 52)) || !(value[51] == 'y' || value[51] == 'o'),
+                reason, "'", value, "' is not a valid italonet address"))
       return false;
 
     if (blob)
     {
       blob->len = sizeof(crypto::ed25519_public_key);
-      lokimq::from_base32z(value.begin(), value.begin() + 52, blob->buffer.begin());
+      italomq::from_base32z(value.begin(), value.begin() + 52, blob->buffer.begin());
     }
   }
   else
@@ -961,7 +961,7 @@ bool mapping_value::validate(cryptonote::network_type nettype, mapping_type type
     if (check_condition(value.size() != 2*SESSION_PUBLIC_KEY_BINARY_LENGTH, reason, "The value=", value, " is not the required ", 2*SESSION_PUBLIC_KEY_BINARY_LENGTH, "-character hex string session public key, length=", value.size()))
       return false;
 
-    if (check_condition(!lokimq::is_hex(value), reason, ", specifies name -> value mapping where the value is not a hex string given value="))
+    if (check_condition(!italomq::is_hex(value), reason, ", specifies name -> value mapping where the value is not a hex string given value="))
       return false;
 
     // NOTE: Session public keys are 33 bytes, with the first byte being 0x05 and the remaining 32 being the public key.
@@ -972,7 +972,7 @@ bool mapping_value::validate(cryptonote::network_type nettype, mapping_type type
     {
       blob->len = value.size() / 2;
       assert(blob->len <= blob->buffer.size());
-      lokimq::from_hex(value.begin(), value.end(), blob->buffer.begin());
+      italomq::from_hex(value.begin(), value.end(), blob->buffer.begin());
 
     }
   }
@@ -987,7 +987,7 @@ bool mapping_value::validate_encrypted(mapping_type type, std::string_view value
   if (blob) *blob = {};
   std::stringstream err_stream;
   int value_len = crypto_aead_xchacha20poly1305_ietf_ABYTES + crypto_aead_xchacha20poly1305_ietf_NPUBBYTES;
-  if (is_lokinet_type(type)) value_len              += LOKINET_ADDRESS_BINARY_LENGTH;
+  if (is_italonet_type(type)) value_len              += ITALONET_ADDRESS_BINARY_LENGTH;
   else if (type == mapping_type::wallet)  value_len += WALLET_ACCOUNT_BINARY_LENGTH;
   else if (type == mapping_type::session)
   {
@@ -1024,17 +1024,17 @@ std::string name_hash_bytes_to_base64(std::string_view bytes)
 {
   if (bytes.size() != NAME_HASH_SIZE)
     throw std::runtime_error{"Invalid name hash: expected exactly 32 bytes"};
-  return lokimq::to_base64(bytes);
+  return italomq::to_base64(bytes);
 }
 
 std::optional<std::string> name_hash_input_to_base64(std::string_view input)
 {
   if (input.size() == NAME_HASH_SIZE)
     return name_hash_bytes_to_base64(input);
-  if (input.size() == 2*NAME_HASH_SIZE && lokimq::is_hex(input))
-    return name_hash_bytes_to_base64(lokimq::from_hex(input));
-  if (input.size() >= NAME_HASH_SIZE_B64_MIN && input.size() <= NAME_HASH_SIZE_B64_MAX && lokimq::is_base64(input)) {
-    std::string tmp = lokimq::from_base64(input);
+  if (input.size() == 2*NAME_HASH_SIZE && italomq::is_hex(input))
+    return name_hash_bytes_to_base64(italomq::from_hex(input));
+  if (input.size() >= NAME_HASH_SIZE_B64_MIN && input.size() <= NAME_HASH_SIZE_B64_MAX && italomq::is_base64(input)) {
+    std::string tmp = italomq::from_base64(input);
     if (tmp.size() == NAME_HASH_SIZE) // Could still be off from too much/too little padding
       return name_hash_bytes_to_base64(tmp);
   }
@@ -1060,10 +1060,10 @@ static bool verify_lns_signature(crypto::hash const &hash, lns::generic_signatur
   }
 }
 
-static bool validate_against_previous_mapping(lns::name_system_db &lns_db, uint64_t blockchain_height, cryptonote::transaction const &tx, cryptonote::tx_extra_loki_name_system const &lns_extra, std::string *reason)
+static bool validate_against_previous_mapping(lns::name_system_db &lns_db, uint64_t blockchain_height, cryptonote::transaction const &tx, cryptonote::tx_extra_italo_name_system const &lns_extra, std::string *reason)
 {
   std::stringstream err_stream;
-  LOKI_DEFER { if (reason && reason->empty()) *reason = err_stream.str(); };
+  ITALO_DEFER { if (reason && reason->empty()) *reason = err_stream.str(); };
 
   crypto::hash expected_prev_txid = crypto::null_hash;
   std::string name_hash           = hash_to_base64(lns_extra.name_hash);
@@ -1096,7 +1096,7 @@ static bool validate_against_previous_mapping(lns::name_system_db &lns_db, uint6
                                                   lns_extra.field_is_set(lns::extra_field::owner) ? &lns_extra.owner : nullptr,
                                                   lns_extra.field_is_set(lns::extra_field::backup_owner) ? &lns_extra.backup_owner : nullptr,
                                                   expected_prev_txid);
-      if (check_condition(!hash, reason, tx, ", ", lns_extra_string(lns_db.network_type(), lns_extra), " unexpectedly failed to generate signature hash, please inform the Loki developers"))
+      if (check_condition(!hash, reason, tx, ", ", lns_extra_string(lns_db.network_type(), lns_extra), " unexpectedly failed to generate signature hash, please inform the Italo developers"))
         return false;
 
       if (check_condition(!verify_lns_signature(hash, lns_extra.signature, mapping.owner) &&
@@ -1139,16 +1139,16 @@ static bool validate_against_previous_mapping(lns::name_system_db &lns_db, uint6
 // Sanity check value to disallow the empty name hash
 static const crypto::hash null_name_hash = name_to_hash("");
 
-bool name_system_db::validate_lns_tx(uint8_t hf_version, uint64_t blockchain_height, cryptonote::transaction const &tx, cryptonote::tx_extra_loki_name_system &lns_extra, std::string *reason)
+bool name_system_db::validate_lns_tx(uint8_t hf_version, uint64_t blockchain_height, cryptonote::transaction const &tx, cryptonote::tx_extra_italo_name_system &lns_extra, std::string *reason)
 {
   // -----------------------------------------------------------------------------------------------
   // Pull out LNS Extra from TX
   // -----------------------------------------------------------------------------------------------
   {
-    if (check_condition(tx.type != cryptonote::txtype::loki_name_system, reason, tx, ", uses wrong tx type, expected=", cryptonote::txtype::loki_name_system))
+    if (check_condition(tx.type != cryptonote::txtype::italo_name_system, reason, tx, ", uses wrong tx type, expected=", cryptonote::txtype::italo_name_system))
       return false;
 
-    if (check_condition(!cryptonote::get_field_from_tx_extra(tx.extra, lns_extra), reason, tx, ", didn't have loki name service in the tx_extra"))
+    if (check_condition(!cryptonote::get_field_from_tx_extra(tx.extra, lns_extra), reason, tx, ", didn't have italo name service in the tx_extra"))
       return false;
   }
 
@@ -1222,7 +1222,7 @@ bool name_system_db::validate_lns_tx(uint8_t hf_version, uint64_t blockchain_hei
     if (burn != burn_required)
     {
       char const *over_or_under = burn > burn_required ? "too much " : "insufficient ";
-      if (check_condition(true, reason, tx, ", ", lns_extra_string(nettype, lns_extra), " burned ", over_or_under, "loki=", burn, ", require=", burn_required))
+      if (check_condition(true, reason, tx, ", ", lns_extra_string(nettype, lns_extra), " burned ", over_or_under, "italo=", burn, ", require=", burn_required))
         return false;
     }
   }
@@ -1238,28 +1238,28 @@ bool validate_mapping_type(std::string_view mapping_type_str, uint8_t hf_version
     mapping_type_ = lns::mapping_type::session;
   else if (hf_version >= cryptonote::network_version_16_pulse)
   {
-    if (tools::string_iequal(mapping, "lokinet"))
-      mapping_type_ = lns::mapping_type::lokinet;
+    if (tools::string_iequal(mapping, "italonet"))
+      mapping_type_ = lns::mapping_type::italonet;
     else if (txtype == lns_tx_type::buy || txtype == lns_tx_type::renew)
     {
-      if (tools::string_iequal_any(mapping, "lokinet_1y", "lokinet_1years")) // Can also specify "lokinet"
-        mapping_type_ = lns::mapping_type::lokinet;
-      else if (tools::string_iequal_any(mapping, "lokinet_2y", "lokinet_2years"))
-        mapping_type_ = lns::mapping_type::lokinet_2years;
-      else if (tools::string_iequal_any(mapping, "lokinet_5y", "lokinet_5years"))
-        mapping_type_ = lns::mapping_type::lokinet_5years;
-      else if (tools::string_iequal_any(mapping, "lokinet_10y", "lokinet_10years"))
-        mapping_type_ = lns::mapping_type::lokinet_10years;
+      if (tools::string_iequal_any(mapping, "italonet_1y", "italonet_1years")) // Can also specify "italonet"
+        mapping_type_ = lns::mapping_type::italonet;
+      else if (tools::string_iequal_any(mapping, "italonet_2y", "italonet_2years"))
+        mapping_type_ = lns::mapping_type::italonet_2years;
+      else if (tools::string_iequal_any(mapping, "italonet_5y", "italonet_5years"))
+        mapping_type_ = lns::mapping_type::italonet_5years;
+      else if (tools::string_iequal_any(mapping, "italonet_10y", "italonet_10years"))
+        mapping_type_ = lns::mapping_type::italonet_10years;
     }
   }
 
   if (!mapping_type_)
   {
     if (reason) *reason = "Unsupported LNS type \"" + std::string{mapping_type_str} + "\"; supported " + (
-        txtype == lns_tx_type::update ? "update types are: session, lokinet" :
-        txtype == lns_tx_type::renew  ? "renew types are: lokinet_1y, lokinet_2y, lokinet_5y, lokinet_10y" :
-        txtype == lns_tx_type::buy    ? "buy types are session, lokinet_1y, lokinet_2y, lokinet_5y, lokinet_10y"
-                                      : "lookup types are session, lokinet");
+        txtype == lns_tx_type::update ? "update types are: session, italonet" :
+        txtype == lns_tx_type::renew  ? "renew types are: italonet_1y, italonet_2y, italonet_5y, italonet_10y" :
+        txtype == lns_tx_type::buy    ? "buy types are session, italonet_1y, italonet_2y, italonet_5y, italonet_10y"
+                                      : "lookup types are session, italonet");
     return false;
   }
 
@@ -1415,7 +1415,7 @@ bool mapping_value::decrypt(std::string_view name, mapping_type type, const cryp
   {
     switch(type) {
       case mapping_type::session: dec_length = SESSION_PUBLIC_KEY_BINARY_LENGTH; break;
-      case mapping_type::lokinet: dec_length = LOKINET_ADDRESS_BINARY_LENGTH; break;
+      case mapping_type::italonet: dec_length = ITALONET_ADDRESS_BINARY_LENGTH; break;
       case mapping_type::wallet:  dec_length = WALLET_ACCOUNT_BINARY_LENGTH; break;
       default: MERROR("Invalid mapping_type passed to mapping_value::decrypt"); return false;
     }
@@ -1509,7 +1509,7 @@ CREATE INDEX IF NOT EXISTS "backup_owner_id_index" ON mappings("backup_owner_ind
     return false;
   }
 
-  // In Loki 8 we dropped some columns that are no longer needed, but SQLite can't do this easily:
+  // In Italo 8 we dropped some columns that are no longer needed, but SQLite can't do this easily:
   // instead we have to manually recreate the table, so check it and see if the prev_txid or
   // register_height columns still exist: if so, we need to recreate.
   bool need_mappings_migration = false;
@@ -1839,7 +1839,7 @@ name_system_db::~name_system_db()
 
 namespace {
 
-std::optional<int64_t> add_or_get_owner_id(lns::name_system_db &lns_db, crypto::hash const &tx_hash, cryptonote::tx_extra_loki_name_system const &entry, lns::generic_owner const &key)
+std::optional<int64_t> add_or_get_owner_id(lns::name_system_db &lns_db, crypto::hash const &tx_hash, cryptonote::tx_extra_italo_name_system const &entry, lns::generic_owner const &key)
 {
   int64_t result = 0;
   if (owner_record owner = lns_db.get_owner_by_key(key)) result = owner.id;
@@ -1859,7 +1859,7 @@ std::optional<int64_t> add_or_get_owner_id(lns::name_system_db &lns_db, crypto::
 // Build a query and bind values that will create a new row at the given height by copying the
 // current highest-height row values and/or updating the given update fields.
 using update_variant = std::variant<uint16_t, int64_t, uint64_t, blob_view, std::string>;
-std::pair<std::string, std::vector<update_variant>> update_record_query(name_system_db& lns_db, uint64_t height, const cryptonote::tx_extra_loki_name_system& entry, const crypto::hash& tx_hash)
+std::pair<std::string, std::vector<update_variant>> update_record_query(name_system_db& lns_db, uint64_t height, const cryptonote::tx_extra_italo_name_system& entry, const crypto::hash& tx_hash)
 {
   assert(entry.is_updating() || entry.is_renewing());
 
@@ -1935,7 +1935,7 @@ FROM "mappings" WHERE "type" = ? AND "name_hash" = ? ORDER BY "update_height" DE
   return result;
 }
 
-bool add_lns_entry(lns::name_system_db &lns_db, uint64_t height, cryptonote::tx_extra_loki_name_system const &entry, crypto::hash const &tx_hash)
+bool add_lns_entry(lns::name_system_db &lns_db, uint64_t height, cryptonote::tx_extra_italo_name_system const &entry, crypto::hash const &tx_hash)
 {
   // -----------------------------------------------------------------------------------------------
   // New Mapping Insert or Completely Replace
@@ -2015,10 +2015,10 @@ bool name_system_db::add_block(const cryptonote::block &block, const std::vector
   {
     for (cryptonote::transaction const &tx : txs)
     {
-      if (tx.type != cryptonote::txtype::loki_name_system)
+      if (tx.type != cryptonote::txtype::italo_name_system)
         continue;
 
-      cryptonote::tx_extra_loki_name_system entry = {};
+      cryptonote::tx_extra_italo_name_system entry = {};
       std::string fail_reason;
       if (!validate_lns_tx(block.major_version, height, tx, entry, &fail_reason))
       {
@@ -2051,11 +2051,11 @@ struct lns_update_history
   uint64_t owner_last_update_height        = static_cast<uint64_t>(-1);
   uint64_t backup_owner_last_update_height = static_cast<uint64_t>(-1);
 
-  void     update(uint64_t height, cryptonote::tx_extra_loki_name_system const &lns_extra);
+  void     update(uint64_t height, cryptonote::tx_extra_italo_name_system const &lns_extra);
   uint64_t newest_update_height() const;
 };
 
-void lns_update_history::update(uint64_t height, cryptonote::tx_extra_loki_name_system const &lns_extra)
+void lns_update_history::update(uint64_t height, cryptonote::tx_extra_italo_name_system const &lns_extra)
 {
   if (lns_extra.field_is_set(lns::extra_field::encrypted_value))
     value_last_update_height = height;
@@ -2077,7 +2077,7 @@ struct replay_lns_tx
 {
   uint64_t                              height;
   crypto::hash                          tx_hash;
-  cryptonote::tx_extra_loki_name_system entry;
+  cryptonote::tx_extra_italo_name_system entry;
 };
 
 void name_system_db::block_detach(cryptonote::Blockchain const &blockchain, uint64_t new_blockchain_height)
@@ -2094,7 +2094,7 @@ bool name_system_db::save_owner(lns::generic_owner const &owner, int64_t *row_id
   return result;
 }
 
-bool name_system_db::save_mapping(crypto::hash const &tx_hash, cryptonote::tx_extra_loki_name_system const &src, uint64_t height, std::optional<uint64_t> expiration, int64_t owner_id, std::optional<int64_t> backup_owner_id)
+bool name_system_db::save_mapping(crypto::hash const &tx_hash, cryptonote::tx_extra_italo_name_system const &src, uint64_t height, std::optional<uint64_t> expiration, int64_t owner_id, std::optional<int64_t> backup_owner_id)
 {
   if (!src.is_buying())
     return false;
@@ -2152,7 +2152,7 @@ owner_record name_system_db::get_owner_by_id(int64_t owner_id)
 
 mapping_record name_system_db::get_mapping(mapping_type type, std::string_view name_base64_hash, std::optional<uint64_t> blockchain_height)
 {
-  assert(name_base64_hash.size() == 44 && name_base64_hash.back() == '=' && lokimq::is_base64(name_base64_hash));
+  assert(name_base64_hash.size() == 44 && name_base64_hash.back() == '=' && italomq::is_base64(name_base64_hash));
   mapping_record result = {};
   result.loaded         = bind_and_run(lns_sql_type::get_mapping, get_mapping_sql, &result,
       db_mapping_type(type), name_base64_hash);
@@ -2163,7 +2163,7 @@ mapping_record name_system_db::get_mapping(mapping_type type, std::string_view n
 
 std::optional<mapping_value> name_system_db::resolve(mapping_type type, std::string_view name_hash_b64, uint64_t blockchain_height)
 {
-  assert(name_hash_b64.size() == 44 && name_hash_b64.back() == '=' && lokimq::is_base64(name_hash_b64));
+  assert(name_hash_b64.size() == 44 && name_hash_b64.back() == '=' && italomq::is_base64(name_hash_b64));
   std::optional<mapping_value> result;
   bind_all(resolve_sql, db_mapping_type(type), name_hash_b64, blockchain_height);
   if (step(resolve_sql) == SQLITE_ROW)
@@ -2184,7 +2184,7 @@ std::optional<mapping_value> name_system_db::resolve(mapping_type type, std::str
 
 std::vector<mapping_record> name_system_db::get_mappings(std::vector<mapping_type> const &types, std::string_view name_base64_hash, std::optional<uint64_t> blockchain_height)
 {
-  assert(name_base64_hash.size() == 44 && name_base64_hash.back() == '=' && lokimq::is_base64(name_base64_hash));
+  assert(name_base64_hash.size() == 44 && name_base64_hash.back() == '=' && italomq::is_base64(name_base64_hash));
   std::vector<mapping_record> result;
   if (types.empty())
     return result;

@@ -37,7 +37,7 @@
 
 #include <boost/program_options/options_description.hpp>
 #include <boost/program_options/variables_map.hpp>
-#include <lokimq/lokimq.h>
+#include <italomq/italomq.h>
 
 #include "cryptonote_protocol/cryptonote_protocol_handler_common.h"
 #include "epee/storages/portable_storage_template_helper.h"
@@ -56,7 +56,7 @@
 PUSH_WARNINGS
 DISABLE_VS_WARNINGS(4355)
 
-#include "common/loki_integration_test_hooks.h"
+#include "common/italo_integration_test_hooks.h"
 namespace cryptonote
 {
    struct test_options {
@@ -77,7 +77,7 @@ namespace cryptonote
   // cryptonote_protocol/quorumnet.cpp's quorumnet::init_core_callbacks().  This indirection is here
   // so that core doesn't need to link against cryptonote_protocol (plus everything it depends on).
 
-  // Initializes quorumnet state (for service nodes only).  This is called after the LokiMQ object
+  // Initializes quorumnet state (for service nodes only).  This is called after the ItaloMQ object
   // has been set up but before it starts listening.  Return an opaque pointer (void *) that gets
   // passed into all the other callbacks below so that the callbacks can recast it into whatever it
   // should be.
@@ -86,7 +86,7 @@ namespace cryptonote
   // just service nodes.  The second argument should be the `quorumnet_new` return value if a
   // service node, nullptr if not.
   using quorumnet_init_proc = void (core &core, void *self);
-  // Destroys the quorumnet state; called on shutdown *after* the LokiMQ object has been destroyed.
+  // Destroys the quorumnet state; called on shutdown *after* the ItaloMQ object has been destroyed.
   // Should destroy the state object and set the pointer reference to nullptr.
   using quorumnet_delete_proc = void (void *&self);
   // Relays votes via quorumnet.
@@ -428,7 +428,7 @@ namespace cryptonote
      /**
       * @brief performs safe shutdown steps for core and core components
       *
-      * Uninitializes the miner instance, lokimq, transaction pool, and Blockchain
+      * Uninitializes the miner instance, italomq, transaction pool, and Blockchain
       */
      void deinit();
 
@@ -682,9 +682,9 @@ namespace cryptonote
      /// @brief return a reference to the service node list
      tx_memory_pool &get_pool() { return m_mempool; }
 
-     /// Returns a reference to the LokiMQ object.  Must not be called before init(), and should not
-     /// be used for any lmq communication until after start_lokimq() has been called.
-     lokimq::LokiMQ& get_lmq() { return *m_lmq; }
+     /// Returns a reference to the ItaloMQ object.  Must not be called before init(), and should not
+     /// be used for any lmq communication until after start_italomq() has been called.
+     italomq::ItaloMQ& get_lmq() { return *m_lmq; }
 
      /**
       * @copydoc miner::on_synchronized
@@ -1002,8 +1002,8 @@ namespace cryptonote
       */
      bool set_storage_server_peer_reachable(crypto::public_key const &pubkey, bool value);
 
-     /// Time point at which the storage server and lokinet last pinged us
-     std::atomic<time_t> m_last_storage_server_ping, m_last_lokinet_ping;
+     /// Time point at which the storage server and italonet last pinged us
+     std::atomic<time_t> m_last_storage_server_ping, m_last_italonet_ping;
      std::atomic<uint16_t> m_storage_lmq_port;
 
      uint32_t sn_public_ip() const { return m_sn_public_ip; }
@@ -1018,7 +1018,7 @@ namespace cryptonote
      bool relay_txpool_transactions();
 
      /**
-      * @brief returns the lokid config directory
+      * @brief returns the italod config directory
       */
      const fs::path& get_config_directory() const { return m_config_folder; }
 
@@ -1123,38 +1123,38 @@ namespace cryptonote
       * Checks the given x25519 pubkey against the configured access lists and, if allowed, returns
       * the access level; otherwise returns `denied`.
       */
-     lokimq::AuthLevel lmq_check_access(const crypto::x25519_public_key& pubkey) const;
+     italomq::AuthLevel lmq_check_access(const crypto::x25519_public_key& pubkey) const;
 
      /**
-      * @brief Initializes LokiMQ object, called during init().
+      * @brief Initializes ItaloMQ object, called during init().
       *
       * Does not start it: this gets called to initialize it, then it gets configured with endpoints
-      * and listening addresses, then finally a call to `start_lokimq()` should happen to actually
+      * and listening addresses, then finally a call to `start_italomq()` should happen to actually
       * start it.
       */
-     void init_lokimq(const boost::program_options::variables_map& vm);
+     void init_italomq(const boost::program_options::variables_map& vm);
 
  public:
      /**
-      * @brief Starts LokiMQ listening.
+      * @brief Starts ItaloMQ listening.
       *
-      * Called after all LokiMQ initialization is done.
+      * Called after all ItaloMQ initialization is done.
       */
-     void start_lokimq();
+     void start_italomq();
 
      /**
       * Returns whether to allow the connection and, if so, at what authentication level.
       */
-     lokimq::AuthLevel lmq_allow(std::string_view ip, std::string_view x25519_pubkey, lokimq::AuthLevel default_auth);
+     italomq::AuthLevel lmq_allow(std::string_view ip, std::string_view x25519_pubkey, italomq::AuthLevel default_auth);
 
      /**
       * @brief Internal use only!
       *
-      * This returns a mutable reference to the internal auth level map that LokiMQ uses, for
+      * This returns a mutable reference to the internal auth level map that ItaloMQ uses, for
       * internal use only.
       */
-     std::unordered_map<crypto::x25519_public_key, lokimq::AuthLevel>& _lmq_auth_level_map() { return m_lmq_auth; }
-     lokimq::TaggedThreadID const &pulse_thread_id() const { return *m_pulse_thread_id; }
+     std::unordered_map<crypto::x25519_public_key, italomq::AuthLevel>& _lmq_auth_level_map() { return m_lmq_auth; }
+     italomq::TaggedThreadID const &pulse_thread_id() const { return *m_pulse_thread_id; }
 
  private:
 
@@ -1214,15 +1214,15 @@ namespace cryptonote
      std::atomic_flag m_checkpoints_updating; //!< set if checkpoints are currently updating to avoid multiple threads attempting to update at once
 
      bool m_service_node; // True if running in service node mode
-     service_keys m_service_keys; // Always set, even for non-SN mode -- these can be used for public lokimq rpc
+     service_keys m_service_keys; // Always set, even for non-SN mode -- these can be used for public italomq rpc
 
-     /// Service Node's public IP and storage server port (http and lokimq)
+     /// Service Node's public IP and storage server port (http and italomq)
      uint32_t m_sn_public_ip;
      uint16_t m_storage_port;
      uint16_t m_quorumnet_port;
 
-     /// LokiMQ main object.  Gets created during init().
-     std::unique_ptr<lokimq::LokiMQ> m_lmq;
+     /// ItaloMQ main object.  Gets created during init().
+     std::unique_ptr<italomq::ItaloMQ> m_lmq;
 
      // Internal opaque data object managed by cryptonote_protocol/quorumnet.cpp.  void pointer to
      // avoid linking issues (protocol does not link against core).
@@ -1230,7 +1230,7 @@ namespace cryptonote
 
      /// Stores x25519 -> access level for LMQ authentication.
      /// Not to be modified after the LMQ listener starts.
-     std::unordered_map<crypto::x25519_public_key, lokimq::AuthLevel> m_lmq_auth;
+     std::unordered_map<crypto::x25519_public_key, italomq::AuthLevel> m_lmq_auth;
 
      size_t block_sync_size;
 
@@ -1250,7 +1250,7 @@ namespace cryptonote
        uint64_t height = 0, emissions = 0, fees = 0, burnt = 0;
      } m_coinbase_cache;
 
-     std::optional<lokimq::TaggedThreadID> m_pulse_thread_id;
+     std::optional<italomq::TaggedThreadID> m_pulse_thread_id;
    };
 }
 
