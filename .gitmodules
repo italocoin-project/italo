@@ -25,3 +25,6 @@
 [submodule "external/ghc-filesystem"]
 	path = external/ghc-filesystem
 	url = https://github.com/gulrak/filesystem.git
+[submodule "external/randomx"]
+	path = external/randomx
+	url = https://github.com/loki-project/loki-randomXL
