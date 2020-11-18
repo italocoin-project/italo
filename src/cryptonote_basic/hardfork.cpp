@@ -73,7 +73,7 @@ static constexpr HardFork::Params mainnet_hard_forks[] =
   { network_version_13_enforce_checkpoints, 7, 0, 1571850000 }, // 2019-10-23 19:00AEDT
   { network_version_14_blink,               8, 0, 1578528000 }, // 2020-01-09 00:00UTC
   { network_version_15_lns,                 9, 0, 1585105200 }, // 2020-03-25 14:00AEDT (03:00UTC)
-  { network_version_16_pulse,               25, 0, 1602464400 }, // 2020-10-12 12:00AEDT (01:00UTC)
+  { network_version_16_pulse,               100, 0, 1602464400 }, // 2020-10-12 12:00AEDT (01:00UTC)
   { network_version_17,                     10 + BLOCKS_EXPECTED_IN_DAYS(180), 0, 1602464400 + 180*24*60*60 }, // HF16 + 180 days
 };
 
