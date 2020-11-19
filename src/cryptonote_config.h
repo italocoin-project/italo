@@ -283,8 +283,8 @@ namespace config
     inline constexpr uint64_t GOVERNANCE_REWARD_INTERVAL_IN_BLOCKS = 1000;
     inline constexpr std::array GOVERNANCE_WALLET_ADDRESS =
     {
-      "T6SUprTYE5rQpep9iQFxyPcKVd91DFR1fQ1Qsyqp5eYLiFc8XuYd3reRE71qDL8c3DXioUbDEpDFdaUpetnL37NS1R3rzoKxi"sv, // hardfork v7-9
-      "T6TzkJb5EiASaCkcH7idBEi1HSrpSQJE1Zq3aL65ojBMPZvqHNYPTL56i3dncGVNEYCG5QG5zrBmRiVwcg6b1cRM1SRNqbp44"sv, // hardfork v10
+      "iz5CsufgHSeNrnWgwtqtaicP2EJMoWMhvBFjdrWtW6VDG9LdcNdQgSUNCytQm1uhLTh5vSZBcoAfVBGkheej3c2Z2kzExV5Y5"sv, // hardfork v7-9
+      "iz5CsufgHSeNrnWgwtqtaicP2EJMoWMhvBFjdrWtW6VDG9LdcNdQgSUNCytQm1uhLTh5vSZBcoAfVBGkheej3c2Z2kzExV5Y5"sv, // hardfork v10
     };
 
   }
@@ -309,8 +309,8 @@ namespace config
     inline constexpr uint64_t GOVERNANCE_REWARD_INTERVAL_IN_BLOCKS = BLOCKS_EXPECTED_IN_DAYS(7);
     inline constexpr std::array GOVERNANCE_WALLET_ADDRESS =
     {
-      "dV3EhSE1xXgSzswBgVioqFNTfcqGopvTrcYjs4YDLHUfU64DuHxFoEmbwoyipTidGiTXx5EuYdgzZhDLMTo9uEv82M4A7Uimp"sv, // hardfork v7-9
-      "dV3EhSE1xXgSzswBgVioqFNTfcqGopvTrcYjs4YDLHUfU64DuHxFoEmbwoyipTidGiTXx5EuYdgzZhDLMTo9uEv82M4A7Uimp"sv, // hardfork v10
+      "iz5CsufgHSeNrnWgwtqtaicP2EJMoWMhvBFjdrWtW6VDG9LdcNdQgSUNCytQm1uhLTh5vSZBcoAfVBGkheej3c2Z2kzExV5Y5"sv, // hardfork v7-9
+      "iz5CsufgHSeNrnWgwtqtaicP2EJMoWMhvBFjdrWtW6VDG9LdcNdQgSUNCytQm1uhLTh5vSZBcoAfVBGkheej3c2Z2kzExV5Y5"sv, // hardfork v10
     };
   }
 }

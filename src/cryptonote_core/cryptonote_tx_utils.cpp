@@ -162,9 +162,7 @@ namespace cryptonote
 
   uint64_t derive_governance_from_block_reward(network_type nettype, const cryptonote::block &block, uint8_t hf_version)
   {
-    if (hf_version < 17)
-      return 0;
-    if (hf_version >= 17)
+    if (hf_version >= 15)
       return governance_reward_formula(0, hf_version);
 
     uint64_t result       = 0;
