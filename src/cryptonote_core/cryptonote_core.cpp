@@ -396,10 +396,11 @@ namespace cryptonote
       m_quorumnet_port = command_line::get_arg(vm, arg_quorumnet_port);
 
       bool storage_ok = true;
+      /*
       if (m_storage_port == 0 && m_nettype != DEVNET) {
         MERROR("Please specify the port on which the storage server is listening with: '--" << arg_storage_server_port.name << " <port>'");
         storage_ok = false;
-      }
+      }*/
 
       if (m_quorumnet_port == 0) {
         MERROR("Quorumnet port cannot be 0; please specify a valid port to listen on with: '--" << arg_quorumnet_port.name << " <port>'");
@@ -2233,7 +2234,7 @@ namespace cryptonote
           });
         }
 
-        if (m_nettype != DEVNET)
+        /*if (m_nettype != DEVNET)
         {
           if (!check_external_ping(m_last_storage_server_ping, STORAGE_SERVER_PING_LIFETIME, "the storage server"))
           {
@@ -2249,7 +2250,7 @@ namespace cryptonote
                 "is running! It is required to run alongside the Italo daemon");
             return;
           }
-        }
+        }*/
 
         submit_uptime_proof();
       });
