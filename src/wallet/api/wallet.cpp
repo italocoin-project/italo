@@ -36,6 +36,7 @@
 #include "wallet.h"
 #include "pending_transaction.h"
 #include "unsigned_transaction.h"
+#include "stake_unlock_result.h"
 #include "transaction_history.h"
 #include "address_book.h"
 #include "subaddress.h"
@@ -1654,28 +1655,13 @@ void WalletImpl::disposeTransaction(PendingTransaction *t)
     delete t;
 }
 
-#if 0
-uint64_t WalletImpl::estimateTransactionFee(const std::vector<std::tuple<std::string, uint64_t>> &destinations, uint32_t priority) const
+uint64_t WalletImpl::estimateTransactionFee(uint32_t priority, uint32_t recipients) const
 {
-#if 0
-    const size_t pubkey_size = 33;
-    const size_t encrypted_paymentid_size = 11;
-    const size_t extra_size = pubkey_size + encrypted_paymentid_size;
-
-    return m_wallet->estimate_fee(
-        1 /*inputs*/,
-        CRYPTONOTE_DEFAULT_TX_MIXIN /*mixin*/,
-        destinations.size() + 1 /*outputs*/,
-        extra_size,
-        m_wallet->use_fork_rules(HF_VERSION_CLSAG, 0),
-        m_wallet->get_base_fees(),
-        m_wallet->get_fee_percent(priority),
-        m_wallet->get_fee_quantization_mask());
-#else
-    return 0; // TODO: IMPLEMENT
-#endif
+    constexpr uint32_t typical_size = 2000;
+    const auto base_fee = m_wallet->get_base_fees();
+    uint64_t pct = m_wallet->get_fee_percent(priority == 1 ? 1 : 5, txtype::standard);
+    return (base_fee.first * typical_size + base_fee.second * (recipients + 1)) * pct / 100;
 }
-#endif
 
 TransactionHistory *WalletImpl::history()
 {
@@ -2478,6 +2464,55 @@ PendingTransaction* WalletImpl::stakePending(const std::string& sn_key_str, cons
   return transaction;
 }
 
+StakeUnlockResult* WalletImpl::canRequestStakeUnlock(const std::string &sn_key)
+{
+    tools::wallet2::request_stake_unlock_result res = {};
+
+    crypto::public_key snode_key;
+    if (!tools::hex_to_type(sn_key, snode_key))
+    {
+      res.success = false;
+      res.msg = "Failed to Parse Service Node Key";
+      return new StakeUnlockResultImpl(res);
+    }
+
+    return new StakeUnlockResultImpl(m_wallet->can_request_stake_unlock(snode_key));
+}
+
+StakeUnlockResult* WalletImpl::requestStakeUnlock(const std::string &sn_key)
+{
+    tools::wallet2::request_stake_unlock_result res = {};
+
+    crypto::public_key snode_key;
+    if (!tools::hex_to_type(sn_key, snode_key))
+    {
+      res.success = false;
+      res.msg = "Failed to Parse Service Node Key";
+      return new StakeUnlockResultImpl(res);
+    }
+    tools::wallet2::request_stake_unlock_result unlock_result = m_wallet->can_request_stake_unlock(snode_key);
+    if (unlock_result.success)
+    {
+      try
+      {
+        m_wallet->commit_tx(unlock_result.ptx);
+      }
+      catch(const std::exception &e)
+      {
+        res.success = false;
+        res.msg = "Failed to commit tx.";
+        return new StakeUnlockResultImpl(res);
+      }
+    }
+    else
+    {
+      res.success = false;
+      res.msg = tr("Cannot request stake unlock: " + unlock_result.msg);
+      return new StakeUnlockResultImpl(res);
+    }
+
+    return new StakeUnlockResultImpl(unlock_result);
+}
 
 uint64_t WalletImpl::coldKeyImageSync(uint64_t &spent, uint64_t &unspent)
 {

@@ -43,6 +43,7 @@ namespace Wallet {
 class TransactionHistoryImpl;
 class PendingTransactionImpl;
 class UnsignedTransactionImpl;
+class StakeUnlockResultImpl;
 class AddressBookImpl;
 class SubaddressImpl;
 class SubaddressAccountImpl;
@@ -129,6 +130,10 @@ public:
 
     PendingTransaction* stakePending(const std::string& service_node_key, const std::string& address, const std::string& amount, std::string& error_msg) override;
 
+    StakeUnlockResult* canRequestStakeUnlock(const std::string &sn_key) override;
+
+    StakeUnlockResult* requestStakeUnlock(const std::string &sn_key) override;
+
     MultisigState multisig() const override;
     std::string getMultisigInfo() const override;
     std::string makeMultisig(const std::vector<std::string>& info, uint32_t threshold) override;
@@ -156,8 +161,7 @@ public:
     bool importKeyImages(std::string_view filename) override;
 
     void disposeTransaction(PendingTransaction * t) override;
-    // TODO(italo): Implement
-    // uint64_t estimateTransactionFee(const std::vector<std::pair<std::string, uint64_t>> &destinations, PendingTransaction::Priority priority) const override;
+    uint64_t estimateTransactionFee(uint32_t priority, uint32_t recipients = 1) const override;
     TransactionHistory * history() override;
     AddressBook * addressBook() override;
     Subaddress * subaddress() override;

@@ -42,6 +42,7 @@ local debian_pipeline(name, image,
             [if allow_fail then "failure"]: "ignore",
             environment: { SSH_KEY: { from_secret: "SSH_KEY" }, GTEST_FILTER: gtest_filter },
             commands: [
+                'echo "Building on ${DRONE_STAGE_MACHINE}"',
                 'echo "man-db man-db/auto-update boolean false" | debconf-set-selections',
                 apt_get_quiet + ' update',
                 apt_get_quiet + ' install -y eatmydata',
@@ -134,6 +135,7 @@ local android_build_steps(android_abi, android_platform=21, jobs=6, cmake_extra=
         '-DCMAKE_BUILD_TYPE=Release ' +
         '-DCMAKE_TOOLCHAIN_FILE=/usr/lib/android-sdk/ndk-bundle/build/cmake/android.toolchain.cmake ' +
         '-DANDROID_PLATFORM=' + android_platform + ' -DANDROID_ABI=' + android_abi + ' ' +
+        '-DMONERO_SLOW_HASH=ON ' +
         '-DBUILD_STATIC_DEPS=ON -DSTATIC=ON -G Ninja ' + cmake_extra,
     'ninja -j' + jobs + ' -v wallet_merged',
     'cd ..',
