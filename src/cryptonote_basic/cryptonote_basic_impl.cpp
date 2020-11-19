@@ -118,7 +118,7 @@ namespace cryptonote {
       reward = 4398046511103;
       return true;
     } 
-    else if (already_generated_coins == 4398046511103 && height == 1)
+    if (already_generated_coins == 4398046511103 && height == 1)
     {
       reward = 22'500'000 * COIN;
       return true;
