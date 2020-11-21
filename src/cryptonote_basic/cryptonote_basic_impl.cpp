@@ -47,7 +47,7 @@ using namespace epee;
 #undef ITALO_DEFAULT_LOG_CATEGORY
 #define ITALO_DEFAULT_LOG_CATEGORY "cn"
 
-double pow(double, double);
+double loki_exp2(double);
 
 namespace cryptonote {
 
@@ -94,7 +94,12 @@ namespace cryptonote {
     //premine reward
     if (already_generated_coins == 0)
     {
-      reward = 22500000000000000;
+      reward = 4398046511103;
+      return true;
+    } 
+    if (already_generated_coins == 4398046511103 && height == 1)
+    {
+      reward = 25000000000000000;
       return true;
     }
 
@@ -109,7 +114,7 @@ namespace cryptonote {
     }
 
     if (version >= 8)
-      base_reward = 28000000000 + 100000000000 / pow(2.0, height / (720.0 * 90.0)); // halve every 90 days.
+      base_reward = 28000000000.0 + 100000000000.0 / loki_exp2(height / (720.0 * 90.0)); // halve every 90 days.
 
     uint64_t full_reward_zone = get_min_block_size(version);
 

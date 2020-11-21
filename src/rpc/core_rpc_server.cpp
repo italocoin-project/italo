@@ -57,16 +57,6 @@ using namespace epee;
 #define MAX_RESTRICTED_FAKE_OUTS_COUNT 40
 #define MAX_RESTRICTED_GLOBAL_FAKE_OUTS_COUNT 5000
 
-namespace
-{
-  void add_reason(std::string &reasons, const char *reason)
-  {
-    if (!reasons.empty())
-      reasons += ", ";
-    reasons += reason;
-  }
-}
-
 namespace cryptonote
 {
 
@@ -227,7 +217,7 @@ namespace cryptonote
     if (use_bootstrap_daemon_if_necessary<COMMAND_RPC_GET_BLOCKS_FAST>(invoke_http_mode::BIN, "/getblocks.bin", req, res, r))
       return r;
 
-    std::list<std::pair<cryptonote::blobdata, std::list<cryptonote::blobdata> > > bs;
+    std::vector<std::pair<cryptonote::blobdata, std::vector<cryptonote::blobdata> > > bs;
 
     if(!m_core.find_blockchain_supplement(req.start_height, req.block_ids, bs, res.current_height, res.start_height, req.prune, COMMAND_RPC_GET_BLOCKS_FAST_MAX_COUNT))
     {
@@ -236,6 +226,8 @@ namespace cryptonote
     }
 
     size_t pruned_size = 0, unpruned_size = 0, ntxes = 0;
+    res.blocks.reserve(bs.size());
+    res.output_indices.reserve(bs.size());
     for(auto& bd: bs)
     {
       res.blocks.resize(res.blocks.size()+1);
@@ -258,7 +250,9 @@ namespace cryptonote
       }
       size_t txidx = 0;
       ntxes += bd.second.size();
-      for (std::list<cryptonote::blobdata>::iterator i = bd.second.begin(); i != bd.second.end(); ++i)
+      res.blocks.back().txs.reserve(bd.second.size());
+      res.output_indices.back().indices.reserve(bd.second.size());
+      for (std::vector<cryptonote::blobdata>::iterator i = bd.second.begin(); i != bd.second.end(); ++i)
       {
         unpruned_size += i->size();
         res.blocks.back().txs.push_back(std::move(*i));
@@ -287,7 +281,7 @@ namespace cryptonote
       if (use_bootstrap_daemon_if_necessary<COMMAND_RPC_GET_ALT_BLOCKS_HASHES>(invoke_http_mode::JON, "/get_alt_blocks_hashes", req, res, r))
         return r;
 
-      std::list<block> blks;
+      std::vector<block> blks;
 
       if(!m_core.get_alternative_blocks(blks))
       {
@@ -329,8 +323,8 @@ namespace cryptonote
         res.status = "Error retrieving block at height " + std::to_string(height);
         return true;
       }
-      std::list<transaction> txs;
-      std::list<crypto::hash> missed_txs;
+      std::vector<transaction> txs;
+      std::vector<crypto::hash> missed_txs;
       m_core.get_transactions(blk.tx_hashes, txs, missed_txs);
       res.blocks.resize(res.blocks.size() + 1);
       res.blocks.back().block = block_to_blob(blk);
@@ -545,8 +539,8 @@ namespace cryptonote
       }
       vh.push_back(*reinterpret_cast<const crypto::hash*>(b.data()));
     }
-    std::list<crypto::hash> missed_txs;
-    std::list<transaction> txs;
+    std::vector<crypto::hash> missed_txs;
+    std::vector<transaction> txs;
     bool r = m_core.get_transactions(vh, txs, missed_txs);
     if(!r)
     {
@@ -567,25 +561,26 @@ namespace cryptonote
       if(r)
       {
         // sort to match original request
-        std::list<transaction> sorted_txs;
+        std::vector<transaction> sorted_txs;
         std::vector<tx_info>::const_iterator i;
+        unsigned txs_processed = 0;
         for (const crypto::hash &h: vh)
         {
           if (std::find(missed_txs.begin(), missed_txs.end(), h) == missed_txs.end())
           {
-            if (txs.empty())
+            if (txs.size() == txs_processed)
             {
               res.status = "Failed: internal error - txs is empty";
               return true;
             }
             // core returns the ones it finds in the right order
-            if (get_transaction_hash(txs.front()) != h)
+            if (get_transaction_hash(txs[txs_processed]) != h)
             {
               res.status = "Failed: tx hash mismatch";
               return true;
             }
-            sorted_txs.push_back(std::move(txs.front()));
-            txs.pop_front();
+            sorted_txs.push_back(std::move(txs[txs_processed]));
+            ++txs_processed;
           }
           else if ((i = std::find_if(pool_tx_info.begin(), pool_tx_info.end(), [h](const tx_info &txi) { return epee::string_tools::pod_to_hex(h) == txi.id_hash; })) != pool_tx_info.end())
           {
@@ -596,7 +591,7 @@ namespace cryptonote
               return true;
             }
             sorted_txs.push_back(tx);
-            missed_txs.remove(h);
+            missed_txs.erase(std::find(missed_txs.begin(), missed_txs.end(), h));
             pool_tx_hashes.insert(h);
             const std::string hash_string = epee::string_tools::pod_to_hex(h);
             for (const auto &ti: pool_tx_info)
@@ -615,7 +610,7 @@ namespace cryptonote
       LOG_PRINT_L2("Found " << found_in_pool << "/" << vh.size() << " transactions in the pool");
     }
 
-    std::list<std::string>::const_iterator txhi = req.txs_hashes.begin();
+    std::vector<std::string>::const_iterator txhi = req.txs_hashes.begin();
     std::vector<crypto::hash>::const_iterator vhi = vh.begin();
     for(auto& tx: txs)
     {
@@ -764,24 +759,26 @@ namespace cryptonote
     tx_verification_context tvc = AUTO_VAL_INIT(tvc);
     if(!m_core.handle_incoming_tx(tx_blob, tvc, false, false, req.do_not_relay) || tvc.m_verifivation_failed)
     {
-      res.status = "Failed";
-      res.reason = "";
-      if ((res.low_mixin = tvc.m_low_mixin))
-        add_reason(res.reason, "ring size too small");
-      if ((res.double_spend = tvc.m_double_spend))
-        add_reason(res.reason, "double spend");
-      if ((res.invalid_input = tvc.m_invalid_input))
-        add_reason(res.reason, "invalid input");
-      if ((res.invalid_output = tvc.m_invalid_output))
-        add_reason(res.reason, "invalid output");
-      if ((res.too_big = tvc.m_too_big))
-        add_reason(res.reason, "too big");
-      if ((res.overspend = tvc.m_overspend))
-        add_reason(res.reason, "overspend");
-      if ((res.fee_too_low = tvc.m_fee_too_low))
-        add_reason(res.reason, "fee too low");
-      if ((res.not_rct = tvc.m_not_rct))
-        add_reason(res.reason, "tx is not ringct");
+      const vote_verification_context &vvc = tvc.m_vote_ctx;
+      res.status  = "Failed";
+      res.reason  = print_tx_verification_context  (tvc);
+      res.reason += print_vote_verification_context(vvc);
+
+      res.low_mixin = tvc.m_low_mixin;
+      res.double_spend = tvc.m_double_spend;
+      res.invalid_input = tvc.m_invalid_input;
+      res.invalid_output = tvc.m_invalid_output;
+      res.too_big = tvc.m_too_big;
+      res.overspend = tvc.m_overspend;
+      res.fee_too_low = tvc.m_fee_too_low;
+      res.not_rct = tvc.m_not_rct;
+      res.invalid_block_height = vvc.m_invalid_block_height;
+      res.duplicate_voters = vvc.m_duplicate_voters;
+      res.voters_quorum_index_out_of_bounds = vvc.m_voters_quorum_index_out_of_bounds;
+      res.service_node_index_out_of_bounds = vvc.m_service_node_index_out_of_bounds;
+      res.signature_not_valid = vvc.m_signature_not_valid;
+      res.not_enough_votes = vvc.m_not_enough_votes;
+
       const std::string punctuation = res.reason.empty() ? "" : ": ";
       if (tvc.m_verifivation_failed)
       {
@@ -806,6 +803,7 @@ namespace cryptonote
     NOTIFY_NEW_TRANSACTIONS::request r;
     r.txs.push_back(tx_blob);
     m_core.get_protocol()->relay_transactions(r, fake_context);
+
     //TODO: make sure that tx has reached other nodes here, probably wait to receive reflections from other nodes
     res.status = CORE_RPC_STATUS_OK;
     return true;
@@ -1656,10 +1654,10 @@ namespace cryptonote
     PERF_TIMER(on_flush_txpool);
 
     bool failed = false;
-    std::list<crypto::hash> txids;
+    std::vector<crypto::hash> txids;
     if (req.txids.empty())
     {
-      std::list<transaction> pool_txs;
+      std::vector<transaction> pool_txs;
       bool r = m_core.get_pool_transactions(pool_txs);
       if (!r)
       {
@@ -1977,6 +1975,58 @@ namespace cryptonote
     return true;
   }
   //------------------------------------------------------------------------------------------------------------------------------
+  bool core_rpc_server::on_get_quorum_state(const COMMAND_RPC_GET_QUORUM_STATE::request& req, COMMAND_RPC_GET_QUORUM_STATE::response& res, epee::json_rpc::error& error_resp)
+  {
+    PERF_TIMER(on_get_quorum_state);
+    bool r;
+
+    const std::shared_ptr<service_nodes::quorum_state> quorum_state = m_core.get_quorum_state(req.height);
+    r = (quorum_state != nullptr);
+    if (r)
+    {
+      res.status = CORE_RPC_STATUS_OK;
+      res.quorum_nodes.reserve (quorum_state->quorum_nodes.size());
+      res.nodes_to_test.reserve(quorum_state->nodes_to_test.size());
+
+      for (const auto &key : quorum_state->quorum_nodes)
+        res.quorum_nodes.push_back(epee::string_tools::pod_to_hex(key));
+
+      for (const auto &key : quorum_state->nodes_to_test)
+        res.nodes_to_test.push_back(epee::string_tools::pod_to_hex(key));
+    }
+    else
+    {
+      error_resp.code     = CORE_RPC_ERROR_CODE_WRONG_PARAM;
+      error_resp.message  = "Block height: ";
+      error_resp.message += std::to_string(req.height);
+      error_resp.message += ", returned null hash or failed to derive quorum list";
+    }
+
+    return r;
+  }
+  //------------------------------------------------------------------------------------------------------------------------------
+  bool core_rpc_server::on_get_service_node_key(const COMMAND_RPC_GET_SERVICE_NODE_KEY::request& req, COMMAND_RPC_GET_SERVICE_NODE_KEY::response& res, epee::json_rpc::error &error_resp)
+  {
+    PERF_TIMER(on_get_service_node_key);
+
+    crypto::public_key pubkey;
+    crypto::secret_key seckey;
+    bool result = m_core.get_service_node_keys(pubkey, seckey);
+    if (result)
+    {
+      res.service_node_pubkey = string_tools::pod_to_hex(pubkey);
+    }
+    else
+    {
+      error_resp.code    = CORE_RPC_ERROR_CODE_INTERNAL_ERROR;
+      error_resp.message = "Daemon queried is not a service node or did not launch with --service-node";
+      return false;
+    }
+
+    res.status = CORE_RPC_STATUS_OK;
+    return result;
+  }
+  //------------------------------------------------------------------------------------------------------------------------------
   bool core_rpc_server::on_relay_tx(const COMMAND_RPC_RELAY_TX::request& req, COMMAND_RPC_RELAY_TX::response& res, epee::json_rpc::error& error_resp)
   {
     PERF_TIMER(on_relay_tx);
@@ -2165,7 +2215,92 @@ namespace cryptonote
     return true;
   }
   //------------------------------------------------------------------------------------------------------------------------------
+  bool core_rpc_server::on_get_service_node_registration_cmd(const COMMAND_RPC_GET_SERVICE_NODE_REGISTRATION_CMD::request& req,
+                                                             COMMAND_RPC_GET_SERVICE_NODE_REGISTRATION_CMD::response& res,
+                                                             epee::json_rpc::error& error_resp)
+  {
+    PERF_TIMER(on_get_service_node_registration_cmd);
 
+    crypto::public_key service_node_pubkey;
+    crypto::secret_key service_node_key;
+    if (!m_core.get_service_node_keys(service_node_pubkey, service_node_key))
+    {
+      error_resp.code    = CORE_RPC_ERROR_CODE_WRONG_PARAM;
+      error_resp.message = "Daemon has not been started in service node mode, please relaunch with --service-node flag.";
+      return false;
+    }
+
+    if (!service_nodes::make_registration_cmd(m_core.get_nettype(), req.args, service_node_pubkey, service_node_key, res.registration_cmd, req.make_friendly))
+    {
+      error_resp.code    = CORE_RPC_ERROR_CODE_WRONG_PARAM;
+      error_resp.message = "Failed to make registration command";
+      return false;
+    }
+
+    res.status = CORE_RPC_STATUS_OK;
+    return true;
+  }
+  //------------------------------------------------------------------------------------------------------------------------------
+  bool core_rpc_server::on_get_service_nodes(const COMMAND_RPC_GET_SERVICE_NODES::request& req, COMMAND_RPC_GET_SERVICE_NODES::response& res, epee::json_rpc::error& error_resp)
+  {
+    PERF_TIMER(on_get_service_nodes);
+
+    std::vector<crypto::public_key> pubkeys(req.service_node_pubkeys.size());
+    for (size_t i = 0; i < req.service_node_pubkeys.size(); i++)
+    {
+      if (!string_tools::hex_to_pod(req.service_node_pubkeys[i], pubkeys[i]))
+      {
+        error_resp.code    = CORE_RPC_ERROR_CODE_WRONG_PARAM;
+        error_resp.message = "Could not convert to a public key, arg: ";
+        error_resp.message += std::to_string(i);
+        error_resp.message += " which is pubkey: ";
+        error_resp.message += req.service_node_pubkeys[i];
+        return false;
+      }
+    }
+
+    std::vector<service_nodes::service_node_pubkey_info> pubkey_info_list = m_core.get_service_node_list_state(pubkeys);
+
+    res.status = CORE_RPC_STATUS_OK;
+    res.service_node_states.reserve(pubkey_info_list.size());
+    for (const auto &pubkey_info : pubkey_info_list)
+    {
+      COMMAND_RPC_GET_SERVICE_NODES::response::entry entry = {};
+      entry.service_node_pubkey           = string_tools::pod_to_hex(pubkey_info.pubkey);
+      entry.registration_height           = pubkey_info.info.registration_height;
+      entry.last_reward_block_height      = pubkey_info.info.last_reward_block_height;
+      entry.last_reward_transaction_index = pubkey_info.info.last_reward_transaction_index;
+      entry.last_uptime_proof             = m_core.get_uptime_proof(pubkey_info.pubkey);
+
+      entry.contributors.reserve(pubkey_info.info.contributors.size());
+      for (service_nodes::service_node_info::contribution const &contributor : pubkey_info.info.contributors)
+      {
+        COMMAND_RPC_GET_SERVICE_NODES::response::contribution new_contributor = {};
+        new_contributor.amount   = contributor.amount;
+        new_contributor.reserved = contributor.reserved;
+        new_contributor.address  = cryptonote::get_account_address_as_str(nettype(), false/*is_subaddress*/, contributor.address);
+        entry.contributors.push_back(new_contributor);
+      }
+
+      entry.total_contributed             = pubkey_info.info.total_contributed;
+      entry.total_reserved                = pubkey_info.info.total_reserved;
+      entry.staking_requirement           = pubkey_info.info.staking_requirement;
+      entry.portions_for_operator         = pubkey_info.info.portions_for_operator;
+      entry.operator_address              = cryptonote::get_account_address_as_str(nettype(), false/*is_subaddress*/, pubkey_info.info.operator_address);
+
+      res.service_node_states.push_back(entry);
+    }
+
+    return true;
+  }
+  //------------------------------------------------------------------------------------------------------------------------------
+  bool core_rpc_server::on_get_staking_requirement(const COMMAND_RPC_GET_STAKING_REQUIREMENT::request& req, COMMAND_RPC_GET_STAKING_REQUIREMENT::response& res, epee::json_rpc::error& error_resp)
+  {
+    PERF_TIMER(on_get_staking_requirement);
+    res.staking_requirement = service_nodes::get_staking_requirement(nettype(), req.height);
+    res.status = CORE_RPC_STATUS_OK;
+    return true;
+  }
 
   const command_line::arg_descriptor<std::string, false, true, 2> core_rpc_server::arg_rpc_bind_port = {
       "rpc-bind-port"
