@@ -1,5 +1,5 @@
 // Copyright (c) 2016-2018, The Monero Project
-// Copyright (c)      2018, The Loki Project
+// Copyright (c)      2018, The Italo Project
 // 
 // All rights reserved.
 // 
@@ -34,8 +34,8 @@
 #include <memory>
 #include "misc_log_ex.h"
 
-#undef LOKI_DEFAULT_LOG_CATEGORY
-#define LOKI_DEFAULT_LOG_CATEGORY "perf"
+#undef ITALO_DEFAULT_LOG_CATEGORY
+#define ITALO_DEFAULT_LOG_CATEGORY "perf"
 
 namespace tools
 {

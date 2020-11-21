@@ -1,4 +1,4 @@
-# Copyright (c) 2018, The Loki Project
+# Copyright (c) 2018, The Italo Project
 # Copyright (c) 2014-2018, The Monero Project
 #
 # All rights reserved.
@@ -72,9 +72,9 @@ set(crypto_private_headers
   skein_port.h
   cn_slow_hash.hpp)
 
-loki_private_headers(cncrypto
+italo_private_headers(cncrypto
   ${crypto_private_headers})
-loki_add_library(cncrypto
+italo_add_library(cncrypto
   ${crypto_sources}
   ${crypto_headers}
   ${crypto_private_headers})
