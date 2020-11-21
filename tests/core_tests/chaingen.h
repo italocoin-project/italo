@@ -52,8 +52,8 @@
 #include "cryptonote_basic/cryptonote_boost_serialization.h"
 #include "misc_language.h"
 
-#undef LOKI_DEFAULT_LOG_CATEGORY
-#define LOKI_DEFAULT_LOG_CATEGORY "tests.core"
+#undef ITALO_DEFAULT_LOG_CATEGORY
+#define ITALO_DEFAULT_LOG_CATEGORY "tests.core"
 
 #define TESTS_DEFAULT_FEE ((uint64_t)200000000) // 2 * pow(10, 8)
 
@@ -955,7 +955,7 @@ cryptonote::transaction make_deregistration_tx(const std::vector<test_event_entr
                                                const cryptonote::block& head,
                                                const cryptonote::tx_extra_service_node_deregister& deregister, uint8_t hf_version, uint64_t fee);
 
-// NOTE(loki): These macros assume hardfork version 7 and are from the old Monero testing code
+// NOTE(italo): These macros assume hardfork version 7 and are from the old Monero testing code
 #define MAKE_TX_MIX(VEC_EVENTS, TX_NAME, FROM, TO, AMOUNT, NMIX, HEAD)                       \
   cryptonote::transaction TX_NAME;                                                           \
   TxBuilder(VEC_EVENTS, TX_NAME, HEAD, FROM, TO, AMOUNT, cryptonote::network_version_7).build(); \

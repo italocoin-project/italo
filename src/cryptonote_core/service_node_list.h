@@ -1,4 +1,4 @@
-// Copyright (c)      2018, The Loki Project
+// Copyright (c)      2018, The Italo Project
 //
 // All rights reserved.
 //
@@ -164,7 +164,7 @@ namespace service_nodes
   };
 
   template<typename T>
-  void loki_shuffle(std::vector<T>& a, uint64_t seed);
+  void italo_shuffle(std::vector<T>& a, uint64_t seed);
 
   class service_node_list
     : public cryptonote::Blockchain::BlockAddedHook,

@@ -42,8 +42,8 @@
 #include "string_tools.h"
 
 
-#undef LOKI_DEFAULT_LOG_CATEGORY
-#define LOKI_DEFAULT_LOG_CATEGORY "wallet.mms"
+#undef ITALO_DEFAULT_LOG_CATEGORY
+#define ITALO_DEFAULT_LOG_CATEGORY "wallet.mms"
 
 namespace mms
 {

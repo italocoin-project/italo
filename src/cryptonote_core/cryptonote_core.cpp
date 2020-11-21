@@ -1,5 +1,5 @@
 // Copyright (c) 2014-2018, The Monero Project
-// Copyright (c)      2018, The Loki Project
+// Copyright (c)      2018, The Italo Project
 //
 // All rights reserved.
 //
@@ -58,10 +58,10 @@ using namespace epee;
 #include "wipeable_string.h"
 #include "common/i18n.h"
 
-#include "common/loki_integration_test_hooks.h"
+#include "common/italo_integration_test_hooks.h"
 
-#undef LOKI_DEFAULT_LOG_CATEGORY
-#define LOKI_DEFAULT_LOG_CATEGORY "cn"
+#undef ITALO_DEFAULT_LOG_CATEGORY
+#define ITALO_DEFAULT_LOG_CATEGORY "cn"
 
 DISABLE_VS_WARNINGS(4355)
 
@@ -159,7 +159,7 @@ namespace cryptonote
   };
   static const command_line::arg_descriptor<std::string> arg_check_updates = {
     "check-updates"
-  , "Check for new versions of loki: [disabled|notify|download|update]"
+  , "Check for new versions of italo: [disabled|notify|download|update]"
   , "notify"
   };
   static const command_line::arg_descriptor<bool> arg_fluffy_blocks  = {
@@ -336,9 +336,9 @@ namespace cryptonote
     command_line::add_arg(desc, arg_reorg_notify);
     command_line::add_arg(desc, arg_block_rate_notify);
 
-#if defined(LOKI_ENABLE_INTEGRATION_TEST_HOOKS)
-    command_line::add_arg(desc, loki::arg_integration_test_hardforks_override);
-    command_line::add_arg(desc, loki::arg_integration_test_shared_mem_name);
+#if defined(ITALO_ENABLE_INTEGRATION_TEST_HOOKS)
+    command_line::add_arg(desc, italo::arg_integration_test_hardforks_override);
+    command_line::add_arg(desc, italo::arg_integration_test_shared_mem_name);
 #endif
 
     miner::init_options(desc);
@@ -459,8 +459,8 @@ namespace cryptonote
   {
     start_time = std::time(nullptr);
 
-#if defined(LOKI_ENABLE_INTEGRATION_TEST_HOOKS)
-    const std::string arg_integration_test_override_hardforks = command_line::get_arg(vm, loki::arg_integration_test_hardforks_override);
+#if defined(ITALO_ENABLE_INTEGRATION_TEST_HOOKS)
+    const std::string arg_integration_test_override_hardforks = command_line::get_arg(vm, italo::arg_integration_test_hardforks_override);
 
     std::vector<std::pair<uint8_t, uint64_t>> integration_test_hardforks;
     if (!arg_integration_test_override_hardforks.empty())
@@ -488,8 +488,8 @@ namespace cryptonote
       test_options = &integration_hardfork_override;
 
     {
-      const std::string arg_shared_mem_name = command_line::get_arg(vm, loki::arg_integration_test_shared_mem_name);
-      loki::init_integration_test_context(arg_shared_mem_name);
+      const std::string arg_shared_mem_name = command_line::get_arg(vm, italo::arg_integration_test_shared_mem_name);
+      italo::init_integration_test_context(arg_shared_mem_name);
     }
 #endif
 
@@ -532,8 +532,8 @@ namespace cryptonote
       if (boost::filesystem::exists(old_files / "blockchain.bin"))
       {
         MWARNING("Found old-style blockchain.bin in " << old_files.string());
-        MWARNING("Loki now uses a new format. You can either remove blockchain.bin to start syncing");
-        MWARNING("the blockchain anew, or use loki-blockchain-export and loki-blockchain-import to");
+        MWARNING("Italo now uses a new format. You can either remove blockchain.bin to start syncing");
+        MWARNING("the blockchain anew, or use italo-blockchain-export and italo-blockchain-import to");
         MWARNING("convert your existing blockchain.bin to the new format. See README.md for instructions.");
         return false;
       }
@@ -559,7 +559,7 @@ namespace cryptonote
 
     if (m_nettype == FAKECHAIN)
     {
-#if !defined(LOKI_ENABLE_INTEGRATION_TEST_HOOKS) // In integration mode, don't delete the DB. This should be explicitly done in the tests. Otherwise the more likely behaviour is persisting the DB across multiple daemons in the same test.
+#if !defined(ITALO_ENABLE_INTEGRATION_TEST_HOOKS) // In integration mode, don't delete the DB. This should be explicitly done in the tests. Otherwise the more likely behaviour is persisting the DB across multiple daemons in the same test.
       // reset the db by removing the database file before opening it
       if (!db->remove_data_file(filename))
       {
@@ -1724,7 +1724,7 @@ namespace cryptonote
     {
       std::string main_message;
       if (m_offline)
-        main_message = "The daemon is running offline and will not attempt to sync to the Loki network.";
+        main_message = "The daemon is running offline and will not attempt to sync to the Italo network.";
       else
         main_message = "The daemon will start synchronizing with the network. This may take a long time to complete.";
       MGINFO_YELLOW(ENDL << "**********************************************************************" << ENDL
@@ -1758,8 +1758,8 @@ namespace cryptonote
     m_miner.on_idle();
     m_mempool.on_idle();
 
-#if defined(LOKI_ENABLE_INTEGRATION_TEST_HOOKS)
-    loki::core_is_idle = true;
+#if defined(ITALO_ENABLE_INTEGRATION_TEST_HOOKS)
+    italo::core_is_idle = true;
 #endif
 
     return true;
@@ -1809,7 +1809,7 @@ namespace cryptonote
   //-----------------------------------------------------------------------------------------------
   bool core::check_updates()
   {
-    static const char software[] = "loki";
+    static const char software[] = "italo";
 #ifdef BUILD_TAG
     static const char buildtag[] = BOOST_PP_STRINGIZE(BUILD_TAG);
     static const char subdir[] = "cli"; // because it can never be simple
@@ -1829,7 +1829,7 @@ namespace cryptonote
     if (!tools::check_updates(software, buildtag, version, hash))
       return false;
 
-    if (tools::vercmp(version.c_str(), LOKI_VERSION) <= 0)
+    if (tools::vercmp(version.c_str(), ITALO_VERSION) <= 0)
     {
       m_update_available = false;
       return true;
@@ -1972,7 +1972,7 @@ namespace cryptonote
       return true;
     }
 
-#if defined(LOKI_ENABLE_INTEGRATION_TEST_HOOKS)
+#if defined(ITALO_ENABLE_INTEGRATION_TEST_HOOKS)
     MDEBUG("Not checking block rate, integration test mode");
     return true;
 #endif
@@ -1992,7 +1992,7 @@ namespace cryptonote
       MDEBUG("blocks in the last " << seconds[n] / 60 << " minutes: " << b << " (probability " << p << ")");
       if (p < threshold)
       {
-        MWARNING("There were " << b << " blocks in the last " << seconds[n] / 60 << " minutes, there might be large hash rate changes, or we might be partitioned, cut off from the Loki network or under attack. Or it could be just sheer bad luck.");
+        MWARNING("There were " << b << " blocks in the last " << seconds[n] / 60 << " minutes, there might be large hash rate changes, or we might be partitioned, cut off from the Italo network or under attack. Or it could be just sheer bad luck.");
 
         std::shared_ptr<tools::Notify> block_rate_notify = m_block_rate_notify;
         if (block_rate_notify)

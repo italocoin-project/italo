@@ -1,4 +1,4 @@
-// Copyright (c) 2018, The Loki Project
+// Copyright (c) 2018, The Italo Project
 // 
 // All rights reserved.
 // 
@@ -26,16 +26,16 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef LOKI_H
-#define LOKI_H
+#ifndef ITALO_H
+#define ITALO_H
 
 #include <string>
 
-namespace loki
+namespace italo
 {
 double      round           (double);
 double      exp2            (double);
 std::string hex64_to_base32z(std::string const& src);
-}; // namespace Loki
+}; // namespace Italo
 
-#endif // LOKI_H
+#endif // ITALO_H

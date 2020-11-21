@@ -1,11 +1,11 @@
-#if defined(LOKI_ENABLE_INTEGRATION_TEST_HOOKS)
+#if defined(ITALO_ENABLE_INTEGRATION_TEST_HOOKS)
 
 #if defined _WIN32
 #error "Need to implement semaphores for Windows Layer"
 #endif
 
-#ifndef LOKI_INTEGRATION_TEST_HOOKS_H
-#define LOKI_INTEGRATION_TEST_HOOKS_H
+#ifndef ITALO_INTEGRATION_TEST_HOOKS_H
+#define ITALO_INTEGRATION_TEST_HOOKS_H
 
 //
 // Header
@@ -19,7 +19,7 @@
 #include "command_line.h"
 #include "shoom.h"
 
-namespace loki
+namespace italo
 {
 struct fixed_buffer
 {
@@ -41,14 +41,14 @@ extern const command_line::arg_descriptor<std::string, false> arg_integration_te
 extern boost::mutex integration_test_mutex;
 extern bool core_is_idle;
 
-}; // namespace loki
+}; // namespace italo
 
-#endif // LOKI_INTEGRATION_TEST_HOOKS_H
+#endif // ITALO_INTEGRATION_TEST_HOOKS_H
 
 //
 // CPP Implementation
 //
-#ifdef LOKI_INTEGRATION_TEST_HOOKS_IMPLEMENTATION
+#ifdef ITALO_INTEGRATION_TEST_HOOKS_IMPLEMENTATION
 #include <string.h>
 #include <assert.h>
 #include <chrono>
@@ -70,7 +70,7 @@ static sem_t              *global_stdout_semaphore_handle;
 static sem_t              *global_stdout_ready_semaphore;
 static sem_t              *global_stdin_ready_semaphore;
 
-namespace loki
+namespace italo
 {
 bool core_is_idle;
 const command_line::arg_descriptor<std::string, false> arg_integration_test_hardforks_override = {
@@ -83,23 +83,23 @@ const command_line::arg_descriptor<std::string, false> arg_integration_test_hard
 const command_line::arg_descriptor<std::string, false> arg_integration_test_shared_mem_name = {
   "integration-test-shared-mem-name"
 , "Specify the shared memory base name for stdin, stdout and semaphore name"
-, "loki-default-integration-test-mem-name"
+, "italo-default-integration-test-mem-name"
 , false
 };
 
 boost::mutex integration_test_mutex;
 
-} // namespace loki
+} // namespace italo
 
 std::string global_stdin_semaphore_name;
 std::string global_stdout_semaphore_name;
 std::string global_stdout_ready_semaphore_name;
 std::string global_stdin_ready_semaphore_name;
 
-void loki::use_standard_cout()   { if (!global_std_cout) { global_std_cout = std::cout.rdbuf(); } std::cout.rdbuf(global_std_cout); }
-void loki::use_redirected_cout() { if (!global_std_cout) { global_std_cout = std::cout.rdbuf(); } std::cout.rdbuf(global_redirected_cout.rdbuf()); }
+void italo::use_standard_cout()   { if (!global_std_cout) { global_std_cout = std::cout.rdbuf(); } std::cout.rdbuf(global_std_cout); }
+void italo::use_redirected_cout() { if (!global_std_cout) { global_std_cout = std::cout.rdbuf(); } std::cout.rdbuf(global_redirected_cout.rdbuf()); }
 
-void loki::init_integration_test_context(const std::string &base_name)
+void italo::init_integration_test_context(const std::string &base_name)
 {
   assert(base_name.size() > 0);
 
@@ -130,7 +130,7 @@ void loki::init_integration_test_context(const std::string &base_name)
     if (once_only)
     {
       once_only = false;
-      printf("Loki Integration Test: Shared memory %s has not been created yet, blocking ...\n", global_stdin_shared_mem->Path().c_str());
+      printf("Italo Integration Test: Shared memory %s has not been created yet, blocking ...\n", global_stdin_shared_mem->Path().c_str());
     }
   }
 
@@ -139,12 +139,12 @@ void loki::init_integration_test_context(const std::string &base_name)
   global_stdout_ready_semaphore = sem_open(global_stdout_ready_semaphore_name.c_str(), O_CREAT, 0600, 0);
   global_stdin_ready_semaphore = sem_open(global_stdin_ready_semaphore_name.c_str(), O_CREAT, 0600, 0);
 
-  if (!global_stdin_semaphore_handle)  fprintf(stderr, "Loki Integration Test: Failed to initialise global_stdin_semaphore_handle\n");
-  if (!global_stdout_semaphore_handle) fprintf(stderr, "Loki Integration Test: Failed to initialise global_stdout_semaphore_handle\n");
-  if (!global_stdout_ready_semaphore) fprintf(stderr, "Loki Integration Test: Failed to initialise global_stdout_ready_semaphore_handle\n");
-  if (!global_stdin_ready_semaphore) fprintf(stderr, "Loki Integration Test: Failed to initialise global_stdin_ready_semaphore_handle\n");
+  if (!global_stdin_semaphore_handle)  fprintf(stderr, "Italo Integration Test: Failed to initialise global_stdin_semaphore_handle\n");
+  if (!global_stdout_semaphore_handle) fprintf(stderr, "Italo Integration Test: Failed to initialise global_stdout_semaphore_handle\n");
+  if (!global_stdout_ready_semaphore) fprintf(stderr, "Italo Integration Test: Failed to initialise global_stdout_ready_semaphore_handle\n");
+  if (!global_stdin_ready_semaphore) fprintf(stderr, "Italo Integration Test: Failed to initialise global_stdin_ready_semaphore_handle\n");
 
-  printf("Loki Integration Test: Hooks initialised into shared memory, %s, %s, %s, %s, %s, %s\n",
+  printf("Italo Integration Test: Hooks initialised into shared memory, %s, %s, %s, %s, %s, %s\n",
       stdin_name.c_str(),
       stdout_name.c_str(),
       global_stdin_semaphore_name.c_str(),
@@ -153,7 +153,7 @@ void loki::init_integration_test_context(const std::string &base_name)
       global_stdout_ready_semaphore_name.c_str());
 }
 
-void loki::deinit_integration_test_context()
+void italo::deinit_integration_test_context()
 {
   sem_unlink(global_stdin_semaphore_name.c_str());
   sem_unlink(global_stdout_semaphore_name.c_str());
@@ -204,7 +204,7 @@ static char *parse_message(char *msg_buf, int msg_buf_len)
   return ptr;
 }
 
-std::vector<std::string> loki::separate_stdin_to_space_delim_args(loki::fixed_buffer const *cmd)
+std::vector<std::string> italo::separate_stdin_to_space_delim_args(italo::fixed_buffer const *cmd)
 {
   std::vector<std::string> args;
   char const *start = cmd->data;
@@ -227,7 +227,7 @@ std::vector<std::string> loki::separate_stdin_to_space_delim_args(loki::fixed_bu
   return args;
 }
 
-loki::fixed_buffer loki::read_from_stdin_shared_mem()
+italo::fixed_buffer italo::read_from_stdin_shared_mem()
 {
   boost::unique_lock<boost::mutex> scoped_lock(integration_test_mutex);
 
@@ -261,7 +261,7 @@ loki::fixed_buffer loki::read_from_stdin_shared_mem()
   return result;
 }
 
-void loki::write_redirected_stdout_to_shared_mem()
+void italo::write_redirected_stdout_to_shared_mem()
 {
   boost::unique_lock<boost::mutex> scoped_lock(integration_test_mutex);
 
@@ -277,6 +277,6 @@ void loki::write_redirected_stdout_to_shared_mem()
   use_redirected_cout();
 }
 
-#endif // LOKI_INTEGRATION_TEST_HOOKS_IMPLEMENTATION
-#endif // LOKI_ENABLE_INTEGRATION_TEST_HOOKS
+#endif // ITALO_INTEGRATION_TEST_HOOKS_IMPLEMENTATION
+#endif // ITALO_ENABLE_INTEGRATION_TEST_HOOKS
 

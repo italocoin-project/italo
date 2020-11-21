@@ -1,5 +1,5 @@
 // Copyright (c) 2014-2018, The Monero Project
-// Copyright (c)      2018, The Loki Project
+// Copyright (c)      2018, The Italo Project
 //
 // All rights reserved.
 //
@@ -41,15 +41,15 @@
 #include "cryptonote_basic/hardfork.h"
 #include <boost/format.hpp>
 
-#include "common/loki_integration_test_hooks.h"
+#include "common/italo_integration_test_hooks.h"
 
 #include <fstream>
 #include <ctime>
 #include <string>
 #include <numeric>
 
-#undef LOKI_DEFAULT_LOG_CATEGORY
-#define LOKI_DEFAULT_LOG_CATEGORY "daemon"
+#undef ITALO_DEFAULT_LOG_CATEGORY
+#define ITALO_DEFAULT_LOG_CATEGORY "daemon"
 
 namespace daemonize {
 
@@ -61,9 +61,9 @@ namespace {
   {
     std::cout << prompt << std::flush;
     std::string result;
-#if defined (LOKI_ENABLE_INTEGRATION_TEST_HOOKS)
-    loki::write_redirected_stdout_to_shared_mem();
-    loki::fixed_buffer buffer = loki::read_from_stdin_shared_mem();
+#if defined (ITALO_ENABLE_INTEGRATION_TEST_HOOKS)
+    italo::write_redirected_stdout_to_shared_mem();
+    italo::fixed_buffer buffer = italo::read_from_stdin_shared_mem();
     result.reserve(buffer.len);
     result = buffer.data;
 #else
@@ -1280,8 +1280,8 @@ bool t_rpc_command_executor::stop_daemon()
 //# ifdef WIN32
 //    // Stop via service API
 //    // TODO - this is only temporary!  Get rid of hard-coded constants!
-//    bool ok = windows::stop_service("Loki Daemon");
-//    ok = windows::uninstall_service("Loki Daemon");
+//    bool ok = windows::stop_service("Italo Daemon");
+//    ok = windows::uninstall_service("Italo Daemon");
 //    //bool ok = windows::stop_service(SERVICE_NAME);
 //    //ok = windows::uninstall_service(SERVICE_NAME);
 //    if (ok)
@@ -1325,10 +1325,10 @@ bool t_rpc_command_executor::print_status()
   bool daemon_is_alive = m_rpc_client->check_connection();
 
   if(daemon_is_alive) {
-    tools::success_msg_writer() << "lokid is running";
+    tools::success_msg_writer() << "italod is running";
   }
   else {
-    tools::fail_msg_writer() << "lokid is NOT running";
+    tools::fail_msg_writer() << "italod is NOT running";
   }
 
   return true;
@@ -2812,7 +2812,7 @@ bool t_rpc_command_executor::prepare_registration()
       case register_step::is_solo_stake__operator_address_to_reserve:
       {
         std::string address_str;
-        last_input_result = input_line_back_cancel_get_input("Enter the loki address for the solo staker", address_str);
+        last_input_result = input_line_back_cancel_get_input("Enter the italo address for the solo staker", address_str);
         if (last_input_result == input_line_result::back)
           continue;
 
@@ -2917,7 +2917,7 @@ bool t_rpc_command_executor::prepare_registration()
       case register_step::is_open_stake__operator_address_to_reserve:
       {
         std::string address_str;
-        last_input_result = input_line_back_cancel_get_input("Enter the loki address for the operator", address_str);
+        last_input_result = input_line_back_cancel_get_input("Enter the italo address for the operator", address_str);
         if (last_input_result == input_line_result::back)
           continue;
 
@@ -2941,7 +2941,7 @@ bool t_rpc_command_executor::prepare_registration()
         std::cout << "Minimum amount that can be reserved: " << cryptonote::print_money(min_contribution) << " " << cryptonote::get_unit() << std::endl;
 
         std::string contribution_str;
-        last_input_result = input_line_back_cancel_get_input("How much loki does the operator want to reserve in the stake?", contribution_str);
+        last_input_result = input_line_back_cancel_get_input("How much italo does the operator want to reserve in the stake?", contribution_str);
         if (last_input_result == input_line_result::back)
           continue;
 
@@ -2992,7 +2992,7 @@ bool t_rpc_command_executor::prepare_registration()
 
       case register_step::is_open_stake__contributor_address_to_reserve:
       {
-        std::string const prompt = "Enter the loki address for contributor " + std::to_string(state.contributions.size() + 1);
+        std::string const prompt = "Enter the italo address for contributor " + std::to_string(state.contributions.size() + 1);
         std::string address_str;
         last_input_result = input_line_back_cancel_get_input(prompt.c_str(), address_str);
         if (last_input_result == input_line_result::back)
@@ -3022,7 +3022,7 @@ bool t_rpc_command_executor::prepare_registration()
         std::cout << "There is " << cryptonote::print_money(amount_left) << " " << cryptonote::get_unit() << " left to meet the staking requirement." << std::endl;
 
         std::string contribution_str;
-        std::string const prompt = "How much loki does contributor " + std::to_string(state.contributions.size() + 1) + " want to reserve in the stake?";
+        std::string const prompt = "How much italo does contributor " + std::to_string(state.contributions.size() + 1) + " want to reserve in the stake?";
         last_input_result        = input_line_back_cancel_get_input(prompt.c_str(), contribution_str);
         if (last_input_result == input_line_result::back)
           continue;
