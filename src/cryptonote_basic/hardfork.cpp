@@ -61,7 +61,8 @@ HardFork::HardFork(cryptonote::BlockchainDB &db, uint8_t original_version, time_
   forked_time(forked_time),
   update_time(update_time),
   window_size(window_size),
-  default_threshold_percent(default_threshold_percent)
+  default_threshold_percent(default_threshold_percent),
+  current_fork_index(0)
 {
   if (window_size == 0)
     throw "window_size needs to be strictly positive";
@@ -218,7 +219,6 @@ bool HardFork::reorganize_from_block_height(uint64_t height)
   if (height >= db.height())
     return false;
 
-  db.set_batch_transactions(true);
   bool stop_batch = db.batch_start();
 
   versions.clear();
@@ -302,6 +302,29 @@ bool HardFork::rescan_from_chain_height(uint64_t height)
   return rescan_from_block_height(height - 1);
 }
 
+void HardFork::on_block_popped(uint64_t nblocks)
+{
+  CHECK_AND_ASSERT_THROW_MES(nblocks > 0, "nblocks must be greater than 0");
+
+  CRITICAL_REGION_LOCAL(lock);
+
+  const uint64_t new_chain_height = db.height();
+  const uint64_t old_chain_height = new_chain_height + nblocks;
+  uint8_t version;
+  uint64_t height;
+  for (height = old_chain_height - 1; height >= new_chain_height; --height)
+  {
+    versions.pop_back();
+    version = db.get_hard_fork_version(height);
+    versions.push_front(version);
+  }
+
+  // does not take voting into account
+  for (current_fork_index = heights.size() - 1; current_fork_index > 0; --current_fork_index)
+    if (height >= heights[current_fork_index].height)
+      break;
+}
+
 int HardFork::get_voted_fork_index(uint64_t height) const
 {
   CRITICAL_REGION_LOCAL(lock);
@@ -376,20 +399,24 @@ uint8_t HardFork::get_ideal_version(uint64_t height) const
 
 uint64_t HardFork::get_earliest_ideal_height_for_version(uint8_t version) const
 {
-  for (unsigned int n = heights.size() - 1; n > 0; --n) {
-    if (heights[n].version <= version)
-      return heights[n].height;
+  uint64_t height = std::numeric_limits<uint64_t>::max();
+  for (auto i = heights.rbegin(); i != heights.rend(); ++i) {
+    if (i->version >= version) {
+      height = i->height;
+    } else {
+      break;
+    }
   }
-  return 0;
+  return height;
 }
 
 uint8_t HardFork::get_next_version() const
 {
   CRITICAL_REGION_LOCAL(lock);
   uint64_t height = db.height();
-  for (unsigned int n = heights.size() - 1; n > 0; --n) {
-    if (height >= heights[n].height) {
-      return heights[n < heights.size() - 1 ? n + 1 : n].version;
+  for (auto i = heights.rbegin(); i != heights.rend(); ++i) {
+    if (height >= i->height) {
+      return (i == heights.rbegin() ? i : (i - 1))->version;
     }
   }
   return original_version;

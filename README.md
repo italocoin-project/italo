@@ -1,30 +1,34 @@
-# Italo
+# Loki
 
-Copyright (c) 2018 The Italo Project.   
+<p align="center">
+    <a href="https://github.com/loki-project/loki/commits/dev"><img alt="pipeline status" src="https://gitlab.com/lokiproject/loki/badges/dev/pipeline.svg" /></a>
+</p>
+
+Copyright (c) 2018 The Loki Project.   
 Portions Copyright (c) 2014-2018 The Monero Project.   
 Portions Copyright (c) 2012-2013 The Cryptonote developers.
 
 ## Development resources
 
-- Web: [italo.network](https://italo.network)
-- Telegram: [t.me/ItaloCommunity](https://t.me/ItaloCommunity)
-- Mail: [team@italo.network](mailto:team@italo.network)
-- GitHub: [https://github.com/italo-project/italo](https://github.com/italo-project/italo)
+- Web: [loki.network](https://loki.network)
+- Telegram: [t.me/LokiCommunity](https://t.me/LokiCommunity)
+- Mail: [team@loki.network](mailto:team@loki.network)
+- GitHub: [https://github.com/loki-project/loki](https://github.com/loki-project/loki)
 - Discord: [https://discord.gg/67GXfD6](https://discord.gg/67GXfD6)
 
 ## Vulnerability disclosure
 
-- Check out our [Vulnerability Response Process](https://github.com/italo-project/Meta/blob/master/VULNERABILITY_RESPONSE_ITALO.md), encourages prompt disclosure of any Vulnerabilities
+- Check out our [Vulnerability Response Process](https://loki-project.github.io/loki-docs/Contributing/VULNERABILITY_RESPONSE_LOKI), encourages prompt disclosure of any Vulnerabilities
 
 ## Information
 
-Italo is a private cryptocurrency based on Monero. Over the course of the coming months, the Italo project aims to offer an incenvised full node layer with a secondary p2p network that offers a private communications layer based on the Tox protocol.
+Loki is a private cryptocurrency based on Monero. Loki currently offers an incentivised full node layer, over the coming months we will be looking to support a secondary p2p network (Lokinet) and a messenger that offers private communications based on the Signal protocol (Loki Messenger).
 
 More information on the project can be found on the website and in the whitepaper.
 
-Italo is an open source project, and we encourage contributions from anyone with something to offer. For more information on contributing, please contact team@italo.network
+Loki is an open source project, and we encourage contributions from anyone with something to offer. For more information on contributing, please contact team@loki.network
 
-## Compiling Italo from source
+## Compiling Loki from source
 
 ### Dependencies
 
@@ -37,51 +41,57 @@ sources are also used for statically-linked builds because distribution
 packages often include only shared library binaries (`.so`) but not static
 library archives (`.a`).
 
-| Dep            | Min. version  | Vendored | Debian/Ubuntu pkg  | Arch pkg       | Optional | Purpose        |
-| -------------- | ------------- | ---------| ------------------ | -------------- | -------- | -------------- |
-| GCC            | 4.7.3         | NO       | `build-essential`  | `base-devel`   | NO       |                |
-| CMake          | 3.0.0         | NO       | `cmake`            | `cmake`        | NO       |                |
-| pkg-config     | any           | NO       | `pkg-config`       | `base-devel`   | NO       |                |
-| Boost          | 1.58          | NO       | `libboost-all-dev` | `boost`        | NO       | C++ libraries  |
-| OpenSSL        | basically any | NO       | `libssl-dev`       | `openssl`      | NO       | sha256 sum     |
-| libzmq         | 3.0.0         | NO       | `libzmq3-dev`      | `zeromq`       | NO       | ZeroMQ library |
-| libunbound     | 1.4.16        | YES      | `libunbound-dev`   | `unbound`      | NO       | DNS resolver   |
-| libsodium      | ?             | NO       | `libsodium-dev`    | ?              | NO       | libsodium      |
-| libminiupnpc   | 2.0           | YES      | `libminiupnpc-dev` | `miniupnpc`    | YES      | NAT punching   |
-| libunwind      | any           | NO       | `libunwind8-dev`   | `libunwind`    | YES      | Stack traces   |
-| liblzma        | any           | NO       | `liblzma-dev`      | `xz`           | YES      | For libunwind  |
-| libreadline    | 6.3.0         | NO       | `libreadline6-dev` | `readline`     | YES      | Input editing  |
-| ldns           | 1.6.17        | NO       | `libldns-dev`      | `ldns`         | YES      | SSL toolkit    |
-| expat          | 1.1           | NO       | `libexpat1-dev`    | `expat`        | YES      | XML parsing    |
-| GTest          | 1.5           | YES      | `libgtest-dev`^    | `gtest`        | YES      | Test suite     |
-| Doxygen        | any           | NO       | `doxygen`          | `doxygen`      | YES      | Documentation  |
-| Graphviz       | any           | NO       | `graphviz`         | `graphviz`     | YES      | Documentation  |
+| Dep          | Min. version  | Vendored | Debian/Ubuntu pkg  | Arch pkg     | Fedora            | Optional | Purpose        |
+| ------------ | ------------- | -------- | ------------------ | ------------ | ----------------- | -------- | -------------- |
+| GCC          | 4.7.3         | NO       | `build-essential`  | `base-devel` | `gcc`             | NO       |                |
+| CMake        | 3.5           | NO       | `cmake`            | `cmake`      | `cmake`           | NO       |                |
+| pkg-config   | any           | NO       | `pkg-config`       | `base-devel` | `pkgconf`         | NO       |                |
+| Boost        | 1.58          | NO       | `libboost-all-dev` | `boost`      | `boost-devel`     | NO       | C++ libraries  |
+| OpenSSL      | basically any | NO       | `libssl-dev`       | `openssl`    | `openssl-devel`   | NO       | sha256 sum     |
+| libzmq       | 3.0.0         | NO       | `libzmq3-dev`      | `zeromq`     | `cppzmq-devel`    | NO       | ZeroMQ library |
+| OpenPGM      | ?             | NO       | `libpgm-dev`       | `libpgm`     | `openpgm-devel`   | NO       | For ZeroMQ     |
+| libnorm[2]   | ?             | NO       | `libnorm-dev`      |              |               `   | YES      | For ZeroMQ     |
+| libunbound   | 1.4.16        | YES      | `libunbound-dev`   | `unbound`    | `unbound-devel`   | NO       | DNS resolver   |
+| libsodium    | ?             | NO       | `libsodium-dev`    | `libsodium`  | `libsodium-devel` | NO       | cryptography   |
+| libunwind    | any           | NO       | `libunwind8-dev`   | `libunwind`  | `libunwind-devel` | YES      | Stack traces   |
+| liblzma      | any           | NO       | `liblzma-dev`      | `xz`         | `xz-devel`        | YES      | For libunwind  |
+| libreadline  | 6.3.0         | NO       | `libreadline6-dev` | `readline`   | `readline-devel`  | YES      | Input editing  |
+| ldns         | 1.6.17        | NO       | `libldns-dev`      | `ldns`       | `ldns-devel`      | YES      | SSL toolkit    |
+| expat        | 1.1           | NO       | `libexpat1-dev`    | `expat`      | `expat-devel`     | YES      | XML parsing    |
+| GTest        | 1.5           | YES      | `libgtest-dev`[1]  | `gtest`      | `gtest-devel`     | YES      | Test suite     |
+| Doxygen      | any           | NO       | `doxygen`          | `doxygen`    | `doxygen`         | YES      | Documentation  |
+| Graphviz     | any           | NO       | `graphviz`         | `graphviz`   | `graphviz`        | YES      | Documentation  |
 
 
-[^] On Debian/Ubuntu `libgtest-dev` only includes sources and headers. You must
+[1] On Debian/Ubuntu `libgtest-dev` only includes sources and headers. You must
 build the library binary manually. This can be done with the following command ```sudo apt-get install libgtest-dev && cd /usr/src/gtest && sudo cmake . && sudo make && sudo mv libg* /usr/lib/ ```
+[2] libnorm-dev is needed if your zmq library was built with libnorm, and not needed otherwise
+
+Debian / Ubuntu one liner for all dependencies  
+``` sudo apt update && sudo apt install build-essential cmake pkg-config libboost-all-dev libssl-dev libzmq3-dev libunbound-dev libsodium-dev libunwind8-dev liblzma-dev libreadline6-dev libldns-dev libexpat1-dev doxygen graphviz libpgm-dev```
 
 ### Cloning the repository
 
 Clone recursively to pull-in needed submodule(s):
 
-`$ git clone --recursive https://github.com/italo-project/italo`
+`$ git clone --recursive https://github.com/loki-project/loki`
 
 If you already have a repo cloned, initialize and update:
 
-`$ cd italo && git submodule init && git submodule update`
+`$ cd loki && git submodule init && git submodule update`
 
 ### Build instructions
 
-Italo uses the CMake build system and a top-level [Makefile](Makefile) that
+Loki uses the CMake build system and a top-level [Makefile](Makefile) that
 invokes cmake commands as needed.
 
 #### On Linux and OS X
 
 * Install the dependencies
-* Change to the root of the source code directory and build:
+* Change to the root of the source code directory, change to the most recent release branch, and build:
 
-        cd italo
+        cd loki
+        git checkout master
         make
 
     *Optional*: If your machine has several cores and enough memory, enable
@@ -92,11 +102,17 @@ invokes cmake commands as needed.
     *Note*: If cmake can not find zmq.hpp file on OS X, installing `zmq.hpp` from
     https://github.com/zeromq/cppzmq to `/usr/local/include` should fix that error.
 
+    *Note*: The instructions above will compile the most stable release of the
+    Loki software. If you would like to use and test the most recent software,
+    use ```git checkout master```. The master branch may contain updates that are
+    both unstable and incompatible with release software, though testing is always
+    encouraged.
+
 * The resulting executables can be found in `build/release/bin`
 
-* Add `PATH="$PATH:$HOME/italo/build/release/bin"` to `.profile`
+* Add `PATH="$PATH:$HOME/loki/build/release/bin"` to `.profile`
 
-* Run Italo with `italod --detach`
+* Run Loki with `lokid --detach`
 
 * **Optional**: build and run the test suite to verify the binaries:
 
@@ -120,24 +136,26 @@ Dependencies need to be built with -fPIC. Static libraries usually aren't, so yo
 
 #### On the Raspberry Pi
 
-Tested on a Raspberry Pi Zero with a clean install of minimal Raspbian Stretch (2017-09-07 or later) from https://www.raspberrypi.org/downloads/raspbian/. If you are using Raspian Jessie, [please see note in the following section](#note-for-raspbian-jessie-users). 
+Tested on a Raspberry Pi Zero with a clean install of minimal Raspbian Stretch (2017-09-07 or later) from https://www.raspberrypi.org/downloads/raspbian/. If you are using Raspian Jessie, [please see note in the following section](#note-for-raspbian-jessie-users).
 
 * `apt-get update && apt-get upgrade` to install all of the latest software
 
-* Install the dependencies for Italo from the 'Debian' column in the table above.
+* Install the dependencies for Loki from the 'Debian' column in the table above.
 
 * Increase the system swap size:
-```	
+```
 	sudo /etc/init.d/dphys-swapfile stop  
 	sudo nano /etc/dphys-swapfile  
-	CONF_SWAPSIZE=1024  
+	CONF_SWAPSIZE=2048
 	sudo /etc/init.d/dphys-swapfile start  
 ```
-* Clone italo and checkout most recent release version:
+* If using an external hard disk without an external power supply, ensure it gets enough power to avoid hardware issues when syncing, by adding the line "max_usb_current=1" to /boot/config.txt
+
+* Clone loki and checkout most recent release version:
 ```
-        git clone https://github.com/italo-project/italo.git
-	cd italo
-	git checkout tags/v0.11.0.0
+        git clone https://github.com/loki-project/loki.git
+	cd loki
+	git checkout master
 ```
 * Build:
 ```
@@ -147,26 +165,26 @@ Tested on a Raspberry Pi Zero with a clean install of minimal Raspbian Stretch (
 
 * The resulting executables can be found in `build/release/bin`
 
-* Add `PATH="$PATH:$HOME/italo/build/release/bin"` to `.profile`
+* Add `PATH="$PATH:$HOME/loki/build/release/bin"` to `.profile`
 
-* Run Italo with `italod --detach`
+* Run Loki with `lokid --detach`
 
 * You may wish to reduce the size of the swap file after the build has finished, and delete the boost directory from your home directory
 
 #### *Note for Raspbian Jessie users:*
 
-If you are using the older Raspbian Jessie image, compiling Italo is a bit more complicated. The version of Boost available in the Debian Jessie repositories is too old to use with Italo, and thus you must compile a newer version yourself. The following explains the extra steps, and has been tested on a Raspberry Pi 2 with a clean install of minimal Raspbian Jessie.
+If you are using the older Raspbian Jessie image, compiling Loki is a bit more complicated. The version of Boost available in the Debian Jessie repositories is too old to use with Loki, and thus you must compile a newer version yourself. The following explains the extra steps, and has been tested on a Raspberry Pi 2 with a clean install of minimal Raspbian Jessie.
 
 * As before, `apt-get update && apt-get upgrade` to install all of the latest software, and increase the system swap size
 
-```	
+```
 	sudo /etc/init.d/dphys-swapfile stop  
 	sudo nano /etc/dphys-swapfile  
-	CONF_SWAPSIZE=1024  
+	CONF_SWAPSIZE=2048  
 	sudo /etc/init.d/dphys-swapfile start  
 ```
 
-* Then, install the dependencies for Italo except `libunwind` and `libboost-all-dev`
+* Then, install the dependencies for Loki except `libunwind` and `libboost-all-dev`
 
 * Install the latest version of boost (this may first require invoking `apt-get remove --purge libboost*` to remove a previous version if you're not using a clean install):
 ```
@@ -179,50 +197,64 @@ If you are using the older Raspbian Jessie image, compiling Italo is a bit more 
 ```
 * Wait ~8 hours
 ```
-	sudo ./bjam install
+	sudo ./bjam cxxflags=-fPIC cflags=-fPIC -a install
 ```
 * Wait ~4 hours
 
-* From here, follow the [general Raspberry Pi instructions](#on-the-raspberry-pi) from the "Clone italo and checkout most recent release version" step.
+* From here, follow the [general Raspberry Pi instructions](#on-the-raspberry-pi) from the "Clone loki and checkout most recent release version" step.
 
 #### On Windows:
 
 Binaries for Windows are built on Windows using the MinGW toolchain within
-[MSYS2 environment](http://msys2.github.io). The MSYS2 environment emulates a
+[MSYS2 environment](https://www.msys2.org). The MSYS2 environment emulates a
 POSIX system. The toolchain runs within the environment and *cross-compiles*
 binaries that can run outside of the environment as a regular Windows
 application.
 
 **Preparing the build environment**
 
-* Download and install the [MSYS2 installer](http://msys2.github.io), either the 64-bit or the 32-bit package, depending on your system.
+* Download and install the [MSYS2 installer](https://www.msys2.org), either the 64-bit or the 32-bit package, depending on your system.
 * Open the MSYS shell via the `MSYS2 Shell` shortcut
 * Update packages using pacman:  
 
-        pacman -Syuu  
+        pacman -Syu  
 
 * Exit the MSYS shell using Alt+F4  
 * Edit the properties for the `MSYS2 Shell` shortcut changing "msys2_shell.bat" to "msys2_shell.cmd -mingw64" for 64-bit builds or "msys2_shell.cmd -mingw32" for 32-bit builds
 * Restart MSYS shell via modified shortcut and update packages again using pacman:  
 
-        pacman -Syuu  
+        pacman -Syu  
 
 
 * Install dependencies:
 
     To build for 64-bit Windows:
 
-        pacman -S mingw-w64-x86_64-toolchain make mingw-w64-x86_64-cmake mingw-w64-x86_64-boost mingw-w64-x86_64-openssl mingw-w64-x86_64-zeromq mingw-w64-x86_64-libsodium
+        pacman -S mingw-w64-x86_64-toolchain make mingw-w64-x86_64-cmake mingw-w64-x86_64-boost mingw-w64-x86_64-openssl mingw-w64-x86_64-zeromq mingw-w64-x86_64-libsodium mingw-w64-x86_64-hidapi
 
     To build for 32-bit Windows:
- 
-        pacman -S mingw-w64-i686-toolchain make mingw-w64-i686-cmake mingw-w64-i686-boost mingw-w64-i686-openssl mingw-w64-i686-zeromq mingw-w64-i686-libsodium
+
+        pacman -S mingw-w64-i686-toolchain make mingw-w64-i686-cmake mingw-w64-i686-boost mingw-w64-i686-openssl mingw-w64-i686-zeromq mingw-w64-i686-libsodium mingw-w64-i686-hidapi
 
 * Open the MingW shell via `MinGW-w64-Win64 Shell` shortcut on 64-bit Windows
   or `MinGW-w64-Win64 Shell` shortcut on 32-bit Windows. Note that if you are
   running 64-bit Windows, you will have both 64-bit and 32-bit MinGW shells.
 
+**Cloning**
+
+* To git clone, run:
+
+        git clone --recursive https://github.com/loki-project/loki.git
+
 **Building**
+
+* Change to the cloned directory, run:
+	
+        cd git
+
+* If you would like a specific [version/tag](https://github.com/loki-project/loki/tags), do a git checkout for that version. eg. 'v2.0.3'. If you dont care about the version and just want binaries from master, skip this step:
+	
+        git checkout v2.0.3
 
 * If you are on a 64-bit system, run:
 
@@ -234,9 +266,19 @@ application.
 
 * The resulting executables can be found in `build/release/bin`
 
+* **Optional**: to build Windows binaries suitable for debugging on a 64-bit system, run:
+
+        make debug-static-win64
+
+* **Optional**: to build Windows binaries suitable for debugging on a 32-bit system, run:
+
+        make debug-static-win32
+
+* The resulting executables can be found in `build/debug/bin`
+
 ### On FreeBSD:
 
-The project can be built from scratch by following instructions for Linux above. If you are running italo in a jail you need to add the flag: `allow.sysvipc=1` to your jail configuration, otherwise lmdb will throw the error message: `Failed to open lmdb environment: Function not implemented`.
+The project can be built from scratch by following instructions for Linux above. If you are running loki in a jail you need to add the flag: `allow.sysvipc=1` to your jail configuration, otherwise lmdb will throw the error message: `Failed to open lmdb environment: Function not implemented`.
 
 ### On OpenBSD:
 
@@ -244,20 +286,20 @@ The project can be built from scratch by following instructions for Linux above.
 
 This has been tested on OpenBSD 5.8.
 
-You will need to add a few packages to your system. `pkg_add db cmake gcc gcc-libs g++ miniupnpc gtest`.
+You will need to add a few packages to your system. `pkg_add db cmake gcc gcc-libs g++ gtest`.
 
 The doxygen and graphviz packages are optional and require the xbase set.
 
 The Boost package has a bug that will prevent librpc.a from building correctly. In order to fix this, you will have to Build boost yourself from scratch. Follow the directions here (under "Building Boost"):
 https://github.com/bitcoin/bitcoin/blob/master/doc/build-openbsd.md
 
-You will have to add the serialization, date_time, and regex modules to Boost when building as they are needed by Italo.
+You will have to add the serialization, date_time, and regex modules to Boost when building as they are needed by Loki.
 
 To build: `env CC=egcc CXX=eg++ CPP=ecpp DEVELOPER_LOCAL_TOOLS=1 BOOST_ROOT=/path/to/the/boost/you/built make release-static-64`
 
-#### OpenBSD >= 6.2
+#### OpenBSD 6.2 and 6.3
 
-You will need to add a few packages to your system. `pkg_add cmake miniupnpc zeromq libiconv`.
+You will need to add a few packages to your system. `pkg_add cmake zeromq libiconv`.
 
 The doxygen and graphviz packages are optional and require the xbase set.
 
@@ -274,7 +316,7 @@ mkdir ~/boost
 cd ~/boost
 
 # Fetch boost source
-ftp -o boost_1_64_0.tar.bz2 https://netcologne.dl.sourceforge.net/project/boost/boost/1.64.0/boost_1_64_0.tar.bz2 
+ftp -o boost_1_64_0.tar.bz2 https://netcologne.dl.sourceforge.net/project/boost/boost/1.64.0/boost_1_64_0.tar.bz2
 
 # MUST output: (SHA256) boost_1_64_0.tar.bz2: OK
 echo "7bcc5caace97baa948931d712ea5f37038dbb1c5d89b43ad4def4ed7cb683332 boost_1_64_0.tar.bz2" | sha256 -c
@@ -300,8 +342,6 @@ echo 'using clang : : c++ : <cxxflags>"-fvisibility=hidden -fPIC" <linkflags>"" 
 doas ./b2 -d0 runtime-link=shared threadapi=pthread threading=multi link=static variant=release --layout=tagged --build-type=complete --user-config=user-config.jam -sNO_BZIP2=1 -sICONV_PATH=/usr/local --prefix=/usr/local install
 ```
 
-Build cppzmq
-
 Build the cppzmq bindings.
 
 We assume you are compiling with a non-root user and you have `doas` enabled.
@@ -326,7 +366,24 @@ cmake ..
 doas make install
 ```
 
-Build italo: `env DEVELOPER_LOCAL_TOOLS=1 BOOST_ROOT=/usr/local make release-static`
+Build loki: `env DEVELOPER_LOCAL_TOOLS=1 BOOST_ROOT=/usr/local make release-static`
+
+#### OpenBSD >= 6.4
+
+You will need to add a few packages to your system. `pkg_add cmake gmake zeromq cppzmq libiconv boost`.
+
+The doxygen and graphviz packages are optional and require the xbase set.
+
+Build monero: `env DEVELOPER_LOCAL_TOOLS=1 BOOST_ROOT=/usr/local gmake release-static`
+
+Note: you may encounter the following error, when compiling the latest version of monero as a normal user:
+
+```
+LLVM ERROR: out of memory
+c++: error: unable to execute command: Abort trap (core dumped)
+```
+
+Then you need to increase the data ulimit size to 2GB and try again: `ulimit -d 2000000`
 
 ### On Solaris:
 
@@ -341,12 +398,14 @@ Then you can run make as usual.
 
 ### On Linux for Android (using docker):
 
-        # Build image (select android64.Dockerfile for aarch64)
-        cd utils/build_scripts/ && docker build -f android32.Dockerfile -t italo-android .
+        # Build image (for ARM 32-bit)
+        docker build -f utils/build_scripts/android32.Dockerfile -t loki-android .
+        # Build image (for ARM 64-bit)
+        docker build -f utils/build_scripts/android64.Dockerfile -t loki-android .
         # Create container
-        docker create -it --name italo-android italo-android bash
+        docker create -it --name loki-android loki-android bash
         # Get binaries
-        docker cp italo-android:/opt/android/italo/build/release/bin .
+        docker cp loki-android:/src/build/release/bin .
 
 ### Building portable statically linked binaries
 
@@ -360,15 +419,52 @@ By default, in either dynamically or statically linked builds, binaries target t
 * ```make release-static-win64``` builds binaries on 64-bit Windows portable across 64-bit Windows systems
 * ```make release-static-win32``` builds binaries on 64-bit or 32-bit Windows portable across 32-bit Windows systems
 
-## Running italod
+### Cross Compiling
+
+You can also cross-compile static binaries on Linux for Windows and macOS with the `depends` system.
+
+* ```make depends target=x86_64-linux-gnu``` for 64-bit linux binaries.
+* ```make depends target=x86_64-w64-mingw32``` for 64-bit windows binaries. Requires: python3 g++-mingw-w64-x86-64 wine1.6 bc
+* ```make depends target=x86_64-apple-darwin11``` for macOS binaries. Requires: cmake imagemagick libcap-dev librsvg2-bin libz-dev libbz2-dev libtiff-tools python-dev
+* ```make depends target=i686-linux-gnu``` for 32-bit linux binaries. Requires: g++-multilib bc
+* ```make depends target=i686-w64-mingw32``` for 32-bit windows binaries. Requires: python3 g++-mingw-w64-i686
+* ```make depends target=arm-linux-gnueabihf``` for armv7 binaries. Requires: g++-arm-linux-gnueabihf
+* ```make depends target=aarch64-linux-gnu``` for armv8 binaries. Requires: g++-aarch64-linux-gnu
+
+The required packages are the names for each toolchain on apt. Depending on your distro, they may have different names.
+
+Using `depends` might also be easier to compile Loki on Windows than using MSYS. Activate Windows Subsystem for Linux (WSL) with a distro (for example Ubuntu), install the apt build-essentials and follow the `depends` steps as depicted above.
+
+The produced binaries still link libc dynamically. If the binary is compiled on a current distribution, it might not run on an older distribution with an older installation of libc. Passing `-DBACKCOMPAT=ON` to cmake will make sure that the binary will run on systems having at least libc version 2.17.
+
+## Installing Loki from a package
+
+* Docker
+
+        # Build using all available cores
+        docker build -t loki .
+
+        # or build using a specific number of cores (reduce RAM requirement)
+        docker build --build-arg NPROC=1 -t loki .
+
+        # either run in foreground
+        docker run -it -v /loki/chain:/root/.loki -v /loki/wallet:/wallet -p 22022:22022 loki
+
+        # or in background
+        docker run -it -d -v /loki/chain:/root/.loki -v /loki/wallet:/wallet -p 22022:22022 loki
+
+* The build needs 3 GB space.
+* Wait one  hour or more
+
+## Running lokid
 
 The build places the binary in `bin/` sub-directory within the build directory
 from which cmake was invoked (repository root by default). To run in
 foreground:
 
-    ./bin/italod
+    ./bin/lokid
 
-To list all available options, run `./bin/italod --help`.  Options can be
+To list all available options, run `./bin/lokid --help`.  Options can be
 specified either on the command line or in a configuration file passed by the
 `--config-file` argument.  To specify an option in the configuration file, add
 a line with the syntax `argumentname=value`, where `argumentname` is the name
@@ -376,7 +472,7 @@ of the argument without the leading dashes, for example `log-level=1`.
 
 To run in background:
 
-    ./bin/italod --log-file italod.log --detach
+    ./bin/lokid --log-file lokid.log --detach
 
 ## Internationalization
 
@@ -384,29 +480,31 @@ See [README.i18n.md](README.i18n.md).
 
 ## Using Tor
 
-While Italo isn't made to integrate with Tor, it can be used wrapped with torsocks, by
+While Loki isn't made to integrate with Tor, it can be used wrapped with torsocks, by
 setting the following configuration parameters and environment variables:
 
 * `--p2p-bind-ip 127.0.0.1` on the command line or `p2p-bind-ip=127.0.0.1` in
-  italod.conf to disable listening for connections on external interfaces.
-* `--no-igd` on the command line or `no-igd=1` in italod.conf to disable IGD
+  lokid.conf to disable listening for connections on external interfaces.
+* `--no-igd` on the command line or `no-igd=1` in lokid.conf to disable IGD
   (UPnP port forwarding negotiation), which is pointless with Tor.
 * `DNS_PUBLIC=tcp` or `DNS_PUBLIC=tcp://x.x.x.x` where x.x.x.x is the IP of the
   desired DNS server, for DNS requests to go over TCP, so that they are routed
-  through Tor. When IP is not specified, italod uses the default list of
+  through Tor. When IP is not specified, lokid uses the default list of
   servers defined in [src/common/dns_utils.cpp](src/common/dns_utils.cpp).
-* `TORSOCKS_ALLOW_INBOUND=1` to tell torsocks to allow italod to bind to interfaces
+* `TORSOCKS_ALLOW_INBOUND=1` to tell torsocks to allow lokid to bind to interfaces
    to accept connections from the wallet. On some Linux systems, torsocks
    allows binding to localhost by default, so setting this variable is only
    necessary to allow binding to local LAN/VPN interfaces to allow wallets to
    connect from remote hosts. On other systems, it may be needed for local wallets
    as well.
 * Do NOT pass `--detach` when running through torsocks with systemd, (see
-  [utils/systemd/italod.service](utils/systemd/italod.service) for details).
+  [utils/systemd/lokid.service](utils/systemd/lokid.service) for details).
+* If you use the wallet with a Tor daemon via the loopback IP (eg, 127.0.0.1:9050),
+  then use `--untrusted-daemon` unless it is your own hidden service.
 
-Example command line to start italod through Tor:
+Example command line to start lokid through Tor:
 
-    DNS_PUBLIC=tcp torsocks italod --p2p-bind-ip 127.0.0.1 --no-igd
+    DNS_PUBLIC=tcp torsocks lokid --p2p-bind-ip 127.0.0.1 --no-igd
 
 ### Using Tor on Tails
 
@@ -415,12 +513,12 @@ to add a rule to allow this connection too, in addition to telling torsocks to
 allow inbound connections. Full example:
 
     sudo iptables -I OUTPUT 2 -p tcp -d 127.0.0.1 -m tcp --dport 18081 -j ACCEPT
-    DNS_PUBLIC=tcp torsocks ./italod --p2p-bind-ip 127.0.0.1 --no-igd --rpc-bind-ip 127.0.0.1 \
+    DNS_PUBLIC=tcp torsocks ./lokid --p2p-bind-ip 127.0.0.1 --no-igd --rpc-bind-ip 127.0.0.1 \
         --data-dir /home/amnesia/Persistent/your/directory/to/the/blockchain
 
 ## Debugging
 
-This section contains general instructions for debugging failed installs or problems encountered with Italo. First ensure you are running the latest version built from the Github repo.
+This section contains general instructions for debugging failed installs or problems encountered with Loki. First ensure you are running the latest version built from the Github repo.
 
 ### Obtaining stack traces and core dumps on Unix systems
 
@@ -433,7 +531,7 @@ Run the build.
 Once it stalls, enter the following command:
 
 ```
-gdb /path/to/italod `pidof italod` 
+gdb /path/to/lokid `pidof lokid`
 ```
 
 Type `thread apply all bt` within gdb in order to obtain the stack trace
@@ -446,27 +544,37 @@ Enter `echo core | sudo tee /proc/sys/kernel/core_pattern` to stop cores from be
 
 Run the build.
 
-When it terminates with an output along the lines of "Segmentation fault (core dumped)", there should be a core dump file in the same directory as italod. It may be named just `core`, or `core.xxxx` with numbers appended.
+When it terminates with an output along the lines of "Segmentation fault (core dumped)", there should be a core dump file in the same directory as lokid. It may be named just `core`, or `core.xxxx` with numbers appended.
 
 You can now analyse this core dump with `gdb` as follows:
 
-`gdb /path/to/italod /path/to/dumpfile`
+`gdb /path/to/lokid /path/to/dumpfile`
 
 Print the stack trace with `bt`
 
-* To run italo within gdb:
+* To run loki within gdb:
 
-Type `gdb /path/to/italod`
+Type `gdb /path/to/lokid`
 
 Pass command-line options with `--args` followed by the relevant arguments
 
-Type `run` to run italod
+Type `run` to run lokid
 
 ### Analysing memory corruption
 
-We use the tool `valgrind` for this.
+There are two tools available:
 
-Run with `valgrind /path/to/italod`. It will be slow.
+* ASAN
+
+Configure Loki with the -D SANITIZE=ON cmake flag, eg:
+
+    cd build/debug && cmake -D SANITIZE=ON -D CMAKE_BUILD_TYPE=Debug ../..
+
+You can then run the loki tools normally. Performance will typically halve.
+
+* valgrind
+
+Install valgrind and run as `valgrind /path/to/lokid`. It will be very slow.
 
 ### LMDB
 
@@ -474,7 +582,7 @@ Instructions for debugging suspected blockchain corruption as per @HYC
 
 There is an `mdb_stat` command in the LMDB source that can print statistics about the database but it's not routinely built. This can be built with the following command:
 
-`cd ~/italo/external/db_drivers/liblmdb && make`
+`cd ~/loki/external/db_drivers/liblmdb && make`
 
 The output of `mdb_stat -ea <path to blockchain dir>` will indicate inconsistencies in the blocks, block_heights and block_info table.
 

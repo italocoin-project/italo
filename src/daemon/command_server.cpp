@@ -1,5 +1,5 @@
 // Copyright (c) 2014-2018, The Monero Project
-// Copyright (c)      2018, The Italo Project
+// Copyright (c)      2018, The Loki Project
 // 
 // All rights reserved.
 // 
@@ -33,8 +33,11 @@
 #include "string_tools.h"
 #include "daemon/command_server.h"
 
-#undef ITALO_DEFAULT_LOG_CATEGORY
-#define ITALO_DEFAULT_LOG_CATEGORY "daemon"
+#include "common/loki_integration_test_hooks.h"
+
+
+#undef LOKI_DEFAULT_LOG_CATEGORY
+#define LOKI_DEFAULT_LOG_CATEGORY "daemon"
 
 namespace daemonize {
 
@@ -65,6 +68,7 @@ t_command_server::t_command_server(
   m_command_lookup.set_handler(
       "print_pl"
     , std::bind(&t_command_parser_executor::print_peer_list, &m_parser, p::_1)
+    , "print_pl [white] [gray] [<limit>]"
     , "Print the current peer list."
     );
   m_command_lookup.set_handler(
@@ -117,18 +121,18 @@ t_command_server::t_command_server(
       "prepare_registration"
     , std::bind(&t_command_parser_executor::prepare_registration, &m_parser)
     , "prepare_registration"
-    , "Interactive prompt to prepare the registration. The resulting registration data is saved to disk."
+    , "Interactive prompt to prepare a service node registration command. The resulting registration command can be run in the command-line wallet to send the registration to the blockchain."
     );
   m_command_lookup.set_handler(
       "print_sn"
     , std::bind(&t_command_parser_executor::print_sn, &m_parser, p::_1)
-    , "print_sn [<pubkey> [...]]"
+    , "print_sn [<pubkey> [...]] [+json]"
     , "Print service node registration info for the current height"
     );
   m_command_lookup.set_handler(
       "print_sn_status"
     , std::bind(&t_command_parser_executor::print_sn_status, &m_parser, p::_1)
-    , "print_sn_status"
+    , "print_sn_status [+json]"
     , "Print service node registration info for this service node"
     );
   m_command_lookup.set_handler(
@@ -242,12 +246,12 @@ t_command_server::t_command_server(
     m_command_lookup.set_handler(
       "start_save_graph"
     , std::bind(&t_command_parser_executor::start_save_graph, &m_parser, p::_1)
-    , "Start saving data for dr italo."
+    , "Start saving data for dr loki."
     );
     m_command_lookup.set_handler(
       "stop_save_graph"
     , std::bind(&t_command_parser_executor::stop_save_graph, &m_parser, p::_1)
-    , "Stop saving data for dr italo."
+    , "Stop saving data for dr loki."
     );
     m_command_lookup.set_handler(
       "hard_fork_info"
@@ -292,6 +296,7 @@ t_command_server::t_command_server(
     m_command_lookup.set_handler(
       "alt_chain_info"
     , std::bind(&t_command_parser_executor::alt_chain_info, &m_parser, p::_1)
+    , "alt_chain_info [blockhash]"
     , "Print the information about alternative chains."
     );
     m_command_lookup.set_handler(
@@ -318,9 +323,25 @@ t_command_server::t_command_server(
     , "Print information about the blockchain sync state."
     );
     m_command_lookup.set_handler(
+      "pop_blocks"
+    , std::bind(&t_command_parser_executor::pop_blocks, &m_parser, p::_1)
+    , "pop_blocks <nblocks>"
+    , "Remove blocks from end of blockchain"
+    );
+    m_command_lookup.set_handler(
       "version"
     , std::bind(&t_command_parser_executor::version, &m_parser, p::_1)
     , "Print version information."
+    );
+    m_command_lookup.set_handler(
+      "prune_blockchain"
+    , std::bind(&t_command_parser_executor::prune_blockchain, &m_parser, p::_1)
+    , "Prune the blockchain."
+    );
+    m_command_lookup.set_handler(
+      "check_blockchain_pruning"
+    , std::bind(&t_command_parser_executor::check_blockchain_pruning, &m_parser, p::_1)
+    , "Check the blockchain pruning."
     );
 }
 
@@ -339,12 +360,46 @@ bool t_command_server::process_command_vec(const std::vector<std::string>& cmd)
   return result;
 }
 
+#if defined(LOKI_ENABLE_INTEGRATION_TEST_HOOKS)
+#include <thread>
+#endif
+
 bool t_command_server::start_handling(std::function<void(void)> exit_handler)
 {
   if (m_is_rpc) return false;
 
-  m_command_lookup.start_handling("", get_commands_str(), exit_handler);
+#if defined(LOKI_ENABLE_INTEGRATION_TEST_HOOKS)
+  auto handle_shared_mem_ins_and_outs = [&]()
+  {
+    // TODO(doyle): Hack, don't hook into input until the daemon has completely initialised, i.e. you can print the status
+    while(!loki::core_is_idle) {}
+    mlog_set_categories("");
 
+    for (;;)
+    {
+      loki::fixed_buffer const input = loki::read_from_stdin_shared_mem();
+      std::vector<std::string> args  = loki::separate_stdin_to_space_delim_args(&input);
+      {
+        boost::unique_lock<boost::mutex> scoped_lock(loki::integration_test_mutex);
+        loki::use_standard_cout();
+        std::cout << input.data << std::endl;
+        loki::use_redirected_cout();
+      }
+
+      process_command_vec(args);
+      if (args.size() == 1 && args[0] == "exit")
+      {
+        loki::deinit_integration_test_context();
+        break;
+      }
+
+      loki::write_redirected_stdout_to_shared_mem();
+    }
+  };
+  static std::thread handle_remote_stdin_out_thread(handle_shared_mem_ins_and_outs);
+#endif
+
+  m_command_lookup.start_handling("", get_commands_str(), exit_handler);
   return true;
 }
 
@@ -371,7 +426,7 @@ bool t_command_server::help(const std::vector<std::string>& args)
 std::string t_command_server::get_commands_str()
 {
   std::stringstream ss;
-  ss << "Italo '" << ITALO_RELEASE_NAME << "' (v" << ITALO_VERSION_FULL << ")" << std::endl;
+  ss << "Loki '" << LOKI_RELEASE_NAME << "' (v" << LOKI_VERSION_FULL << ")" << std::endl;
   ss << "Commands: " << std::endl;
   std::string usage = m_command_lookup.get_usage();
   boost::replace_all(usage, "\n", "\n  ");

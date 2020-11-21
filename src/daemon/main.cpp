@@ -1,5 +1,5 @@
 // Copyright (c) 2014-2018, The Monero Project
-// Copyright (c)      2018, The Italo Project
+// Copyright (c)      2018, The Loki Project
 //
 // All rights reserved.
 //
@@ -51,8 +51,8 @@
 #include "common/stack_trace.h"
 #endif // STACK_TRACE
 
-#undef ITALO_DEFAULT_LOG_CATEGORY
-#define ITALO_DEFAULT_LOG_CATEGORY "daemon"
+#undef LOKI_DEFAULT_LOG_CATEGORY
+#define LOKI_DEFAULT_LOG_CATEGORY "daemon"
 
 namespace po = boost::program_options;
 namespace bf = boost::filesystem;
@@ -120,16 +120,16 @@ int main(int argc, char const * argv[])
 
     if (command_line::get_arg(vm, command_line::arg_help))
     {
-      std::cout << "Italo '" << ITALO_RELEASE_NAME << "' (v" << ITALO_VERSION_FULL << ")" << ENDL << ENDL;
+      std::cout << "Loki '" << LOKI_RELEASE_NAME << "' (v" << LOKI_VERSION_FULL << ")" << ENDL << ENDL;
       std::cout << "Usage: " + std::string{argv[0]} + " [options|settings] [daemon_command...]" << std::endl << std::endl;
       std::cout << visible_options << std::endl;
       return 0;
     }
 
-    // Italo Version
+    // Loki Version
     if (command_line::get_arg(vm, command_line::arg_version))
     {
-      std::cout << "Italo '" << ITALO_RELEASE_NAME << "' (v" << ITALO_VERSION_FULL << ")" << ENDL;
+      std::cout << "Loki '" << LOKI_RELEASE_NAME << "' (v" << LOKI_VERSION_FULL << ")" << ENDL;
       return 0;
     }
 
@@ -164,9 +164,10 @@ int main(int argc, char const * argv[])
 
     const bool testnet = command_line::get_arg(vm, cryptonote::arg_testnet_on);
     const bool stagenet = command_line::get_arg(vm, cryptonote::arg_stagenet_on);
-    if (testnet && stagenet)
+    const bool regtest = command_line::get_arg(vm, cryptonote::arg_regtest_on);
+    if (testnet + stagenet + regtest > 1)
     {
-      std::cerr << "Can't specify more than one of --tesnet and --stagenet" << ENDL;
+      std::cerr << "Can't specify more than one of --tesnet and --stagenet and --regtest" << ENDL;
       return 1;
     }
 
@@ -181,7 +182,7 @@ int main(int argc, char const * argv[])
     }
 
     // data_dir
-    //   default: e.g. ~/.italo/ or ~/.italo/testnet
+    //   default: e.g. ~/.loki/ or ~/.loki/testnet
     //   if data-dir argument given:
     //     absolute path
     //     relative path: relative to cwd
@@ -216,6 +217,16 @@ int main(int argc, char const * argv[])
     // after logs initialized
     tools::create_directories_if_necessary(data_dir.string());
 
+#ifdef STACK_TRACE
+    tools::set_stack_trace_log(log_file_path.filename().string());
+#endif // STACK_TRACE
+
+    if (!command_line::is_arg_defaulted(vm, daemon_args::arg_max_concurrency))
+      tools::set_max_concurrency(command_line::get_arg(vm, daemon_args::arg_max_concurrency));
+
+    // logging is now set up
+    MGINFO("Loki '" << LOKI_RELEASE_NAME << "' (v" << LOKI_VERSION_FULL << ")");
+
     // If there are positional options, we're running a daemon command
     {
       auto command = command_line::get_arg(vm, daemon_args::arg_command);
@@ -239,11 +250,14 @@ int main(int argc, char const * argv[])
           return 1;
         }
 
+        const char *env_rpc_login = nullptr;
+        const bool has_rpc_arg = command_line::has_arg(vm, arg.rpc_login);
+        const bool use_rpc_env = !has_rpc_arg && (env_rpc_login = getenv("RPC_LOGIN")) != nullptr && strlen(env_rpc_login) > 0;
         boost::optional<tools::login> login{};
-        if (command_line::has_arg(vm, arg.rpc_login))
+        if (has_rpc_arg || use_rpc_env)
         {
           login = tools::login::parse(
-            command_line::get_arg(vm, arg.rpc_login), false, [](bool verify) {
+            has_rpc_arg ? command_line::get_arg(vm, arg.rpc_login) : std::string(env_rpc_login), false, [](bool verify) {
 #ifdef HAVE_READLINE
         rdln::suspend_readline pause_readline;
 #endif
@@ -264,21 +278,14 @@ int main(int argc, char const * argv[])
         }
         else
         {
+#ifdef HAVE_READLINE
+          rdln::suspend_readline pause_readline;
+#endif
           std::cerr << "Unknown command: " << command.front() << std::endl;
           return 1;
         }
       }
     }
-
-#ifdef STACK_TRACE
-    tools::set_stack_trace_log(log_file_path.filename().string());
-#endif // STACK_TRACE
-
-    if (!command_line::is_arg_defaulted(vm, daemon_args::arg_max_concurrency))
-      tools::set_max_concurrency(command_line::get_arg(vm, daemon_args::arg_max_concurrency));
-
-    // logging is now set up
-    MGINFO("Italo '" << ITALO_RELEASE_NAME << "' (v" << ITALO_VERSION_FULL << ")");
 
     MINFO("Moving from main() into the daemonize now.");
 

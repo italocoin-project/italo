@@ -1,4 +1,4 @@
-# Copyright (c) 2018, The Italo Project
+# Copyright (c) 2018, The Loki Project
 # Copyright (c) 2014-2018, The Monero Project
 #
 # All rights reserved.
@@ -30,9 +30,10 @@
 set(cryptonote_core_sources
   blockchain.cpp
   cryptonote_core.cpp
+  service_node_rules.cpp
   service_node_list.cpp
   service_node_deregister.cpp
-  quorum_cop.cpp
+  service_node_quorum_cop.cpp
   tx_pool.cpp
   cryptonote_tx_utils.cpp)
 
@@ -41,22 +42,17 @@ set(cryptonote_core_headers)
 set(cryptonote_core_private_headers
   blockchain_storage_boost_serialization.h
   blockchain.h
+  service_node_rules.h
   service_node_list.h
-  quorum_cop.h
+  service_node_quorum_cop.h
   cryptonote_core.h
   service_node_deregister.h
   tx_pool.h
   cryptonote_tx_utils.h)
 
-if(PER_BLOCK_CHECKPOINT)
-  set(Blocks "blocks")
-else()
-  set(Blocks "")
-endif()
-
-italo_private_headers(cryptonote_core
+loki_private_headers(cryptonote_core
   ${cryptonote_core_private_headers})
-italo_add_library(cryptonote_core
+loki_add_library(cryptonote_core
   ${cryptonote_core_sources}
   ${cryptonote_core_headers}
   ${cryptonote_core_private_headers})
@@ -76,5 +72,4 @@ target_link_libraries(cryptonote_core
     ${Boost_SYSTEM_LIBRARY}
     ${Boost_THREAD_LIBRARY}
   PRIVATE
-    ${Blocks}
     ${EXTRA_LIBRARIES})

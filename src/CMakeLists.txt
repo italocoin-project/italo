@@ -1,4 +1,4 @@
-# Copyright (c) 2018, The Italo Project
+# Copyright (c) 2018, The Loki Project
 # Copyright (c) 2014-2018, The Monero Project
 #
 # All rights reserved.
@@ -35,18 +35,13 @@ if (WIN32 OR STATIC)
   add_definitions(-DMINIUPNP_STATICLIB)
 endif ()
 
-# warnings are cleared only for GCC on Linux
-if (NOT (MINGW OR APPLE OR FREEBSD OR OPENBSD OR DRAGONFLY))
-  add_compile_options("${WARNINGS_AS_ERRORS_FLAG}") # applies only to targets that follow
-endif()
-
-function (italo_private_headers group)
+function (loki_private_headers group)
   source_group("${group}\\Private"
     FILES
       ${ARGN})
 endfunction ()
 
-function (italo_install_headers subdir)
+function (loki_install_headers subdir)
   install(
     FILES       ${ARGN}
     DESTINATION "include/${subdir}"
@@ -64,7 +59,7 @@ function (enable_stack_trace target)
   endif()
 endfunction()
 
-function (italo_add_executable name)
+function (loki_add_executable name)
   source_group("${name}"
     FILES
       ${ARGN})
@@ -83,31 +78,31 @@ function (italo_add_executable name)
   enable_stack_trace("${name}")
 endfunction ()
 
-function (italo_add_library name)
-    italo_add_library_with_deps(NAME "${name}" SOURCES ${ARGN})
+function (loki_add_library name)
+    loki_add_library_with_deps(NAME "${name}" SOURCES ${ARGN})
 endfunction()
 
-function (italo_add_library_with_deps)
-  cmake_parse_arguments(ITALO_ADD_LIBRARY "" "NAME" "DEPENDS;SOURCES" ${ARGN})
-  source_group("${ITALO_ADD_LIBRARY_NAME}" FILES ${ITALO_ADD_LIBRARY_SOURCES})
+function (loki_add_library_with_deps)
+  cmake_parse_arguments(LOKI_ADD_LIBRARY "" "NAME" "DEPENDS;SOURCES" ${ARGN})
+  source_group("${LOKI_ADD_LIBRARY_NAME}" FILES ${LOKI_ADD_LIBRARY_SOURCES})
 
   # Define a ("virtual") object library and an actual library that links those
   # objects together. The virtual libraries can be arbitrarily combined to link
   # any subset of objects into one library archive. This is used for releasing
   # libwallet, which combines multiple components.
-  set(objlib obj_${ITALO_ADD_LIBRARY_NAME})
-  add_library(${objlib} OBJECT ${ITALO_ADD_LIBRARY_SOURCES})
-  add_library("${ITALO_ADD_LIBRARY_NAME}" $<TARGET_OBJECTS:${objlib}>)
-  if (ITALO_ADD_LIBRARY_DEPENDS)
-    add_dependencies(${objlib} ${ITALO_ADD_LIBRARY_DEPENDS})
+  set(objlib obj_${LOKI_ADD_LIBRARY_NAME})
+  add_library(${objlib} OBJECT ${LOKI_ADD_LIBRARY_SOURCES})
+  add_library("${LOKI_ADD_LIBRARY_NAME}" $<TARGET_OBJECTS:${objlib}>)
+  if (LOKI_ADD_LIBRARY_DEPENDS)
+    add_dependencies(${objlib} ${LOKI_ADD_LIBRARY_DEPENDS})
   endif()
-  set_property(TARGET "${ITALO_ADD_LIBRARY_NAME}" PROPERTY FOLDER "libs")
+  set_property(TARGET "${LOKI_ADD_LIBRARY_NAME}" PROPERTY FOLDER "libs")
   target_compile_definitions(${objlib}
-    PRIVATE $<TARGET_PROPERTY:${ITALO_ADD_LIBRARY_NAME},INTERFACE_COMPILE_DEFINITIONS>)
+    PRIVATE $<TARGET_PROPERTY:${LOKI_ADD_LIBRARY_NAME},INTERFACE_COMPILE_DEFINITIONS>)
 endfunction ()
 
 include(Version)
-italo_add_library(version SOURCES ${CMAKE_BINARY_DIR}/version.cpp DEPENDS genversion)
+loki_add_library(version SOURCES ${CMAKE_BINARY_DIR}/version.cpp DEPENDS genversion)
 
 add_subdirectory(common)
 add_subdirectory(crypto)
@@ -116,29 +111,28 @@ add_subdirectory(checkpoints)
 add_subdirectory(cryptonote_basic)
 add_subdirectory(cryptonote_core)
 add_subdirectory(multisig)
-if(NOT IOS)
-  add_subdirectory(blockchain_db)
-endif()
 add_subdirectory(mnemonics)
+add_subdirectory(wallet)
+add_subdirectory(cryptonote_protocol)
+
 if(NOT IOS)
+  if (NOT LOKI_DAEMON_AND_WALLET_ONLY AND NOT BUILD_INTEGRATION)
+    add_subdirectory(gen_multisig)
+    add_subdirectory(blockchain_utilities)
+  endif()
+  add_subdirectory(blockchain_db)
   add_subdirectory(rpc)
   add_subdirectory(serialization)
-endif()
-add_subdirectory(wallet)
-if(NOT IOS)
   add_subdirectory(p2p)
-endif()
-add_subdirectory(cryptonote_protocol)
-if(NOT IOS)
-  add_subdirectory(simplewallet)
-  add_subdirectory(gen_multisig)
   add_subdirectory(daemonizer)
   add_subdirectory(daemon)
-  add_subdirectory(blockchain_utilities)
+  add_subdirectory(simplewallet)
 endif()
 
 if(CMAKE_BUILD_TYPE STREQUAL Debug)
-  add_subdirectory(debug_utilities)
+  if (NOT LOKI_DAEMON_AND_WALLET_ONLY AND NOT BUILD_INTEGRATION)
+    add_subdirectory(debug_utilities)
+  endif()
 endif()
 
 if(PER_BLOCK_CHECKPOINT)
@@ -146,3 +140,4 @@ if(PER_BLOCK_CHECKPOINT)
 endif()
 
 add_subdirectory(device)
+add_subdirectory(device_trezor)

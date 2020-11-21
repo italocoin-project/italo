@@ -53,6 +53,7 @@ namespace tools
     //         wallet_not_initialized
     //       multisig_export_needed
     //       multisig_import_needed
+    //       password_needed
     //   std::logic_error
     //     wallet_logic_error *
     //       file_exists
@@ -70,14 +71,15 @@ namespace tools
     //         get_out_indexes_error
     //         tx_parse_error
     //         get_tx_pool_error
+    //         out_of_hashchain_bounds_error
+    //       signature_check_failed
     //       transfer_error *
-    //         get_random_outs_general_error
+    //         get_outs_general_error
     //         not_enough_unlocked_money
     //         not_enough_money
     //         tx_not_possible
     //         not_enough_outs_to_mix
     //         tx_not_constructed
-    //         vote_rejected
     //         tx_rejected
     //         tx_sum_overflow
     //         tx_too_big
@@ -121,15 +123,17 @@ namespace tools
       "failed to get hashes",
       "failed to get out indices",
       "failed to get random outs",
-      "failed to get service_node_list",
+      "failed to get service node data",
+      "failed to get hard fork version",
     };
     enum failed_rpc_request_message_indices
     {
       get_blocks_error_message_index,
       get_hashes_error_message_index,
       get_out_indices_error_message_index,
-      get_random_outs_error_message_index,
-      get_service_nodes_error_message_index
+      get_outs_error_message_index,
+      get_service_nodes_error_message_index,
+      get_hard_fork_version_error_message_index,
     };
 
     template<typename Base, int msg_index>
@@ -207,6 +211,22 @@ namespace tools
     {
       explicit multisig_import_needed(std::string&& loc)
         : wallet_runtime_error(std::move(loc), "Not enough multisig data was found to sign: import multisig data from more other participants")
+      {
+      }
+    };
+    //----------------------------------------------------------------------------------------------------
+    struct password_needed : public wallet_runtime_error
+    {
+      explicit password_needed(std::string&& loc, const std::string &msg = "Password needed")
+        : wallet_runtime_error(std::move(loc), msg)
+      {
+      }
+    };
+    //----------------------------------------------------------------------------------------------------
+    struct password_entry_failed : public wallet_runtime_error
+    {
+      explicit password_entry_failed(std::string&& loc, const std::string &msg = "Password entry failed")
+        : wallet_runtime_error(std::move(loc), msg)
       {
       }
     };
@@ -403,6 +423,24 @@ namespace tools
       std::string to_string() const { return refresh_error::to_string(); }
     };
     //----------------------------------------------------------------------------------------------------
+    struct out_of_hashchain_bounds_error : public refresh_error
+    {
+      explicit out_of_hashchain_bounds_error(std::string&& loc)
+        : refresh_error(std::move(loc), "Index out of bounds of of hashchain")
+      {
+      }
+
+      std::string to_string() const { return refresh_error::to_string(); }
+    };
+    //----------------------------------------------------------------------------------------------------
+    struct signature_check_failed : public wallet_logic_error
+    {
+      explicit signature_check_failed(std::string&& loc, const std::string& message)
+        : wallet_logic_error(std::move(loc), "Signature check failed " + message)
+      {
+      }
+    };
+    //----------------------------------------------------------------------------------------------------
     struct transfer_error : public wallet_logic_error
     {
     protected:
@@ -412,7 +450,9 @@ namespace tools
       }
     };
     //----------------------------------------------------------------------------------------------------
-    typedef failed_rpc_request<transfer_error, get_random_outs_error_message_index> get_random_outs_error;
+    typedef failed_rpc_request<transfer_error, get_hard_fork_version_error_message_index> get_hard_fork_version_error;
+    //----------------------------------------------------------------------------------------------------
+    typedef failed_rpc_request<transfer_error, get_outs_error_message_index> get_outs_error;
     //----------------------------------------------------------------------------------------------------
     struct not_enough_unlocked_money : public transfer_error
     {
@@ -625,34 +665,6 @@ namespace tools
       std::string m_reason;
     };
     //----------------------------------------------------------------------------------------------------
-    struct vote_rejected : public transfer_error
-    {
-      explicit vote_rejected(std::string&& loc, const std::string& status, const std::string& reason)
-        : transfer_error(std::move(loc), "vote was rejected by daemon")
-        , m_status(status)
-        , m_reason(reason)
-      {
-      }
-
-      const std::string& status() const { return m_status; }
-      const std::string& reason() const { return m_reason; }
-
-      std::string to_string() const
-      {
-        std::ostringstream ss;
-        ss << transfer_error::to_string() << ", status = " << m_status;
-        if (!m_reason.empty())
-        {
-          ss << " (" << m_reason << ")";
-        }
-        return ss.str();
-      }
-
-    private:
-      std::string m_status;
-      std::string m_reason;
-    };
-    //----------------------------------------------------------------------------------------------------
     struct tx_sum_overflow : public transfer_error
     {
       explicit tx_sum_overflow(
@@ -692,30 +704,30 @@ namespace tools
     //----------------------------------------------------------------------------------------------------
     struct tx_too_big : public transfer_error
     {
-      explicit tx_too_big(std::string&& loc, const cryptonote::transaction& tx, uint64_t tx_size_limit)
+      explicit tx_too_big(std::string&& loc, const cryptonote::transaction& tx, uint64_t tx_weight_limit)
         : transfer_error(std::move(loc), "transaction is too big")
         , m_tx(tx)
-        , m_tx_size_limit(tx_size_limit)
+        , m_tx_weight_limit(tx_weight_limit)
       {
       }
 
       const cryptonote::transaction& tx() const { return m_tx; }
-      uint64_t tx_size_limit() const { return m_tx_size_limit; }
+      uint64_t tx_weight_limit() const { return m_tx_weight_limit; }
 
       std::string to_string() const
       {
         std::ostringstream ss;
         cryptonote::transaction tx = m_tx;
         ss << transfer_error::to_string() <<
-          ", tx_size_limit = " << m_tx_size_limit <<
-          ", tx size = " << get_object_blobsize(m_tx) <<
+          ", tx_weight_limit = " << m_tx_weight_limit <<
+          ", tx weight = " << get_transaction_weight(m_tx) <<
           ", tx:\n" << cryptonote::obj_to_json_str(tx);
         return ss.str();
       }
 
     private:
       cryptonote::transaction m_tx;
-      uint64_t m_tx_size_limit;
+      uint64_t m_tx_weight_limit;
     };
     //----------------------------------------------------------------------------------------------------
     struct zero_destination : public transfer_error
@@ -800,6 +812,14 @@ namespace tools
       }
     };
     //----------------------------------------------------------------------------------------------------
+    struct get_output_blacklist : public wallet_rpc_error
+    {
+      explicit get_output_blacklist(std::string&& loc, const std::string& request)
+        : wallet_rpc_error(std::move(loc), "failed to get output blacklist", request)
+      {
+      }
+    };
+    //----------------------------------------------------------------------------------------------------
     struct wallet_files_doesnt_correspond : public wallet_logic_error
     {
       explicit wallet_files_doesnt_correspond(std::string&& loc, const std::string& keys_file, const std::string& wallet_file)
@@ -815,6 +835,31 @@ namespace tools
     private:
       std::string m_keys_file;
       std::string m_wallet_file;
+    };
+    //----------------------------------------------------------------------------------------------------
+    struct mms_error : public wallet_logic_error
+    {
+    protected:
+      explicit mms_error(std::string&& loc, const std::string& message)
+        : wallet_logic_error(std::move(loc), message)
+      {
+      }
+    };
+    //----------------------------------------------------------------------------------------------------
+    struct no_connection_to_bitmessage : public mms_error
+    {
+      explicit no_connection_to_bitmessage(std::string&& loc, const std::string& address)
+        : mms_error(std::move(loc), "no connection to PyBitmessage at address " + address)
+      {
+      }
+    };
+    //----------------------------------------------------------------------------------------------------
+    struct bitmessage_api_error : public mms_error
+    {
+      explicit bitmessage_api_error(std::string&& loc, const std::string& error_string)
+        : mms_error(std::move(loc), "PyBitmessage returned " + error_string)
+      {
+      }
     };
     //----------------------------------------------------------------------------------------------------
 

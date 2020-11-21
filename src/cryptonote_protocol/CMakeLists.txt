@@ -27,13 +27,12 @@
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 cmake_minimum_required (VERSION 2.6)
-project (italo CXX)
+project (loki CXX)
 
 file(GLOB CRYPTONOTE_PROTOCOL *)
 source_group(cryptonote_protocol FILES ${CRYPTONOTE_PROTOCOL})
 
-#monero_private_headers(cryptonote_protocol ${CRYPTONOTE_PROTOCOL})
-italo_add_library(cryptonote_protocol ${CRYPTONOTE_PROTOCOL})
+loki_add_library(cryptonote_protocol ${CRYPTONOTE_PROTOCOL})
 target_link_libraries(cryptonote_protocol
   PUBLIC
     p2p

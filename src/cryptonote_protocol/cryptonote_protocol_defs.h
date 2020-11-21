@@ -80,6 +80,8 @@ namespace cryptonote
 
     uint64_t height;
 
+    uint32_t pruning_seed;
+
     BEGIN_KV_SERIALIZE_MAP()
       KV_SERIALIZE(incoming)
       KV_SERIALIZE(localhost)
@@ -102,6 +104,7 @@ namespace cryptonote
       KV_SERIALIZE(support_flags)
       KV_SERIALIZE(connection_id)
       KV_SERIALIZE(height)
+      KV_SERIALIZE(pruning_seed)
     END_KV_SERIALIZE_MAP()
   };
 
@@ -148,9 +151,11 @@ namespace cryptonote
     struct request
     {
       std::vector<blobdata>   txs;
+      std::string _; // padding
 
       BEGIN_KV_SERIALIZE_MAP()
         KV_SERIALIZE(txs)
+        KV_SERIALIZE(_)
       END_KV_SERIALIZE_MAP()
     };
   };
@@ -200,12 +205,14 @@ namespace cryptonote
     uint64_t cumulative_difficulty;
     crypto::hash  top_id;
     uint8_t top_version;
+    uint32_t pruning_seed;
 
     BEGIN_KV_SERIALIZE_MAP()
       KV_SERIALIZE(current_height)
       KV_SERIALIZE(cumulative_difficulty)
       KV_SERIALIZE_VAL_POD_AS_BLOB(top_id)
       KV_SERIALIZE_OPT(top_version, (uint8_t)0)
+      KV_SERIALIZE_OPT(pruning_seed, (uint32_t)0)
     END_KV_SERIALIZE_MAP()
   };
 
@@ -292,7 +299,7 @@ namespace cryptonote
 
     struct request
     {
-      std::vector<loki::service_node_deregister::vote> votes;
+      std::vector<service_nodes::deregister_vote> votes;
       BEGIN_KV_SERIALIZE_MAP()
         KV_SERIALIZE_CONTAINER_POD_AS_BLOB(votes)
       END_KV_SERIALIZE_MAP()
@@ -308,11 +315,18 @@ namespace cryptonote
 
     struct request
     {
+      uint16_t snode_version_major;
+      uint16_t snode_version_minor;
+      uint16_t snode_version_patch;
+
       uint64_t timestamp;
       crypto::public_key pubkey;
       crypto::signature sig;
 
       BEGIN_KV_SERIALIZE_MAP()
+        KV_SERIALIZE(snode_version_major)
+        KV_SERIALIZE(snode_version_minor)
+        KV_SERIALIZE(snode_version_patch)
         KV_SERIALIZE(timestamp)
         KV_SERIALIZE_VAL_POD_AS_BLOB(pubkey)
         KV_SERIALIZE_VAL_POD_AS_BLOB(sig)

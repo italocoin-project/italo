@@ -1,4 +1,4 @@
-# Copyright (c) 2018, The Italo Project
+# Copyright (c) 2018, The Loki Project
 # Copyright (c) 2014-2017, The Monero Project
 #
 # All rights reserved.
@@ -33,43 +33,47 @@ set(device_sources
   log.cpp
   )
 
-if(PCSC_FOUND)
-  set(device_sources ${device_sources} device_ledger.cpp)
+if(HIDAPI_FOUND)
+  set(device_sources 
+    ${device_sources} 
+    device_ledger.cpp
+    device_io_hid.cpp
+    )
 endif()
 
 set(device_headers
   device.hpp
+  device_io.hpp
   device_default.hpp
+  device_cold.hpp
   log.hpp
  )
 
-if(PCSC_FOUND)
-  set(device_headers ${device_headers} device_ledger.hpp)
+if(HIDAPI_FOUND)
+  set(device_headers 
+    ${device_headers} 
+    device_ledger.hpp
+    device_io_hid.hpp
+    )
 endif()
 
 set(device_private_headers)
 
 
-if(PER_BLOCK_CHECKPOINT)
-  set(Blocks "blocks")
-else()
-  set(Blocks "")
-endif()
-
-italo_private_headers(device
+loki_private_headers(device
   ${device_private_headers})
 
-italo_add_library(device
+loki_add_library(device
   ${device_sources}
   ${device_headers}
   ${device_private_headers})
 
 target_link_libraries(device
   PUBLIC
-    ${PCSC_LIBRARIES}
+    ${HIDAPI_LIBRARIES}
     cncrypto
     ringct_basic
     ${OPENSSL_CRYPTO_LIBRARIES}
+    ${Boost_SERIALIZATION_LIBRARY}
   PRIVATE
-    ${Blocks}
     ${EXTRA_LIBRARIES})

@@ -34,18 +34,29 @@ set(common_sources
   command_line.cpp
   dns_utils.cpp
   download.cpp
+  error.cpp
+  expect.cpp
+  loki.cpp
   util.cpp
   i18n.cpp
-  exp2.cpp
-  round.cpp
+  rules.cpp
+  notify.cpp
   password.cpp
   perf_timer.cpp
-  rules.cpp
+  pruning.cpp
+  scoped_message_writer.cpp
+  spawn.cpp
   threadpool.cpp
-  updates.cpp)
+  updates.cpp
+  aligned.c
+  combinator.cpp)
 
 if (STACK_TRACE)
   list(APPEND common_sources stack_trace.cpp)
+endif()
+
+if (BACKCOMPAT)
+  list(APPEND common_sources compat/glibc_compat.cpp)
 endif()
 
 set(common_headers)
@@ -58,11 +69,14 @@ set(common_private_headers
   common_fwd.h
   dns_utils.h
   download.h
-  exp2.h
-  round.h
+  error.h
+  expect.h
+  loki.h
   http_connection.h
-  int-util.h
+  loki_integration_test_hooks.h
+  notify.h
   pod-class.h
+  pruning.h
   rpc_client.h
   scoped_message_writer.h
   unordered_containers_boost_serialization.h
@@ -72,9 +86,12 @@ set(common_private_headers
   password.h
   perf_timer.h
   rules.h
+  spawn.h
   stack_trace.h
   threadpool.h
-  updates.h)
+  updates.h
+  aligned.h
+  combinator.h)
 
 italo_private_headers(common
   ${common_private_headers})
@@ -85,7 +102,6 @@ italo_add_library(common
   DEPENDS generate_translations_header)
 target_link_libraries(common
   PUBLIC
-    epee
     cncrypto
     ${UNBOUND_LIBRARY}
     ${LIBUNWIND_LIBRARIES}
@@ -97,6 +113,7 @@ target_link_libraries(common
     ${Boost_CHRONO_LIBRARY}
   PRIVATE
     ${OPENSSL_LIBRARIES}
+    ${EPEE_READLINE}
     ${EXTRA_LIBRARIES})
 
 #monero_install_headers(common
