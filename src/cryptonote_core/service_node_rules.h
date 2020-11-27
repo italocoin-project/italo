@@ -48,7 +48,7 @@ namespace service_nodes {
   
   constexpr size_t pulse_min_service_nodes(cryptonote::network_type nettype)
   {
-    return (nettype == cryptonote::MAINNET) ? 50 : PULSE_QUORUM_SIZE;
+    return (nettype == cryptonote::MAINNET) ? 12 : PULSE_QUORUM_SIZE;
   }
   static_assert(pulse_min_service_nodes(cryptonote::MAINNET) >= PULSE_QUORUM_SIZE);
   static_assert(pulse_min_service_nodes(cryptonote::TESTNET) >= PULSE_QUORUM_SIZE);
