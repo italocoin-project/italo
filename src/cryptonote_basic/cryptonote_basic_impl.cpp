@@ -120,11 +120,11 @@ namespace cryptonote {
     } 
     if (already_generated_coins == 4398046511103 && height == 1)
     {
-      reward = 22'500'000 * COIN;
+      reward = 25'000'000 * COIN;
       return true;
     }
 
-    static_assert((TARGET_BLOCK_TIME % 15s) == 0s, "difficulty targets must be a multiple of a minute");
+    static_assert((TARGET_BLOCK_TIME % 30s) == 0s, "difficulty targets must be a multiple of a minute");
 
     uint64_t base_reward =
       version >= network_version_17 ? BLOCK_REWARD_HF17 :
