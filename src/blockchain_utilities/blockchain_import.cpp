@@ -74,9 +74,6 @@ std::string refresh_string = "\r                                    \r";
 const command_line::arg_descriptor<bool> arg_recalculate_difficulty = {
   "recalculate-difficulty",
   "Recalculate per-block difficulty starting from the height specified",
-  // This is now enabled by default because the network broke at 526483 because of divergent
-  // difficulty values (and the chain that kept going violated the correct difficulty, and got
-  // checkpointed multiple times because enough of the network followed it).
   false};
 }
 
