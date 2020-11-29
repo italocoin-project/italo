@@ -51,7 +51,7 @@ message(STATUS "CMake version ${CMAKE_VERSION}")
 set(CMAKE_OSX_DEPLOYMENT_TARGET 10.12 CACHE STRING "macOS deployment target (Apple clang only)")
 
 project(italo
-    VERSION 8.1.3
+    VERSION 8.1.4
     LANGUAGES CXX C)
 set(ITALO_RELEASE_CODENAME "Salty Saga")
 
