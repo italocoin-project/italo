@@ -114,6 +114,7 @@ set(CURL_HASH SHA256=0ded0808c4d85f2ee0db86980ae610cc9d165e9ca9da466196cc73c3465
 
 
 
+
 include(ExternalProject)
 
 set(DEPS_DESTDIR ${CMAKE_BINARY_DIR}/static-deps)
@@ -603,7 +604,7 @@ set(curl_extra)
 if(WIN32)
   set(curl_ssl_opts --without-ssl --with-schannel)
 elseif(APPLE)
-  set(curl_ssl_opts --without-ssl --with-secure-transport)
+  set(curl_ssl_opts --without-ssl --with-secure-transport --without-nghttp2 --without-nghttp3)
   if(IOS)
     # This CPP crap shouldn't be necessary but is because Apple's toolchain is trash
     set(curl_extra "LDFLAGS=-L${DEPS_DESTDIR}/lib -isysroot ${CMAKE_OSX_SYSROOT}" CPP=cpp)
