@@ -3,6 +3,7 @@
 /// @brief This is the original cryptonote protocol network-events handler, modified by us
 
 // Copyright (c) 2014-2019, The Monero Project
+// Copyright (c) 2020, The Italo Project
 // 
 // All rights reserved.
 // 
