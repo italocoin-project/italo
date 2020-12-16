@@ -1,5 +1,5 @@
 // Copyright (c) 2014-2020, The Monero Project
-// Copyright (c)      2018, The Loki Project
+// Copyright (c)      2018, The Italo Project
 //
 // All rights reserved.
 //
@@ -223,7 +223,7 @@ int main(int argc, char const * argv[])
       {
         auto rpc_config = cryptonote::rpc_args::process(vm);
         std::string rpc_addr;
-        // TODO: remove this in loki 9.x and only use rpc-admin
+        // TODO: remove this in italo 9.x and only use rpc-admin
         if (!is_arg_defaulted(vm, cryptonote::rpc::http_server::arg_rpc_bind_port) ||
             rpc_config.bind_ip.has_value()) {
           auto rpc_port = command_line::get_arg(vm, cryptonote::rpc::http_server::arg_rpc_bind_port);
@@ -236,7 +236,7 @@ int main(int argc, char const * argv[])
         } else {
           rpc_addr = command_line::get_arg(vm, cryptonote::rpc::http_server::arg_rpc_admin)[0];
           if (rpc_addr == "none")
-            throw std::runtime_error{"Cannot invoke lokid command: --rpc-admin is disabled"};
+            throw std::runtime_error{"Cannot invoke italod command: --rpc-admin is disabled"};
         }
 
         {

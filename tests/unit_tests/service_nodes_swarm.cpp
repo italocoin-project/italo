@@ -1,4 +1,4 @@
-// Copyright (c) 2018, The Loki Project
+// Copyright (c) 2018, The Italo Project
 // 
 // All rights reserved.
 // 
@@ -41,7 +41,7 @@
 using namespace service_nodes;
 
 crypto::public_key newPubKey() {
-  return cryptonote::keypair::generate(hw::get_device("default")).pub;
+  return cryptonote::keypair{hw::get_device("default")}.pub;
 };
 
 size_t calculateExcess(const swarm_snode_map_t& swarm_to_snodes) {

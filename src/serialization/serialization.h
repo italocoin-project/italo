@@ -107,7 +107,7 @@
  *
  *     public:
  *       template <class Archive>
- *       void serialize_value(Archive& a) {
+ *       void serialize_value(Archive& ar) {
  *         serialization::value(ar, v1);
  *         serialization::value(ar, v2);
  *       }

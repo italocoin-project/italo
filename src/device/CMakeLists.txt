@@ -1,4 +1,4 @@
-# Copyright (c) 2018, The Loki Project
+# Copyright (c) 2018, The Italo Project
 # Copyright (c) 2014-2017, The Monero Project
 #
 # All rights reserved.
@@ -43,6 +43,12 @@ target_link_libraries(device
   PRIVATE
     version
     extra)
+
+option(HWDEVICE_DEBUG "Enable hardware wallet debugging (requires also using a debug build of the Ledger wallet)" OFF)
+if(HWDEVICE_DEBUG)
+  target_compile_definitions(device PUBLIC DEBUG_HWDEVICE IODUMMYCRYPT_HWDEVICE)
+endif()
+
 
 if(BUILD_STATIC_DEPS)
   message(STATUS "Using HIDAPI from static build deps")

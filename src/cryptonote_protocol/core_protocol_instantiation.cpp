@@ -1,4 +1,4 @@
-// Copyright (c)      2019, The Loki Project
+// Copyright (c)      2019, The Italo Project
 //
 // All rights reserved.
 //

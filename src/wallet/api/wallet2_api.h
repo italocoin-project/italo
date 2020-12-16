@@ -600,6 +600,12 @@ struct Wallet
     }
 
    /**
+    * @brief listCurrentStakes - returns a list of the wallets locked stakes, provides both service node address and the staked amount
+    * @return
+    */
+    virtual std::vector<std::pair<std::string, uint32_t>>* listCurrentStakes() const = 0;
+
+   /**
     * @brief watchOnly - checks if wallet is watch only
     * @return - true if watch only
     */
@@ -1010,7 +1016,7 @@ struct Wallet
     virtual Device getDeviceType() const = 0;
 
     /// Prepare a staking transaction; return nullptr on failure
-    virtual PendingTransaction* stakePending(const std::string& service_node_key, const std::string& address, const std::string& amount, std::string& error_msg) = 0;
+    virtual PendingTransaction* stakePending(const std::string& service_node_key, const std::string& amount, std::string& error_msg) = 0;
 
     virtual StakeUnlockResult* canRequestStakeUnlock(const std::string &sn_key) = 0;
 

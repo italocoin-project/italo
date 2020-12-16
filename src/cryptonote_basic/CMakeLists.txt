@@ -1,4 +1,4 @@
-# Copyright (c) 2018, The Loki Project
+# Copyright (c) 2018, The Italo Project
 # Copyright (c) 2014-2019, The Monero Project
 # Copyright (c) 2020, The Italo Project
 #
@@ -30,11 +30,13 @@
 
 add_library(cryptonote_basic
   account.cpp
+  cryptonote_basic.cpp
   cryptonote_basic_impl.cpp
   cryptonote_format_utils.cpp
   difficulty.cpp
   hardfork.cpp
-  miner.cpp)
+  miner.cpp
+  tx_extra.cpp)
 
 target_link_libraries(cryptonote_basic
   PRIVATE

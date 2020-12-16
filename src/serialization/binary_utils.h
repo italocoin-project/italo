@@ -32,6 +32,7 @@
 #pragma once
 
 #include <sstream>
+#include <vector>
 #include "binary_archive.h"
 #include <streambuf>
 

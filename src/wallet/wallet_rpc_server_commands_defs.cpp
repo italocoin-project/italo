@@ -1,4 +1,4 @@
-// Copyright (c) 2018-2020, The Loki Project
+// Copyright (c) 2018-2020, The Italo Project
 // Copyright (c) 2014-2019, The Monero Project
 // Copyright (c) 2020, The Italo Project
 // 
@@ -858,6 +858,9 @@ KV_SERIALIZE_MAP_CODE_BEGIN(CREATE_WALLET::request)
   KV_SERIALIZE(filename)
   KV_SERIALIZE(password)
   KV_SERIALIZE(language)
+  KV_SERIALIZE(hardware_wallet)
+  KV_SERIALIZE(device_name)
+  KV_SERIALIZE(device_label)
 KV_SERIALIZE_MAP_CODE_END()
 
 

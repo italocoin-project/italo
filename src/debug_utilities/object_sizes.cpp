@@ -1,5 +1,5 @@
 // Copyright (c) 2017-2019, The Monero Project
-// Copyright (c)      2018, The Loki Project
+// Copyright (c)      2018, The Italo Project
 //
 // All rights reserved.
 //
