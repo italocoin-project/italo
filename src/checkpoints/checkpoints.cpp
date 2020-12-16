@@ -1,5 +1,5 @@
 // Copyright (c) 2014-2019, The Monero Project
-// Copyright (c)      2018, The Italo Project
+// Copyright (c)      2018, The Loki Project
 //
 // All rights reserved.
 //
@@ -59,7 +59,7 @@ namespace cryptonote
 
   height_to_hash const HARDCODED_MAINNET_CHECKPOINTS[] =
   {
-    {0, "0f727687a72e5bdd69e647d30ba42e03614eededc278fdcad3a40fe8271fa32e"},
+    {0, "277e7898613b3a4d654461ef083850abb6c817af31ff7892b6b6db15af5c928d"},
   };
 
   crypto::hash get_newest_hardcoded_checkpoint(cryptonote::network_type nettype, uint64_t *height)

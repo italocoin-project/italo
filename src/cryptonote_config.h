@@ -237,9 +237,9 @@ namespace config
   inline constexpr uint16_t ZMQ_RPC_DEFAULT_PORT = 21014;
   inline constexpr uint16_t QNET_DEFAULT_PORT = 21015;
   inline constexpr boost::uuids::uuid const NETWORK_ID = { {
-        0x05, 0x1f, 0x2d, 0x4u, 0x6c, 0x4u, 0x012, 0xb3, 0x15, 0x14, 0x08, 0x2b, 0x6b, 0x13, 0x5c, 0x9b
+        0x44 ,0x65, 0x71, 0x64 ,0x63, 0x55, 0x76, 0x49, 0x6a, 0x3c, 0x71, 0x72, 0x61, 0x66, 0x49
     } }; // Bender's nightmare
-  inline constexpr std::string_view GENESIS_TX = "013c01ff0001ffffffffff7f029b2e4c0281c0b02e7c53291a94d1d0cbff8883f8024f5142ee494ffbbd0880712101569becc5b6d43b97006ebde6a07d1373043d9d64f69fd7e7f13ca150efa33ed4"sv;
+  inline constexpr std::string_view GENESIS_TX = "013c01ff0001ffffffffff7f029b2e4c0281c0b02e7c53291a94d1d0cbff8883f8024f5142ee494ffbbd0880712101a4c7f45361853c33ca078aa72308ed66d62c121e36e278294c7695ad4650e85b"sv;
   inline constexpr uint32_t GENESIS_NONCE = 7000;
 
   inline constexpr uint64_t GOVERNANCE_REWARD_INTERVAL_IN_BLOCKS = BLOCKS_EXPECTED_IN_DAYS(7);
@@ -275,9 +275,9 @@ namespace config
     inline constexpr uint16_t ZMQ_RPC_DEFAULT_PORT = 31014;
     inline constexpr uint16_t QNET_DEFAULT_PORT = 31015;
     inline constexpr boost::uuids::uuid const NETWORK_ID = { {
-        0x10 ,0x29, 0xD5, 0x87 , 0x62, 0x43 , 0x48, 0x69, 0x12, 0x56, 0x81, 0x78, 0x54, 0xB3, 0xA9, 0x23
+        0x10 ,0x29, 0xD5, 0x87 , 0x62, 0x43 , 0x48, 0x69, 0x16, 0x56, 0x81, 0x78, 0x54, 0xB3, 0xA9, 0x23
       } }; // Bender's daydream
-    inline constexpr std::string_view GENESIS_TX = "013c01ff0001ffffffffff7f029b2e4c0281c0b02e7c53291a94d1d0cbff8883f8024f5142ee494ffbbd0880712101b73a6206f07ca2de397f362f59025a305afe6fc7754f6485ed44cab918684246"sv;
+    inline constexpr std::string_view GENESIS_TX = "013c01ff0001ffffffffff7f029b2e4c0281c0b02e7c53291a94d1d0cbff8883f8024f5142ee494ffbbd0880712101c9c26da5cb20f83a823aa5ec94fc30e5bf3e492b108449b3c983ca4d0ff8e1e1"sv;
     inline constexpr uint32_t GENESIS_NONCE = 10001;
 
     inline constexpr uint64_t GOVERNANCE_REWARD_INTERVAL_IN_BLOCKS = 1000;
@@ -301,9 +301,9 @@ namespace config
     inline constexpr uint16_t ZMQ_RPC_DEFAULT_PORT = 41014;
     inline constexpr uint16_t QNET_DEFAULT_PORT = 41015;
     inline constexpr boost::uuids::uuid const NETWORK_ID = { {
-        0xa9, 0xf7, 0x5c, 0x7d, 0x55, 0x17, 0xcb, 0x6b, 0x5a, 0xf4, 0x63, 0x79, 0x7a, 0x57, 0xab, 0xd3
+        0xa9, 0xf7, 0x5c, 0x7d, 0x55, 0x17, 0xcb, 0x6b, 0x5a, 0xf2, 0x66, 0x79, 0x7a, 0x57, 0xab, 0xd3
       } };
-    inline constexpr std::string_view GENESIS_TX = "04011e1e01ff00018080c9db97f4fb2702fa27e905f604faa4eb084ee675faca77b0cfea9adec1526da33cae5e286f31624201dae05bf3fa1662b7fd373c92426763d921cf3745e10ee43edb510f690c656f247200000000000000000000000000000000000000000000000000000000000000000000"sv;
+    inline constexpr std::string_view GENESIS_TX = "013c01ff0001ffffffffff7f029b2e4c0281c0b02e7c53291a94d1d0cbff8883f8024f5142ee494ffbbd088071210131f292ec3b554f10b44d7a24a0c89a53455a2d66d1b31d62c7fd33d1f7b29826"sv;
     inline constexpr uint32_t GENESIS_NONCE = 12345;
 
     inline constexpr uint64_t GOVERNANCE_REWARD_INTERVAL_IN_BLOCKS = BLOCKS_EXPECTED_IN_DAYS(7);
