@@ -54,7 +54,7 @@ set(CMAKE_OSX_DEPLOYMENT_TARGET 10.12 CACHE STRING "macOS deployment target (App
 project(italo
     VERSION 8.1.4
     LANGUAGES CXX C)
-set(ITALO_RELEASE_CODENAME "Salty Saga")
+set(ITALO_RELEASE_CODENAME "Origin, Point One")
 
 # String value to append to the full version string; this is intended to easily identify whether a
 # binary was build from the release or development branches.  This should be permanently set to an
