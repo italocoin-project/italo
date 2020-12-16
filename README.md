@@ -4,7 +4,7 @@
     <a href="https://github.com/italo-project/italo/commits/dev"><img alt="pipeline status" src="https://gitlab.com/italoproject/italo/badges/dev/pipeline.svg" /></a>
 </p>
 
-Copyright (c) 2018 The Italo Project.   
+Copyright (c) 2018 The Loki Project.   
 Portions Copyright (c) 2014-2019 The Monero Project.   
 Portions Copyright (c) 2012-2013 The Cryptonote developers.
 
