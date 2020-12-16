@@ -23,7 +23,7 @@ uint64_t get_staking_requirement(cryptonote::network_type m_nettype, uint64_t he
   if (m_nettype == cryptonote::DEVNET)
       return get_staking_requirement(cryptonote::MAINNET, 600000 + height, hf_version) / 10;
 
-  if (hf_version >= cryptonote::network_version_16_pulse)
+  if (hf_version >= cryptonote::network_version_15_lns)
     return 15000'000000000;
 
   if (hf_version >= cryptonote::network_version_13_enforce_checkpoints)
