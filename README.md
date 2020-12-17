@@ -1,8 +1,11 @@
 # Italo
 
 Copyright (c) 2020 The Italo Project.
+
 Copyright (c) 2018 The Loki Project.
+ 
 Portions Copyright (c) 2014-2019 The Monero Project.
+ 
 Portions Copyright (c) 2012-2013 The Cryptonote developers.
 
 ## Development resources
@@ -11,7 +14,7 @@ Portions Copyright (c) 2012-2013 The Cryptonote developers.
 - Telegram: [t.me/italonetwork](https://t.me/italonetwork)
 - Mail: [info@italo.network](mailto:info@italo.network)
 - GitHub: [https://github.com/italocoin-project/italo](https://github.com/italocoin-project/italo)
-- Discord: [https://discord.gg/67GXfD6](https://discord.gg/67GXfD6)
+- Discord: [https://discord.gg/thUzmtm](https://discord.gg/thUzmtm)
 
 ## Vulnerability disclosure
 
