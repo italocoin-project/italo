@@ -1,28 +1,44 @@
 # Italo
 
-<p align="center">
-    <a href="https://github.com/italo-project/italo/commits/dev"><img alt="pipeline status" src="https://gitlab.com/italoproject/italo/badges/dev/pipeline.svg" /></a>
-</p>
+Copyright (c) 2020 The Italo Project.
 
-Copyright (c) 2018 The Loki Project.   
-Portions Copyright (c) 2014-2019 The Monero Project.   
+Copyright (c) 2018 The Loki Project.
+ 
+Portions Copyright (c) 2014-2019 The Monero Project.
+ 
 Portions Copyright (c) 2012-2013 The Cryptonote developers.
 
 ## Development resources
 
 - Web: [italo.network](https://italo.network)
-- Telegram: [t.me/ItaloCommunity](https://t.me/ItaloCommunity)
-- Mail: [team@italo.network](mailto:team@italo.network)
-- GitHub: [https://github.com/italo-project/italo](https://github.com/italo-project/italo)
-- Discord: [https://discord.gg/67GXfD6](https://discord.gg/67GXfD6)
+- Telegram: [t.me/italonetwork](https://t.me/italonetwork)
+- Mail: [info@italo.network](mailto:info@italo.network)
+- GitHub: [https://github.com/italocoin-project/italo](https://github.com/italocoin-project/italo)
+- Discord: [https://discord.gg/thUzmtm](https://discord.gg/thUzmtm)
 
 ## Vulnerability disclosure
 
-- Check out our [Vulnerability Response Process](https://italo-project.github.io/italo-docs/Contributing/VULNERABILITY_RESPONSE_ITALO), encourages prompt disclosure of any Vulnerabilities
+- Check out our [Vulnerability Response Process](https://italocoin-project.github.io/italocoin-docs/Contributing/VULNERABILITY_RESPONSE_ITALO), encourages prompt disclosure of any Vulnerabilities
+
+## Supporting the project
+
+Italo is a 100% community-sponsored endeavor. If you want to join our efforts, the easiest thing you can do is support the project financially. Both Italo and Bitcoin donations can be made to **donate.italo.network** if using a client that supports the [OpenAlias](https://openalias.org) standard. Alternatively you can send XMR to the Italo donation address via the `donate` command (type `help` in the command-line wallet for details).
+
+The Italo donation address is: `iz5CsufgHSeNrnWgwtqtaicP2EJMoWMhvBFjdrWtW6VDG9LdcNdQgSUNCytQm1uhLTh5vSZBcoAfVBGkheej3c2Z2kzExV5Y5`
+
+The Bitcoin donation address is: `3MqdbY1ix8hZZcbsMfpSaRGdYccdzdLrvW`
+
+The Monero donation address is: `44gNsFFqMf59DiVL3ejpfAdV3H3aFbbYM28XtvBK22SQVESBLpxRrQcFCky2yVH8Wa3FpiBbiNRJ5SQfdsVwJqYpA7XLyec`
+
+Core development funding and/or some supporting services are also graciously provided by sponsors:
+
+NONE YET!
 
 ## Information
 
-Italo is a private cryptocurrency based on Monero. Italo currently offers an incentivised full node layer, over the coming months we will be looking to support a secondary p2p network (Italonet) and a messenger that offers private communications based on the Signal protocol (Italo Messenger).
+**Italo is a private cryptocurrency based on Monero And Loki Project.**
+
+Italo currently offers an incentivised full node layer, over the coming months we will be looking to support a secondary p2p network (Italonet) and a messenger that offers private communications based on the Signal protocol (Italo Messenger).
 
 More information on the project can be found on the website and in the whitepaper.
 
@@ -93,7 +109,7 @@ FreeBSD one liner for required to build dependencies
 
 Clone recursively to pull-in needed submodule(s):
 
-`$ git clone --recursive https://github.com/italo-project/italo`
+`$ git clone --recursive https://github.com/italocoin-project/italo`
 
 If you already have a repo cloned, initialize and update:
 
@@ -228,7 +244,7 @@ application.
 * To git clone, run:
 
     ```bash
-    git clone --recursive https://github.com/italo-project/italo.git
+    git clone --recursive https://github.com/italocoin-project/italo.git
     ```
 
 **Building**
@@ -239,7 +255,7 @@ application.
     cd italo
     ```
 
-* If you would like a specific [version/tag](https://github.com/italo-project/italo/tags), do a git checkout for that version. eg. 'v5.1.2'. If you don't care about the version and just want binaries from master, skip this step:
+* If you would like a specific [version/tag](https://github.com/italocoin-project/italo/tags), do a git checkout for that version. eg. 'v5.1.2'. If you don't care about the version and just want binaries from master, skip this step:
 	
     ```bash
     git checkout v5.1.2
@@ -363,7 +379,7 @@ The produced binaries still link libc dynamically. If the binary is compiled on 
 ## Installing Italo from a package
 
 Pre-built packages are available for recent Debian and Ubuntu systems (and are often usable on
-Debian or Ubuntu-derived Linux distributions).  For more details see https://deb.imaginary.stream
+Debian or Ubuntu-derived Linux distributions).
 
 
 
