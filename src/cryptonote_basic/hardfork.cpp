@@ -66,7 +66,8 @@ static uint8_t get_block_version(const cryptonote::block &b)
 static constexpr HardFork::Params mainnet_hard_forks[] =
 {
   { network_version_7,                      1, 0, 1605737882 },
-  { network_version_16_pulse,               120, 0, 1605737882 + 10*60}, // 2020-03-25 14:00AEDT (03:00UTC)
+  { network_version_11_infinite_staking,    10, 0, 1605737882  + 10*60}, // 2019-03-26 13:00AEDT
+  { network_version_16_pulse,               120, 0, 1605737882 + 20*60}, // 2020-03-25 14:00AEDT (03:00UTC)
   { network_version_17,                     120 + BLOCKS_EXPECTED_IN_DAYS(180), 0, 1605737882 + 180*24*60*60 }, // HF16 + 180 days
 };
 
