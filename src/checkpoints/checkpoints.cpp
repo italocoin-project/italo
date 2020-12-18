@@ -61,6 +61,12 @@ namespace cryptonote
   height_to_hash const HARDCODED_MAINNET_CHECKPOINTS[] =
   {
     {0, "277e7898613b3a4d654461ef083850abb6c817af31ff7892b6b6db15af5c928d"},
+    {1, "699951b884600fafebab8ee9b04370709c37b8068516acd0a80293615f33e48c"},
+    {100, "2cc580e9bbfe55e5ed4ef1fc28a32d6487b5d85dc020a99d3f62c860612e5a7b"},
+    {200, "68df9c630aac812dc768173b4884271373d72c3d3a77cdfd398a16a7ae41dacc"},
+    {300, "0350dc08fcecc5cb0c3049f504620cd58355ebf2af4f210fd5b29c26b59acd06"},
+    {400, "633adae9e5306d20351cb5187a8484020b2b13ffdd3ea4c3a1e8fd11278742ee"},
+    {500, "d53d61021e7aa2600ecf44b10ff901cafde697927919d97e91741e3f26a5a778"},
   };
 
   crypto::hash get_newest_hardcoded_checkpoint(cryptonote::network_type nettype, uint64_t *height)
