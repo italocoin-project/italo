@@ -91,7 +91,7 @@ debug-static-win32:
  
 cmake-release:
 	mkdir -p $(builddir)/release
-	cd $(builddir)/release && cmake -D CMAKE_BUILD_TYPE=Release $(topdir)
+	cd $(builddir)/release && cmake -D CMAKE_BUILD_TYPE=Release -D USE_LTO=OFF $(topdir)
 
 release: cmake-release
 	cd $(builddir)/release && $(MAKE)
