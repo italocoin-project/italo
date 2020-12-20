@@ -12964,7 +12964,7 @@ uint64_t wallet2::get_approximate_blockchain_height() const
 {
   const auto& netconf = cryptonote::get_config(m_nettype);
   const time_t since_ts = time(nullptr) - netconf.HEIGHT_ESTIMATE_TIMESTAMP;
-  uint64_t approx_blockchain_height = netconf.HEIGHT_ESTIMATE_HEIGHT + (since_ts > 0 ? (uint64_t)since_ts / tools::to_seconds(TARGET_BLOCK_TIME) : 0) - BLOCKS_EXPECTED_IN_DAYS(1); // subtract a week's worth of blocks to be conservative
+  uint64_t approx_blockchain_height = netconf.HEIGHT_ESTIMATE_HEIGHT + (since_ts > 0 ? (uint64_t)since_ts / tools::to_seconds(TARGET_BLOCK_TIME) : 0) - BLOCKS_EXPECTED_IN_DAYS(1); // subtract one day worth of blocks to be conservative
   LOG_PRINT_L2("Calculated blockchain height: " << approx_blockchain_height);
   return approx_blockchain_height;
 }
