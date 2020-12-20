@@ -227,8 +227,8 @@ namespace config
   // Used to estimate the blockchain height from a timestamp, with some grace time.  This can drift
   // slightly over time (because average block time is not typically *exactly*
   // DIFFICULTY_TARGET_V2).
-  inline constexpr uint64_t HEIGHT_ESTIMATE_HEIGHT = 582088;
-  inline constexpr time_t HEIGHT_ESTIMATE_TIMESTAMP = 1595359932;
+  inline constexpr uint64_t HEIGHT_ESTIMATE_HEIGHT = 1000;
+  inline constexpr time_t HEIGHT_ESTIMATE_TIMESTAMP = 1608344994;
 
   inline constexpr uint64_t CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX = 0xfb;
   inline constexpr uint64_t CRYPTONOTE_PUBLIC_INTEGRATED_ADDRESS_BASE58_PREFIX = 0xd1;
