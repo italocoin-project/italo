@@ -17,7 +17,7 @@ chmod 600 ssh_key
 filenames=(dist/electron/Packaged/italo-electron-wallet-*)
 if [ "${#filenames[@]}" -lt 1 ] || ! [ -f "${filenames[0]}" ]; then
     echo "Did not find expected electron wallet packages"
-    find italo-electron-gui-wallet/dist/electron/Packaged
+    find dist/electron
     exit 1
 fi
 
