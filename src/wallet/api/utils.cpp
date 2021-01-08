@@ -29,12 +29,14 @@
 //
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
+#include "common_defines.h"
 #include "epee/misc_log_ex.h"
 #include "common/util.h"
 
 namespace Wallet {
 namespace Utils {
 
+EXPORT
 bool isAddressLocal(const std::string &address)
 { 
     try {
@@ -45,6 +47,7 @@ bool isAddressLocal(const std::string &address)
     }
 }
 
+EXPORT
 void onStartup()
 {
     tools::on_startup();
