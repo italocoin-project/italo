@@ -96,6 +96,11 @@ function(combine_archives output_archive)
 endfunction(combine_archives)
 
 if (STATIC AND BUILD_STATIC_DEPS)
+    set(merged_protobuf)
+    if(TARGET protobuf_lite)
+      set(merged_protobuf protobuf_lite)
+    endif()
+
     combine_archives(wallet_merged
             wallet_api
             wallet
@@ -125,7 +130,7 @@ if (STATIC AND BUILD_STATIC_DEPS)
             expat
             libunbound
             sqlite3
-            protobuf_lite
+            ${merged_protobuf}
             sodium
             libzmq
             CURL::libcurl
