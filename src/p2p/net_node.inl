@@ -611,21 +611,24 @@ namespace nodetool
     std::set<std::string> full_addrs;
     if (nettype == cryptonote::TESTNET)
     {
-      full_addrs.insert("162.250.121.176:21012");
-      full_addrs.insert("206.72.199.214:21012");
+      full_addrs.insert("seed1.italo.network:31012");
+      full_addrs.insert("seed2.italo.network:31012");
+      full_addrs.insert("seed3.italo.network:31012");
     }
     else if (nettype == cryptonote::DEVNET)
     {
-      full_addrs.insert("162.250.121.176:21012");
-      full_addrs.insert("206.72.199.214:21012");
+      full_addrs.insert("seed1.italo.network:41012");
+      full_addrs.insert("seed2.italo.network:41012");
+      full_addrs.insert("seed3.italo.network:41012");
     }
     else if (nettype == cryptonote::FAKECHAIN)
     {
     }
     else
     {
-      full_addrs.insert("162.250.121.176:21012");
-      full_addrs.insert("206.72.199.214:21012");
+      full_addrs.insert("seed1.italo.network:21012");
+      full_addrs.insert("seed2.italo.network:21012");
+      full_addrs.insert("seed3.italo.network:21012");
     }
     return full_addrs;
   }
