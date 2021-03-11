@@ -952,7 +952,7 @@ bool italo_chain_generator::block_begin(italo_blockchain_entry &entry, italo_cre
     else if (blk.major_version == cryptonote::network_version_16_pulse)
       miner_tx_context.batched_governance = (FOUNDATION_REWARD_HF15 + CHAINFLIP_LIQUIDITY_HF16) * num_blocks;
     else if (blk.major_version == cryptonote::network_version_17)
-      miner_tx_context.batched_governance = FOUNDATION_REWARD_HF17 * num_blocks;
+      miner_tx_context.batched_governance = FOUNDATION_REWARD_HF18 * num_blocks;
     else
     {
       for (int i = (int)get_block_height(params.prev.block), count = 0;

@@ -284,8 +284,8 @@ namespace config
     inline constexpr uint64_t GOVERNANCE_REWARD_INTERVAL_IN_BLOCKS = 1000;
     inline constexpr std::array GOVERNANCE_WALLET_ADDRESS =
     {
-      "iz5CsufgHSeNrnWgwtqtaicP2EJMoWMhvBFjdrWtW6VDG9LdcNdQgSUNCytQm1uhLTh5vSZBcoAfVBGkheej3c2Z2kzExV5Y5"sv, // hardfork v7-9
-      "iz5CsufgHSeNrnWgwtqtaicP2EJMoWMhvBFjdrWtW6VDG9LdcNdQgSUNCytQm1uhLTh5vSZBcoAfVBGkheej3c2Z2kzExV5Y5"sv, // hardfork v10
+      "9HXg5P4HC5XWEC88xXgQ9pPKZdqwKbNEgE4RWDMAwjeHQ4neU5RDMM7aeUnwYDZRBkUuS9WpYE3nkJZ8FqwS282XQJcDtT4"sv, // hardfork v7-9
+      "9HXg5P4HC5XWEC88xXgQ9pPKZdqwKbNEgE4RWDMAwjeHQ4neU5RDMM7aeUnwYDZRBkUuS9WpYE3nkJZ8FqwS282XQJcDtT4"sv, // hardfork v10
     };
 
   }
@@ -330,7 +330,8 @@ namespace cryptonote
     network_version_14_blink,
     network_version_15_lns,
     network_version_16_pulse,
-    network_version_17, // future HF
+    network_version_17, // WXTA / IPO
+    network_version_18, // future HF
 
     network_version_count,
   };

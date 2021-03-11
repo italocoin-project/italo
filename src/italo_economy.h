@@ -26,12 +26,11 @@ constexpr uint64_t CHAINFLIP_LIQUIDITY_HF16 = BLOCK_REWARD_HF15 * 24 / 100;
 // above, the liquidity funds end after 6 months.  That means that until HF17 is finalized, this is
 // the fallback if we hit the 6-months-after-HF16 point:
 constexpr uint64_t BLOCK_REWARD_HF17      = 3'433'333'333;
-constexpr uint64_t FOUNDATION_REWARD_HF17 =   133'333'333;
-
+constexpr uint64_t FOUNDATION_REWARD_HF18 =   133'333'333;
 
 static_assert(MINER_REWARD_HF15        + SN_REWARD_HF15 + FOUNDATION_REWARD_HF15 == BLOCK_REWARD_HF15);
 static_assert(CHAINFLIP_LIQUIDITY_HF16 + SN_REWARD_HF15 + FOUNDATION_REWARD_HF15 == BLOCK_REWARD_HF16);
-static_assert(                           SN_REWARD_HF15 + FOUNDATION_REWARD_HF17 == BLOCK_REWARD_HF17);
+static_assert(                           SN_REWARD_HF15 + FOUNDATION_REWARD_HF18 == BLOCK_REWARD_HF17);
 
 // -------------------------------------------------------------------------------------------------
 //

@@ -748,7 +748,7 @@ bool italo_core_block_rewards_lrc6::generate(std::vector<test_event_entry>& even
       if (cryptonote::block_has_governance_output(cryptonote::FAKECHAIN, block))
       {
         hf17_gov++;
-        CHECK_EQ(block.miner_tx.vout.at(1).amount, FOUNDATION_REWARD_HF17 * interval);
+        CHECK_EQ(block.miner_tx.vout.at(1).amount, FOUNDATION_REWARD_HF18 * interval);
         CHECK_EQ(block.miner_tx.vout.size(), 2);
       }
       else

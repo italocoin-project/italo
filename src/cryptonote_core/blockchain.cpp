@@ -4980,12 +4980,13 @@ bool Blockchain::calc_batched_governance_reward(uint64_t height, uint64_t &rewar
   // already returned, above).
 
   size_t num_blocks = cryptonote::get_config(nettype()).GOVERNANCE_REWARD_INTERVAL_IN_BLOCKS;
-
+  constexpr uint64_t FOUNDATION_REWARD_HF17 = 25'000 * COIN;
   // Fixed reward starting at HF15
   if (hard_fork_version >= network_version_15_lns)
   {
     reward = num_blocks * (
-        hard_fork_version >= network_version_17 ? FOUNDATION_REWARD_HF17 :
+        hard_fork_version >= network_version_18 ? FOUNDATION_REWARD_HF18 :
+        hard_fork_version == network_version_17 ? FOUNDATION_REWARD_HF17 :
         hard_fork_version >= network_version_16_pulse ? FOUNDATION_REWARD_HF15 + CHAINFLIP_LIQUIDITY_HF16 :
         FOUNDATION_REWARD_HF15);
     return true;

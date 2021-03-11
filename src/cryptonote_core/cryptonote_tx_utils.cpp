@@ -113,7 +113,7 @@ namespace cryptonote
 
     return true;
   }
-
+  
   bool validate_governance_reward_key(uint64_t height, std::string_view governance_wallet_address_str, size_t output_index, const crypto::public_key& output_key, const cryptonote::network_type nettype)
   {
     keypair gov_key = get_deterministic_keypair_from_height(height);
@@ -130,10 +130,11 @@ namespace cryptonote
 
     return correct_key == output_key;
   }
-
+  constexpr uint64_t FOUNDATION_REWARD_HF17 = 25'000 * COIN;
   uint64_t governance_reward_formula(uint64_t base_reward, uint8_t hf_version)
   {
-    return hf_version >= network_version_17         ? FOUNDATION_REWARD_HF17 :
+    return hf_version >= network_version_18         ? FOUNDATION_REWARD_HF18 :
+           hf_version == network_version_17         ? FOUNDATION_REWARD_HF17 :
            hf_version >= network_version_16_pulse   ? FOUNDATION_REWARD_HF15 + CHAINFLIP_LIQUIDITY_HF16 :
            hf_version >= network_version_15_lns     ? FOUNDATION_REWARD_HF15 :
            base_reward / 20;
@@ -149,6 +150,9 @@ namespace cryptonote
   {
     if (height == 0)
       return false;
+    
+    if (hard_fork_version == network_version_17)
+      return true;
 
     if (hard_fork_version <= network_version_9_service_nodes)
       return true;
@@ -566,6 +570,9 @@ namespace cryptonote
       uint64_t remainder = base_reward_unpenalized - allocated;
       if (allocated > base_reward_unpenalized || remainder != 0)
       {
+        if (hard_fork_version == network_version_17)
+          return true;
+
         if (allocated > base_reward_unpenalized)
           MERROR("We allocated more reward " << cryptonote::print_money(allocated) << " than what was available " << cryptonote::print_money(base_reward_unpenalized));
         else
