@@ -29,6 +29,7 @@ namespace service_nodes {
 
   constexpr size_t PULSE_QUORUM_NUM_VALIDATORS     = 11;
   constexpr size_t PULSE_BLOCK_REQUIRED_SIGNATURES = 7;  // A block must have exactly N signatures to be considered properly
+  constexpr size_t PULSE_BLOCK_REQUIRED_SIGNATURESV17 = 4;  // A block must have exactly N signatures to be considered properly
 #endif
 
   constexpr auto PULSE_MIN_TARGET_BLOCK_TIME = TARGET_BLOCK_TIME - 30s;

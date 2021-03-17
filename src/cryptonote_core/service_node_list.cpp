@@ -1403,12 +1403,14 @@ namespace service_nodes
 
       if (quorum_verified)
       {
+        uint8_t const hf_version = block.major_version;
+        uint64_t singtures = hf_version >= cryptonote::network_version_17 ? service_nodes::PULSE_BLOCK_REQUIRED_SIGNATURESV17 : service_nodes::PULSE_BLOCK_REQUIRED_SIGNATURES;
         // NOTE: These invariants are already checked in verify_quorum_signatures
         if (alt_block)
           LOG_PRINT_L1("Alt-block " << height << ":" << hash << " verified successfully");
         assert(block.pulse.validator_bitset != 0);
         assert(block.pulse.validator_bitset < (1 << PULSE_QUORUM_NUM_VALIDATORS));
-        assert(block.signatures.size() == service_nodes::PULSE_BLOCK_REQUIRED_SIGNATURES);
+        assert(block.signatures.size() == singtures);
       }
       else
       {

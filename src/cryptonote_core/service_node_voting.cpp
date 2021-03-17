@@ -264,9 +264,10 @@ namespace service_nodes
 
       case quorum_type::pulse:
       {
-        if (signatures.size() != PULSE_BLOCK_REQUIRED_SIGNATURES)
+        uint64_t singtures = hf_version >= cryptonote::network_version_17 ? PULSE_BLOCK_REQUIRED_SIGNATURESV17 : PULSE_BLOCK_REQUIRED_SIGNATURES;
+        if (signatures.size() != singtures)
         {
-          MGINFO("Pulse block has " << signatures.size() << " signatures but requires " << PULSE_BLOCK_REQUIRED_SIGNATURES);
+          MGINFO("Pulse block has " << signatures.size() << " signatures but requires " << singtures);
           return false;
         }
 

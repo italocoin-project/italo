@@ -1167,7 +1167,7 @@ round_state prepare_for_round(round_context &context, service_nodes::service_nod
   auto const active_node_list             = blockchain.get_service_node_list().active_service_nodes_infos();
   uint8_t const hf_version                = blockchain.get_current_hard_fork_version();
   crypto::public_key const &block_leader  = blockchain.get_service_node_list().get_block_leader().key;
-
+  
   context.prepare_for_round.quorum =
       service_nodes::generate_pulse_quorum(blockchain.nettype(),
                                            block_leader,
@@ -1329,7 +1329,7 @@ round_state send_handshake_bitsets(round_context &context, void *quorumnet_state
   }
 }
 
-round_state wait_for_handshake_bitsets(round_context &context, service_nodes::service_node_list &node_list, void *quorumnet_state, service_nodes::service_node_keys const &key)
+round_state wait_for_handshake_bitsets(round_context &context, service_nodes::service_node_list &node_list, void *quorumnet_state, service_nodes::service_node_keys const &key, cryptonote::Blockchain const &blockchain)
 {
   handle_messages_received_early_for(context.transient.wait_for_handshake_bitsets.stage, quorumnet_state);
   pulse_wait_stage const &stage = context.transient.wait_for_handshake_bitsets.stage;
@@ -1361,8 +1361,8 @@ round_state wait_for_handshake_bitsets(round_context &context, service_nodes::se
     bool i_am_not_participating = false;
     if (best_bitset != 0 && context.prepare_for_round.participant == sn_type::validator)
       i_am_not_participating = ((best_bitset & (1 << context.prepare_for_round.my_quorum_position)) == 0);
-
-    if (count < service_nodes::PULSE_BLOCK_REQUIRED_SIGNATURES || best_bitset == 0 || i_am_not_participating)
+    uint64_t singtures = blockchain.get_current_hard_fork_version() >= cryptonote::network_version_17 ? service_nodes::PULSE_BLOCK_REQUIRED_SIGNATURESV17 : service_nodes::PULSE_BLOCK_REQUIRED_SIGNATURES;
+    if (count < singtures || best_bitset == 0 || i_am_not_participating)
     {
       if (best_bitset == 0)
       {
@@ -1380,7 +1380,7 @@ round_state wait_for_handshake_bitsets(round_context &context, service_nodes::se
       else
       {
         // Can't come to agreement, see threshold comment above
-        MDEBUG(log_prefix(context) << "We heard back from less than " << service_nodes::PULSE_BLOCK_REQUIRED_SIGNATURES << " of the validators ("
+        MDEBUG(log_prefix(context) << "We heard back from less than " << singtures << " of the validators ("
                                    << count << "/" << quorum.size() << "). Waiting until next round.");
       }
 
@@ -1609,7 +1609,7 @@ round_state send_and_wait_for_random_value(round_context &context, service_nodes
 round_state send_and_wait_for_signed_blocks(round_context &context, service_nodes::service_node_list &node_list, void *quorumnet_state, service_nodes::service_node_keys const &key, cryptonote::core &core)
 {
   assert(context.prepare_for_round.participant == sn_type::validator);
-
+  uint64_t singtures = core.get_ideal_hard_fork_version() >= cryptonote::network_version_17 ? service_nodes::PULSE_BLOCK_REQUIRED_SIGNATURESV17 : service_nodes::PULSE_BLOCK_REQUIRED_SIGNATURES;
   //
   // NOTE: Send
   //
@@ -1650,13 +1650,17 @@ round_state send_and_wait_for_signed_blocks(round_context &context, service_node
         indices[indices_count++] = index;
 
     // Random select from first 'N' PULSE_BLOCK_REQUIRED_SIGNATURES from indices_count entries.
-    assert(indices_count >= service_nodes::PULSE_BLOCK_REQUIRED_SIGNATURES);
-    std::array<size_t, service_nodes::PULSE_BLOCK_REQUIRED_SIGNATURES> selected = {};
+    
+    assert(indices_count >= singtures);
+    if (core.get_ideal_hard_fork_version() >= cryptonote::network_version_17)
+        std::array<size_t, service_nodes::PULSE_BLOCK_REQUIRED_SIGNATURESV17> selected = {};
+      std::array<size_t, service_nodes::PULSE_BLOCK_REQUIRED_SIGNATURES> selected = {};
+
     std::sample(indices.begin(), indices.begin() + indices_count, selected.begin(), selected.size(), tools::rng);
 
     // Add Signatures
     cryptonote::block &final_block = context.transient.signed_block.final_block;
-    for (size_t index = 0; index < service_nodes::PULSE_BLOCK_REQUIRED_SIGNATURES; index++)
+    for (size_t index = 0; index <singtures; index++)
     {
       uint16_t validator_index = indices[index];
       auto const &signature    = quorum[validator_index];
@@ -1733,7 +1737,7 @@ void pulse::main(void *quorumnet_state, cryptonote::core &core)
         break;
 
       case round_state::wait_for_handshake_bitsets:
-        context.state = wait_for_handshake_bitsets(context, node_list, quorumnet_state, key);
+        context.state = wait_for_handshake_bitsets(context, node_list, quorumnet_state, key, blockchain);
         break;
 
       case round_state::wait_for_block_template:

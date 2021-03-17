@@ -4463,8 +4463,9 @@ bool Blockchain::handle_block_to_main_chain(const block& bl, const crypto::hash&
   }
 
   abort_block.cancel();
+  uint64_t signtures = get_current_hard_fork_version() >= network_version_17 ? service_nodes::PULSE_BLOCK_REQUIRED_SIGNATURESV17 : service_nodes::PULSE_BLOCK_REQUIRED_SIGNATURES;
   uint64_t const fee_after_penalty = get_outs_money_amount(bl.miner_tx) - base_reward;
-  if (bl.signatures.size() == service_nodes::PULSE_BLOCK_REQUIRED_SIGNATURES)
+  if (bl.signatures.size() == signtures)
   {
     MINFO("+++++ PULSE BLOCK SUCCESSFULLY ADDED"
         "\n\tid: " << id <<
