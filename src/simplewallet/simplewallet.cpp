@@ -714,9 +714,9 @@ bool simple_wallet::spendkey(const std::vector<std::string> &args/* = std::vecto
   } else {
     SCOPED_WALLET_UNLOCK();
 
-    warn_msg_writer() << tr("NEVER give your Oxen wallet private spend key (or seed phrase) to ANYONE else. "
-            "NEVER input your Oxen private spend key (or seed phrase) into any software or website other than the OFFICIAL "
-            "Oxen CLI or GUI wallets, downloaded directly from the Oxen GitHub (https://github.com/oxen-io/) or compiled from source.");
+    warn_msg_writer() << tr("NEVER give your Italo wallet private spend key (or seed phrase) to ANYONE else. "
+            "NEVER input your Italo private spend key (or seed phrase) into any software or website other than the OFFICIAL "
+            "Italo CLI or GUI wallets, downloaded directly from the Italo GitHub (https://github.com/italocoin-project/) or compiled from source.");
     std::string confirm = input_line(tr("Are you sure you want to access your private spend key?"), true);
     if (std::cin.eof() || !command_line::is_yes(confirm))
       return false;
@@ -3426,9 +3426,9 @@ void simple_wallet::print_seed(const epee::wipeable_string &seed)
     "Write them down and store them somewhere safe and secure. Please do not store them in "
     "your email or on file storage services outside of your immediate control.\n")) % (m_wallet->multisig() ? tr("string") : tr("25 words"));
 
-  warn_msg_writer() << tr("NEVER give your Oxen wallet seed to ANYONE else. NEVER input your Oxen "
-          "wallet seed into any software or website other than the OFFICIAL Oxen CLI or GUI wallets, "
-          "downloaded directly from the Oxen GitHub (https://github.com/oxen-io/) or compiled from source.");
+  warn_msg_writer() << tr("NEVER give your Italo wallet seed to ANYONE else. NEVER input your Italo "
+          "wallet seed into any software or website other than the OFFICIAL Italo CLI or GUI wallets, "
+          "downloaded directly from the Italo GitHub (https://github.com/italocoin-project/) or compiled from source.");
   std::string confirm = input_line(tr("Are you sure you want to access your wallet seed?"), true);
   if (std::cin.eof() || !command_line::is_yes(confirm))
     return;
