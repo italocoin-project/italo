@@ -52,9 +52,9 @@ message(STATUS "CMake version ${CMAKE_VERSION}")
 set(CMAKE_OSX_DEPLOYMENT_TARGET 10.12 CACHE STRING "macOS deployment target (Apple clang only)")
 
 project(italo
-    VERSION 9.0.1
+    VERSION 10.0.0
     LANGUAGES CXX C)
-set(ITALO_RELEASE_CODENAME "Origin, Point Two")
+set(ITALO_RELEASE_CODENAME "Odysseus, Point One")
 
 # String value to append to the full version string; this is intended to easily identify whether a
 # binary was build from the release or development branches.  This should be permanently set to an
